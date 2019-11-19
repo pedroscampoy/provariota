@@ -88,7 +88,7 @@ def samtools_markdup(args):
 def picard_markdup(args):
     #java -jar picard.jar MarkDuplicates \
     #  I=input.bam O=marked_duplicates.bam M=marked_dup_metrics.txt
-    picard_jar = get_picard_path()
+    #picard_jar = get_picard_path()
     
     input_bam = os.path.abspath(args.input_bam)
     in_param = "I=" + input_bam
@@ -106,7 +106,7 @@ def picard_markdup(args):
 
     check_create_dir(stat_output_dir)
 
-    cmd_markdup = ["java", "-jar", picard_jar, "MarkDuplicates", 
+    cmd_markdup = ["picard", "MarkDuplicates", 
     in_param, out_param, stats_param]
     execute_subprocess(cmd_markdup)
     
@@ -125,7 +125,7 @@ def picard_markdup(args):
 def picard_dictionary(args):
     #java -jar picard.jar CreateSequenceDictionary\
     # R=reference.fasta O=reference.dict
-    picard_jar = get_picard_path()
+    #picard_jar = get_picard_path()
 
     input_reference = os.path.abspath(args.reference)
     ref_param = "R=" + input_reference
@@ -138,7 +138,7 @@ def picard_dictionary(args):
     if os.path.exists(dict_file_name):
         print(dict_file_name + " already EXIST")
     else:
-        cmd = ["java", "-jar", picard_jar, "CreateSequenceDictionary", 
+        cmd = ["picard", "CreateSequenceDictionary", 
         ref_param, out_param]
         execute_subprocess(cmd)
 

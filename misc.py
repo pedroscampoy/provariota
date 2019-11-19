@@ -121,22 +121,17 @@ def get_picard_path():
 
 
 def get_snpeff_path():
-    type_route = subprocess.run(["whereis", "snpEff.jar"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True, universal_newlines=True) 
-    snpeff_route = type_route.stdout.split(" ")
-    snpeff_jar = False
-    snpeff_config = False
-    for executable in snpeff_route:
-        executable = executable.strip()
-        if executable.endswith(".jar"):
-            snpeff_jar = executable
-        elif executable.endswith(".config"):
-            snpeff_config = executable
+    type_route = subprocess.run(["whereis", "snpEff"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True, universal_newlines=True) 
+    regex = re.compile(r'\/.*')
+    adapter_route = re.search(regex, type_route.stdout).group().strip().split("/")[0:-2]
+    partial_path = "/".join(adapter_route)
+
+    snpEff_config_path = subprocess.run(["find", partial_path, "-name", "snpEff.config"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True, universal_newlines=True)
+
+    final_path_config = snpEff_config_path.stdout.split("\n")[0]
+    final_path_config
     
-    if snpeff_jar and snpeff_config:
-        return snpeff_config, snpeff_jar
-    else:
-        print("some snpEff executables are missing")
-        sys.exit(1)
+    return final_path_config
 
 
 def execute_subprocess(cmd):

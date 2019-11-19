@@ -93,7 +93,7 @@ def get_arguments():
 
     annot_group = parser.add_argument_group('Annotation', 'parameters for variant annotation')
 
-    annot_group.add_argument('--mash_database', type=str, required=False, default="/home/laura/DATABASES/Mash/refseq.genomes.k21s1000.msh", help='MASH ncbi annotation containing all species database')
+    annot_group.add_argument('--mash_database', type=str, required=False, default="/home/pjsola/REFERENCES/mash/refseq.genomes.k21s1000.msh", help='MASH ncbi annotation containing all species database')
     annot_group.add_argument('--snpeff_database', type=str, required=False, default="Mycobacterium_tuberculosis_h37rv", help='snpEFF annotation database')
 
     params_group = parser.add_argument_group('Parameters', 'parameters for diferent stringent conditions')

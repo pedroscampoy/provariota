@@ -4,7 +4,6 @@ import os
 import sys
 import re
 import argparse
-#import argcomplete
 import subprocess
 from misc import check_file_exists, extract_sample, obtain_output_dir, check_create_dir, execute_subprocess
 
@@ -69,13 +68,13 @@ args = get_arguments()
 def get_bbduk_adapters():
     type_route = subprocess.run(["whereis", "bbduk.sh"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True, universal_newlines=True) 
     regex = re.compile(r'\/.*\.sh')
-    adapter_route = re.search(regex, type_route.stdout)
-
-    partial_path_list = adapter_route.group().split("/")[0:-1]
-    partial_path = "/".join(partial_path_list)
-
-    final_path_adapters = os.path.join(partial_path, "resources/adapters.fa") #/home/$user/programs/bbmap/bbmap/resources/adapters.fa
-        
+    adapter_route = re.search(regex, type_route.stdout).group().split("/")[0:-2]
+    partial_path = "/".join(adapter_route)
+    
+    full_adapter_path = subprocess.run(["find", partial_path, "-name", "adapters.fa"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True, universal_newlines=True)
+    
+    final_path_adapters = full_adapter_path.stdout.split("\n")[0]
+    
     return final_path_adapters
     
 def bbduk_trimming(args):

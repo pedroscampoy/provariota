@@ -156,7 +156,7 @@ def add_SG(args, input_bam, output_bg_sorted):
     rg_pl_param = "RGPL=" + rg_pl
     rg_lb_param = "RGLB=" + rg_lb
 
-    picard_jar = get_picard_path()
+    #picard_jar = get_picard_path()
 
     input_param = "INPUT=" + input_bam
     output_param = "OUTPUT=" + output_bg_sorted
@@ -167,7 +167,7 @@ def add_SG(args, input_bam, output_bg_sorted):
     # RGLB= library1 \ RGPL=illumina \ RGPU=H0164ALXX140820.2 \ RGSM=sample1 \ 
     # SORT_ORDER=coordinate \ CREATE_INDEX=true
 
-    cmd = ["java", "-jar", picard_jar, "AddOrReplaceReadGroups", 
+    cmd = ["picard", "AddOrReplaceReadGroups", 
     input_param, output_param, rg_id_param, rg_lb_param, rg_pl_param, rg_pu_param, rg_sm_param,
     "SORT_ORDER=coordinate"]
     execute_subprocess(cmd)

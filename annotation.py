@@ -86,8 +86,7 @@ def snpeff_annotation(args, vcf_file, database="Mycobacterium_tuberculosis_h37rv
     sample = os.path.basename(vcf_file).split(".")[0]
     file_name = (".").join(os.path.basename(vcf_file).split(".")[:-1])
 
-    snpeff_config = get_snpeff_path()[0]
-    snpeff_jar = get_snpeff_path()[1]
+    snpeff_config = get_snpeff_path()
 
     annotate_output_dir = obtain_output_dir(args, "Annotation")
     #output_dir = os.path.abspath(args.output)
@@ -97,7 +96,7 @@ def snpeff_annotation(args, vcf_file, database="Mycobacterium_tuberculosis_h37rv
     stat_file = os.path.join(annotate_output_dir, stat_name)
     output_file = os.path.join(annotate_output_dir, annot_name)
 
-    cmd = ["java", "-jar", snpeff_jar, "-ud", "0", "-c", snpeff_config, "-stats", stat_file, database, vcf_file]
+    cmd = ["snpEff", "-ud", "0", "-c", snpeff_config, "-stats", stat_file, database, vcf_file]
     #execute_subprocess(cmd)
     with open(output_file, "w+") as outfile:
         #calculate coverage and save it in th eoutput file

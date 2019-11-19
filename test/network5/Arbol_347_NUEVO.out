@@ -1,0 +1,100 @@
+Results of file C:\Users\Usuario\Google Drive\Almería_VIGILANCIA_ESTRECHA\Cluster_347\Arbol_347_NUEVO.rdf with Epsilon=0
+Criterion for generated median vectors : Connection cost.
+
+Equivalent taxa : 
+
+Tax.      5 with tax.      8
+
+Final links : 
+
+Link    1 0 Seq.      1 with Seq.      3, mutations at 2        3        12       
+Link    2 0 Seq.      1 with Seq. mv   1, mutations at 24       25       
+Link    3 0 Seq.      2 with Seq. mv   2, mutations at 1        5        10       11       13       14       17       
+Link    4 0 Seq.      4 with Seq.      5, mutations at 18       
+Link    5 0 Seq.      5 with Seq. mv   1, mutations at 20       21       22       23       
+Link    6 0 Seq.      6 with Seq. mv   2, mutations at 4        15       16       
+Link    7 0 Seq.      7 with Seq. mv   1, mutations at 6        7        8        9        
+Link    8 0 Seq. mv   1 with Seq. mv   2, mutations at 19       
+**************************************************
+Frequ. of taxon        1 :    1
+Frequ. of taxon        2 :    1
+Frequ. of taxon        3 :    1
+Frequ. of taxon        4 :    1
+Frequ. of taxon        5 :    1
+Frequ. of taxon        6 :    1
+Frequ. of taxon        7 :    1
+Frequ. of taxon        8 :    1
+Frequ. of taxon   mv   1 :    0
+Frequ. of taxon   mv   2 :    0
+**************************************************
+Weight of character 1      :  10
+Weight of character 2      :  10
+Weight of character 3      :  10
+Weight of character 4      :  10
+Weight of character 5      :  10
+Weight of character 6      :  10
+Weight of character 7      :  10
+Weight of character 8      :  10
+Weight of character 9      :  10
+Weight of character 10     :  10
+Weight of character 11     :  10
+Weight of character 12     :  10
+Weight of character 13     :  10
+Weight of character 14     :  10
+Weight of character 15     :  10
+Weight of character 16     :  10
+Weight of character 17     :  10
+Weight of character 18     :  10
+Weight of character 19     :  10
+Weight of character 20     :  10
+Weight of character 21     :  10
+Weight of character 22     :  10
+Weight of character 23     :  10
+Weight of character 24     :  10
+Weight of character 25     :  10
+**************************************************
+Mapping of character;     1;CH1
+Mapping of character;     2;CH2
+Mapping of character;     3;CH3
+Mapping of character;     4;CH4
+Mapping of character;     5;CH5
+Mapping of character;     6;CH6
+Mapping of character;     7;CH7
+Mapping of character;     8;CH8
+Mapping of character;     9;CH9
+Mapping of character;    10;CH10
+Mapping of character;    11;CH11
+Mapping of character;    12;CH12
+Mapping of character;    13;CH13
+Mapping of character;    14;CH14
+Mapping of character;    15;CH15
+Mapping of character;    16;CH16
+Mapping of character;    17;CH17
+Mapping of character;    18;CH18
+Mapping of character;    19;CH19
+Mapping of character;    20;CH20
+Mapping of character;    21;CH21
+Mapping of character;    22;CH22
+Mapping of character;    23;CH23
+Mapping of character;    24;CH24
+Mapping of character;    25;CH25
+Mapping of taxon;     1;SQ1
+Other information of taxon;     1;Phenotype;;Geography;;Lineage;;Group1;;Group2;;Group3;;
+Mapping of taxon;     2;2519
+Other information of taxon;     2;Phenotype;;Geography;;Lineage;;Group1;;Group2;;Group3;;
+Mapping of taxon;     3;1349
+Other information of taxon;     3;Phenotype;;Geography;;Lineage;;Group1;;Group2;;Group3;;
+Mapping of taxon;     4;550
+Other information of taxon;     4;Phenotype;;Geography;;Lineage;;Group1;;Group2;;Group3;;
+Mapping of taxon;     5;571
+Other information of taxon;     5;Phenotype;;Geography;;Lineage;;Group1;;Group2;;Group3;;
+Mapping of taxon;     6;2098
+Other information of taxon;     6;Phenotype;;Geography;;Lineage;;Group1;;Group2;;Group3;;
+Mapping of taxon;     7;2468
+Other information of taxon;     7;Phenotype;;Geography;;Lineage;;Group1;;Group2;;Group3;;
+Mapping of taxon;     8;347
+Other information of taxon;     8;Phenotype;;Geography;;Lineage;;Group1;;Group2;;Group3;;
+Mapping of taxon;mv   1;mv   1
+Other information of taxon;mv   1;Phenotype;;Geography;;Lineage;;Group1;;Group2;;Group3;;
+Mapping of taxon;mv   2;mv   2
+Other information of taxon;mv   2;Phenotype;;Geography;;Lineage;;Group1;;Group2;;Group3;;

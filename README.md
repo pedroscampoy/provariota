@@ -1,2 +1,3 @@
-# provariota
-SNP calling and comparison in prokaryote species applying best practices
+# provaryota
+Variant calling and comparison in prokaryote species following gatk best practices
+

@@ -1,0 +1,8 @@
+add InbR in Rv0275c based on Article InbR, a TetR family regulator, binds with isoniazid and influences multidrug resistance in Mycobacterium bovis BCG
+manually 
+
+change gid by gidB
+
+add mymA in Rv3083 based on https://www.uniprot.org/uniprot/P9WNF7
+
+based on Molecular Cloning and Characterization of Tap, a Putative Multidrug Efflux Pump Present in Mycobacterium fortuitum and Mycobacterium tuberculosis

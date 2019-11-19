@@ -1,0 +1,56 @@
+Results of file C:\Users\Usuario\Google Drive\Almería_VIGILANCIA_ESTRECHA\347\Arbol1_cluster347.rdf with Epsilon=0
+Criterion for generated median vectors : Connection cost.
+
+Equivalent taxa : 
+
+
+Final links : 
+
+Link    1 0 Seq.      1 with Seq. mv   1, mutations at 4        5        6        7        8        
+Link    2 0 Seq.      2 with Seq. mv   1, mutations at 3        10       11       
+Link    3 0 Seq.      3 with Seq.      4, mutations at 1        2        9        
+Link    4 0 Seq.      4 with Seq. mv   1, mutations at 12       13       
+**************************************************
+Frequ. of taxon        1 :    1
+Frequ. of taxon        2 :    1
+Frequ. of taxon        3 :    1
+Frequ. of taxon        4 :    1
+Frequ. of taxon   mv   1 :    0
+**************************************************
+Weight of character 1      :  10
+Weight of character 2      :  10
+Weight of character 3      :  10
+Weight of character 4      :  10
+Weight of character 5      :  10
+Weight of character 6      :  10
+Weight of character 7      :  10
+Weight of character 8      :  10
+Weight of character 9      :  10
+Weight of character 10     :  10
+Weight of character 11     :  10
+Weight of character 12     :  10
+Weight of character 13     :  10
+**************************************************
+Mapping of character;     1;CH1
+Mapping of character;     2;CH2
+Mapping of character;     3;CH3
+Mapping of character;     4;CH4
+Mapping of character;     5;CH5
+Mapping of character;     6;CH6
+Mapping of character;     7;CH7
+Mapping of character;     8;CH8
+Mapping of character;     9;CH9
+Mapping of character;    10;CH10
+Mapping of character;    11;CH11
+Mapping of character;    12;CH12
+Mapping of character;    13;CH14
+Mapping of taxon;     1;AL 31048558 241
+Other information of taxon;     1;Phenotype;;Geography;;Lineage;;Group1;;Group2;;Group3;;
+Mapping of taxon;     2;AL 54348 16 202
+Other information of taxon;     2;Phenotype;;Geography;;Lineage;;Group1;;Group2;;Group3;;
+Mapping of taxon;     3;AL 52663 10 133
+Other information of taxon;     3;Phenotype;;Geography;;Lineage;;Group1;;Group2;;Group3;;
+Mapping of taxon;     4;REF
+Other information of taxon;     4;Phenotype;;Geography;;Lineage;;Group1;;Group2;;Group3;;
+Mapping of taxon;mv   1;mv   1
+Other information of taxon;mv   1;Phenotype;;Geography;;Lineage;;Group1;;Group2;;Group3;;

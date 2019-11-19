@@ -1,0 +1,123 @@
+cd /media/NAS/Datos/23_11_18_MEZCLAS_SIN_CAPTURA
+
+
+#RENAME AND COPY SAMPLES
+ls *fastq.gz | cut -d "_" -f 1,2 | sort -u > /home/laura/ANALYSIS/Lofreq/coinfection_designed/dictionary_mezclas_in_vitro.txt
+
+MANUALLY give name to enumerated samples
+
+CREATE rename_fasta_files
+
+rename_fasta_files.py -d dictionary_mezclas_in_vitro.txt -i /media/NAS/Datos/FastQ_originales/MEZCLAS_INVITRO_CAPTURA_16118 -o ~/RAW/
+
+cat dictionary_mezclas_in_vitro.txt | awk '{print $2}' > sample_list.txt
+
+
+#CREATE SYMBOLIC LINKS
+cd /home/laura/ANALYSIS/Lofreq/coinfection_designed/raw
+for i in $(cat sample_list.txt); do ln -s $(find /home/laura/RAW -name "$i*") $PWD; done
+
+
+#QUALITY TRIM READS
+for sample in $(cat sample_list.txt); do quality_trim.sh -1 raw/$sample"_R1.fastq.gz" -2 raw/$sample"_R2.fastq.gz" -s $sample -o ./trimmed -T 4; done |tee trim.log
+
+#Use trimmed reads as input for MTBseq
+#Use gatk.bam to call variants with Lofreq
+
+#Using MTBseq/gatk reordered bam
+for i in $(cat sample_list.txt); do \
+lofreq call-parallel \
+--pp-threads 4 \
+-f /home/laura/DATABASES/REFERENCES/ancestorII/MTB_ancestorII_reference.fas \
+-o /home/laura/ANALYSIS/Lofreq/coinfection_designed/MTBseq/$i".vcf" \
+"/home/laura/ANALYSIS/MTBseq/coinfection_designed/GATK_Bam/"$i"_coinfection-designed.gatk.bam"; done
+
+
+#CREATE INDEX FIRST
+
+for i in $(ls *.bam); do samtools index $i; done
+
+#Using Pipeline_TB non reordered bam
+for i in $(cat sample_list.txt); do \
+lofreq call-parallel \
+--pp-threads 4 \
+-f /home/laura/DATABASES/REFERENCES/ancestorII/MTB_ancestorII_reference.fas \
+-o /home/laura/ANALYSIS/Lofreq/coinfection_designed/Pipeline_TB/$i".vcf" \
+"/home/laura/ANALYSIS/Pipeline_TB/coinfection_designed/BAM/"$i"_final.bam"; done
+
+
+
+########
+CALL WITH GATK (NO BSQR)
+########
+
+for i in $(cat sample_list.txt)
+    do 
+    R1=$(find /home/laura/ANALYSIS/Lofreq/coinfection_designed/raw -name "$i*" | grep _R1)
+    R2=$(find /home/laura/ANALYSIS/Lofreq/coinfection_designed/raw -name "$i*" | grep _R2)
+
+
+    python ~/DEVELOP/MIRUMINA/bin/bbduk_trimmer.py -1 $R1 -2 $R2 -o /home/laura/ANALYSIS/Lofreq/coinfection_designed
+done
+
+
+for i in $(cat sample_list.txt)
+    do 
+    R1=$(find /home/laura/ANALYSIS/Lofreq/coinfection_designed/Trimmed -name "$i*" | grep _R1)
+    R2=$(find /home/laura/ANALYSIS/Lofreq/coinfection_designed/Trimmed -name "$i*" | grep _R2)
+
+    python ~/DEVELOP/MIRUMINA/bin/pe_mapper.py -1 $R1 -2 $R2 -r /home/laura/DEVELOP/MIRUMINA/references/MTB_ancestorII_reference.fasta -o /home/laura/ANALYSIS/Lofreq/coinfection_designed
+done
+
+for i in $(cat sample_list.txt)
+    do 
+    python ~/DEVELOP/MIRUMINA/bin/bam_recall.py -b "/home/laura/ANALYSIS/Lofreq/coinfection_designed/Bam/"$i".rg.sorted.bam" -s $i -r /home/laura/DEVELOP/MIRUMINA/references/MTB_ancestorII_reference.fasta -o /home/laura/ANALYSIS/Lofreq/coinfection_designed
+done
+
+
+
+for i in $(cat sample_list.txt)
+    do
+    gatk SelectVariants \
+    -V "/home/laura/ANALYSIS/Lofreq/coinfection_designed/VCF_recal/"$i".vcf" \
+    -select-type SNP \
+    -O "/home/laura/ANALYSIS/Lofreq/coinfection_designed/VCF_recal/"$i".snp.vcf"
+done
+
+
+for i in $(cat sample_list.txt)
+    do
+    gatk VariantFiltration \
+    -V "/home/laura/ANALYSIS/Lofreq/coinfection_designed/VCF_recal/"$i".snp.vcf" \
+    -filter "QD < 2.0" --filter-name "QD2" \
+    -filter "QUAL < 30.0" --filter-name "QUAL30" \
+    -filter "SOR > 3.0" --filter-name "SOR3" \
+    -filter "FS > 60.0" --filter-name "FS60" \
+    -filter "MQ < 40.0" --filter-name "MQ40" \
+    -filter "MQRankSum < -12.5" --filter-name "MQRankSum-12.5" \
+    -filter "ReadPosRankSum < -8.0" --filter-name "ReadPosRankSum-8" \
+    -O "/home/laura/ANALYSIS/Lofreq/coinfection_designed/VCF_recal/"$i".hf.snp.vcf"
+done
+
+
+for i in $(cat sample_list.txt)
+    do
+    gatk VariantsToTable \
+    -V "/home/laura/ANALYSIS/Lofreq/coinfection_designed/VCF_recal/"$i".hf.snp.vcf" \
+    --fields CHROM --fields POS --fields ID --fields REF --fields ALT --fields QUAL --fields FILTER --genotype-fields GT --genotype-fields AD --genotype-fields DP --genotype-fields GQ --genotype-fields PL \
+    --split-multi-allelic \
+    -O "/home/laura/ANALYSIS/Lofreq/coinfection_designed/VCF_recal/"$i".hf.snp.tab"
+done
+
+#--show-filtered
+
+
+
+for i in $(cat sample_list.txt)
+    do
+    lofreq call-parallel \
+    --pp-threads 4 \
+    -f /home/laura/DATABASES/REFERENCES/ancestorII/MTB_ancestorII_reference.fasta \
+    -o "/home/laura/ANALYSIS/Lofreq/coinfection_italy/Lofreq/"$i".vcf" \
+    "/home/laura/ANALYSIS/Lofreq/coinfection_italy/Bam/"$i".rg.markdup.sorted.bam"
+ done

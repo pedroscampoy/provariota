@@ -1,0 +1,346 @@
+6575:fluoroquinolones (FQ),T
+6620:fluoroquinolones (FQ),C,A
+6621:fluoroquinolones (FQ),C
+6734:fluoroquinolones (FQ),G,A
+6735:fluoroquinolones (FQ),C
+6736:fluoroquinolones (FQ),G
+6737:fluoroquinolones (FQ),C
+6738:fluoroquinolones (FQ),A,T
+6741:fluoroquinolones (FQ),T
+6742:fluoroquinolones (FQ),T
+6749:fluoroquinolones (FQ),A
+6750:fluoroquinolones (FQ),T
+7563:fluoroquinolones (FQ),T
+7564:fluoroquinolones (FQ),C
+7566:fluoroquinolones (FQ),A
+7570:fluoroquinolones (FQ),T
+7572:fluoroquinolones (FQ),C
+7581:fluoroquinolones (FQ),C,A,T
+7582:fluoroquinolones (FQ),G,C,T
+575729:ethionamide (ETH),T
+576164:ethionamide (ETH),T
+576242:ethionamide (ETH),T
+576338:ethionamide (ETH),T
+576414:ethionamide (ETH),A
+576429:ethionamide (ETH),C
+760314:rifampicin (RMP),T
+761004:rifampicin (RMP),G
+761093:rifampicin (RMP),C
+761095:rifampicin (RMP),C,G
+761098:rifampicin (RMP),T,C
+761100:rifampicin (RMP),A
+761101:rifampicin (RMP),C,T
+761108:rifampicin (RMP),T
+761109:rifampicin (RMP),T,TT
+761110:rifampicin (RMP),G,T
+761111:rifampicin (RMP),G
+761117:rifampicin (RMP),C
+761120:rifampicin (RMP),G
+761128:rifampicin (RMP),T,G
+761139:rifampicin (RMP),A,G,T,TG
+761140:rifampicin (RMP),C,G,T
+761141:rifampicin (RMP),A
+761154:rifampicin (RMP),G,T
+761155:rifampicin (RMP),G,T
+761161:rifampicin (RMP),C
+761277:rifampicin (RMP),T
+781687:streptomycin (SM),G
+781821:streptomycin (SM),C
+781822:streptomycin (SM),G
+801268:linezolid (LZD),C
+1472337:streptomycin (SM),T
+1472358:streptomycin (SM),T
+1472359:streptomycin (SM),C
+1472362:streptomycin (SM),T
+1472750:streptomycin (SM),A
+1472751:streptomycin (SM),G
+1472752:streptomycin (SM),T
+1473246:amikacin (AMK) kanamycin (KAN) capreomycin (CPR),G
+1473247:amikacin (AMK) kanamycin (KAN) capreomycin (CPR),T
+1473329:amikacin (AMK) kanamycin (KAN) capreomycin (CPR),T
+1475956:linezolid (LZD),T
+1476471:linezolid (LZD),T
+1673423:isoniazid (INH),T
+1673424:isoniazid (INH),G
+1673425:isoniazid (INH),T
+1673432:isoniazid (INH),A,C
+1674481:isoniazid (INH) ethionamide (ETH),G
+1674782:isoniazid (INH) ethionamide (ETH),C
+1833909:pyrazinamide (PZA),C
+1834325:pyrazinamide (PZA),A
+1834852:pyrazinamide (PZA),C
+1917946:capreomycin (CPR),T
+1917979:capreomycin (CPR),T
+1917991:capreomycin (CPR),T
+1918003:capreomycin (CPR),T
+1918139:capreomycin (CPR),A
+1918144:capreomycin (CPR),G
+1918211:capreomycin (CPR),A
+1918292:capreomycin (CPR),C,G
+1918322:capreomycin (CPR),A
+1918388:capreomycin (CPR),C
+1918487:capreomycin (CPR),T
+1918489:capreomycin (CPR),A,T
+1918494:capreomycin (CPR),G
+1918651:capreomycin (CPR),A
+2102240:isoniazid (INH) ethionamide (ETH),T
+2102715:isoniazid (INH) ethionamide (ETH),C
+2155167:isoniazid (INH),C,T
+2155168:isoniazid (INH),G,T,A
+2155169:isoniazid (INH),C
+2155206:isoniazid (INH),C
+2155212:isoniazid (INH),G
+2155214:isoniazid (INH),C
+2155222:isoniazid (INH),A
+2155289:isoniazid (INH),G
+2155699:isoniazid (INH),C
+2288683:pyrazinamide (PZA),G
+2288697:pyrazinamide (PZA),G
+2288703:pyrazinamide (PZA),G,C
+2288704:pyrazinamide (PZA),A
+2288718:pyrazinamide (PZA),G
+2288719:pyrazinamide (PZA),C
+2288727:pyrazinamide (PZA),G
+2288730:pyrazinamide (PZA),A
+2288740:pyrazinamide (PZA),G
+2288752:pyrazinamide (PZA),G
+2288754:pyrazinamide (PZA),G
+2288757:pyrazinamide (PZA),T
+2288761:pyrazinamide (PZA),G
+2288764:pyrazinamide (PZA),G
+2288766:pyrazinamide (PZA),C
+2288772:pyrazinamide (PZA),G,C
+2288778:pyrazinamide (PZA),C
+2288779:pyrazinamide (PZA),T
+2288782:pyrazinamide (PZA),C
+2288805:pyrazinamide (PZA),T,A
+2288806:pyrazinamide (PZA),G,T
+2288817:pyrazinamide (PZA),T,A
+2288818:pyrazinamide (PZA),C
+2288820:pyrazinamide (PZA),G
+2288821:pyrazinamide (PZA),A
+2288823:pyrazinamide (PZA),G
+2288826:pyrazinamide (PZA),C
+2288827:pyrazinamide (PZA),G
+2288828:pyrazinamide (PZA),C
+2288830:pyrazinamide (PZA),G
+2288832:pyrazinamide (PZA),C,G
+2288833:pyrazinamide (PZA),C
+2288836:pyrazinamide (PZA),T,A
+2288838:pyrazinamide (PZA),T
+2288839:pyrazinamide (PZA),G
+2288841:pyrazinamide (PZA),A
+2288844:pyrazinamide (PZA),G
+2288847:pyrazinamide (PZA),G,T
+2288848:pyrazinamide (PZA),A,T
+2288853:pyrazinamide (PZA),G,C
+2288857:pyrazinamide (PZA),A
+2288859:pyrazinamide (PZA),C
+2288868:pyrazinamide (PZA),C
+2288869:pyrazinamide (PZA),A
+2288874:pyrazinamide (PZA),G
+2288880:pyrazinamide (PZA),G
+2288883:pyrazinamide (PZA),C,T,G
+2288885:pyrazinamide (PZA),T,A
+2288886:pyrazinamide (PZA),G,T
+2288887:pyrazinamide (PZA),G,C
+2288895:pyrazinamide (PZA),C,G
+2288902:pyrazinamide (PZA),G
+2288920:pyrazinamide (PZA),T,G
+2288928:pyrazinamide (PZA),T
+2288930:pyrazinamide (PZA),T
+2288931:pyrazinamide (PZA),A
+2288933:pyrazinamide (PZA),C
+2288934:pyrazinamide (PZA),C,G
+2288935:pyrazinamide (PZA),C
+2288938:pyrazinamide (PZA),T
+2288944:pyrazinamide (PZA),C,G
+2288945:pyrazinamide (PZA),T
+2288952:pyrazinamide (PZA),G,T
+2288953:pyrazinamide (PZA),T,A
+2288954:pyrazinamide (PZA),T
+2288955:pyrazinamide (PZA),C,G
+2288956:pyrazinamide (PZA),G,C
+2288957:pyrazinamide (PZA),C
+2288960:pyrazinamide (PZA),T,C
+2288961:pyrazinamide (PZA),C,G
+2288962:pyrazinamide (PZA),G
+2288971:pyrazinamide (PZA),A
+2288982:pyrazinamide (PZA),A
+2288988:pyrazinamide (PZA),C,G
+2288997:pyrazinamide (PZA),C
+2288998:pyrazinamide (PZA),C
+2289000:pyrazinamide (PZA),C,G
+2289001:pyrazinamide (PZA),C
+2289016:pyrazinamide (PZA),G
+2289028:pyrazinamide (PZA),G
+2289029:pyrazinamide (PZA),T
+2289030:pyrazinamide (PZA),C
+2289031:pyrazinamide (PZA),A
+2289036:pyrazinamide (PZA),A
+2289038:pyrazinamide (PZA),G,A
+2289039:pyrazinamide (PZA),G,T
+2289040:pyrazinamide (PZA),G,C
+2289043:pyrazinamide (PZA),G
+2289049:pyrazinamide (PZA),AT
+2289050:pyrazinamide (PZA),C
+2289052:pyrazinamide (PZA),C
+2289054:pyrazinamide (PZA),C
+2289057:pyrazinamide (PZA),A
+2289061:pyrazinamide (PZA),G
+2289068:pyrazinamide (PZA),T,C
+2289070:pyrazinamide (PZA),G
+2289071:pyrazinamide (PZA),C
+2289072:pyrazinamide (PZA),C,G
+2289073:pyrazinamide (PZA),C,A
+2289081:pyrazinamide (PZA),C,T,A
+2289082:pyrazinamide (PZA),A
+2289089:pyrazinamide (PZA),T
+2289090:pyrazinamide (PZA),C,G
+2289091:pyrazinamide (PZA),A,C
+2289096:pyrazinamide (PZA),G,C
+2289097:pyrazinamide (PZA),T
+2289100:pyrazinamide (PZA),C,A
+2289103:pyrazinamide (PZA),C,G
+2289108:pyrazinamide (PZA),C,G
+2289111:pyrazinamide (PZA),C
+2289133:pyrazinamide (PZA),A
+2289138:pyrazinamide (PZA),G
+2289140:pyrazinamide (PZA),C
+2289150:pyrazinamide (PZA),C
+2289159:pyrazinamide (PZA),T
+2289162:pyrazinamide (PZA),G
+2289171:pyrazinamide (PZA),T
+2289180:pyrazinamide (PZA),C
+2289186:pyrazinamide (PZA),G
+2289193:pyrazinamide (PZA),T
+2289200:pyrazinamide (PZA),T
+2289201:pyrazinamide (PZA),T
+2289202:pyrazinamide (PZA),G
+2289203:pyrazinamide (PZA),C
+2289204:pyrazinamide (PZA),G
+2289206:pyrazinamide (PZA),C
+2289207:pyrazinamide (PZA),G
+2289208:pyrazinamide (PZA),T
+2289213:pyrazinamide (PZA),C,G
+2289214:pyrazinamide (PZA),T
+2289216:pyrazinamide (PZA),G,C
+2289218:pyrazinamide (PZA),T
+2289219:pyrazinamide (PZA),G,C
+2289220:pyrazinamide (PZA),T
+2289222:pyrazinamide (PZA),T,C
+2289223:pyrazinamide (PZA),A
+2289225:pyrazinamide (PZA),G
+2289226:pyrazinamide (PZA),CA
+2289231:pyrazinamide (PZA),G,C
+2289234:pyrazinamide (PZA),T
+2289235:pyrazinamide (PZA),G
+2289239:pyrazinamide (PZA),A,T
+2289240:pyrazinamide (PZA),T,G
+2289248:pyrazinamide (PZA),G,C
+2289252:pyrazinamide (PZA),C,G,A
+2715342:kanamycin (KAN),T
+2715346:kanamycin (KAN),A
+2726136:isoniazid (INH),T
+2726145:isoniazid (INH),A
+3073808:para-aminosalicylic acid (PAS),C
+4241078:ethambutol (EMB),G
+4243221:ethambutol (EMB),T
+4243225:ethambutol (EMB),A
+4243242:ethambutol (EMB),A
+4243245:ethambutol (EMB),A
+4243833:ethambutol (EMB),A
+4244193:ethambutol (EMB),A
+4244281:ethambutol (EMB),A
+4244617:ethambutol (EMB),T
+4245730:ethambutol (EMB),C
+4246734:ethambutol (EMB),G
+4247402:ethambutol (EMB),G
+4247429:ethambutol (EMB),G,C
+4247430:ethambutol (EMB),C
+4247431:ethambutol (EMB),A,C,T
+4247469:ethambutol (EMB),C
+4247495:ethambutol (EMB),T
+4247496:ethambutol (EMB),G,TG
+4247507:ethambutol (EMB),C
+4247513:ethambutol (EMB),C,T
+4247573:ethambutol (EMB),A
+4247717:ethambutol (EMB),G
+4247723:ethambutol (EMB),T
+4247729:ethambutol (EMB),A,T
+4247730:ethambutol (EMB),C,A
+4247863:ethambutol (EMB),G
+4247873:ethambutol (EMB),A
+4248002:ethambutol (EMB),A
+4248003:ethambutol (EMB),G
+4248747:ethambutol (EMB),A
+4249518:ethambutol (EMB),G
+4326087:ethionamide (ETH),T
+4326236:ethionamide (ETH),T
+4326300:ethionamide (ETH),C
+4326320:ethionamide (ETH),T
+4326333:ethionamide (ETH),G
+4326449:ethionamide (ETH),T
+4326461:ethionamide (ETH),C
+4326738:ethionamide (ETH),A
+4326807:ethionamide (ETH),T
+4326917:ethionamide (ETH),T
+4327224:ethionamide (ETH),C
+4327301:ethionamide (ETH),G
+4327307:ethionamide (ETH),G
+4327322:ethionamide (ETH),A
+4327346:ethionamide (ETH),T
+4327347:ethionamide (ETH),A
+4407604:streptomycin (SM),T
+4407790:streptomycin (SM),A
+4407824:streptomycin (SM),A
+4407931:streptomycin (SM),G
+4407940:streptomycin (SM),G
+4407992:streptomycin (SM),T
+4408009:streptomycin (SM),C
+4408102:streptomycin (SM),G
+6576:fluoroquinolones_(FQ),A
+6579:fluoroquinolones_(FQ),T,A
+6768:fluoroquinolones_(FQ),C
+412339:ethambutol_(EMB),G
+413498:ethambutol_(EMB),G
+413807:ethambutol_(EMB),T
+761106:rifampicin_(RMP),C
+761116:rifampicin_(RMP),G
+761127:rifampicin_(RMP),CA
+1416212:ethambutol_(EMB),C
+1673393:isoniazid_(INH),C
+1673406:isoniazid_(INH),T
+1673431:isoniazid_(INH),A
+1918125:streptomycin_(SM)_amikacin_(AMK)_kanamycin_(KAN)_capreomycin_(CPR),A
+1918135:streptomycin_(SM)_amikacin_(AMK)_kanamycin_(KAN)_capreomycin_(CPR),C
+1918136:streptomycin_(SM)_amikacin_(AMK)_kanamycin_(KAN)_capreomycin_(CPR),A
+1918202:streptomycin_(SM)_amikacin_(AMK)_kanamycin_(KAN)_capreomycin_(CPR),G
+1918213:streptomycin_(SM)_amikacin_(AMK)_kanamycin_(KAN)_capreomycin_(CPR),C
+1918219:streptomycin_(SM)_amikacin_(AMK)_kanamycin_(KAN)_capreomycin_(CPR),T,A
+1918220:streptomycin_(SM)_amikacin_(AMK)_kanamycin_(KAN)_capreomycin_(CPR),A
+1918418:streptomycin_(SM)_amikacin_(AMK)_kanamycin_(KAN)_capreomycin_(CPR),G
+1918478:streptomycin_(SM)_amikacin_(AMK)_kanamycin_(KAN)_capreomycin_(CPR),G,C
+1918661:streptomycin_(SM)_amikacin_(AMK)_kanamycin_(KAN)_capreomycin_(CPR),C
+2154445:isoniazid_(INH),T
+2154682:isoniazid_(INH),T
+2154700:isoniazid_(INH),C
+2155211:isoniazid_(INH),A
+2155234:isoniazid_(INH),G
+2155241:isoniazid_(INH),T
+2155306:isoniazid_(INH),T
+2155688:isoniazid_(INH),T
+2288686:pyrazinamide_(PZA),A
+2288717:pyrazinamide_(PZA),T
+2288767:pyrazinamide_(PZA),C
+2288790:pyrazinamide_(PZA),G
+2288815:pyrazinamide_(PZA),T
+2288860:pyrazinamide_(PZA),A
+2289099:pyrazinamide_(PZA),C
+2726100:isoniazid_(INH),T
+2726112:isoniazid_(INH),T
+3645524:ethambutol_(EMB),T
+3646959:ethambutol_(EMB),T
+3647041:ethambutol_(EMB),G
+4245147:ethambutol_(EMB),T
+4407904:streptomycin_(SM)_amikacin_(AMK)_kanamycin_(KAN)_capreomycin_(CPR),A

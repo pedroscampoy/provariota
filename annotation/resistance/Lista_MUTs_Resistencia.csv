@@ -1,0 +1,614 @@
+Variant position genome stop	WT base	Var. base	Region	Gene ID	Gene Name	Gene start	Gene stop	Dir.	AA change	Codon change	Variant position gene start	Antibiotic	High Confidence SNP
+6575	c	t	coding	Rv0005	gyrB	5240	7267	+	Arg446Cys	cgt/tgt	1336	fluoroquinolones (FQ)	
+6620	g	c	coding	Rv0005	gyrB	5240	7267	+	Asp461His	gac/cac	1381	fluoroquinolones (FQ)	yes
+6620	g	a	coding	Rv0005	gyrB	5240	7267	+	Asp461Asn	gac/aac	1381	fluoroquinolones (FQ)	yes
+6621	a	c	coding	Rv0005	gyrB	5240	7267	+	Asp461Ala	gac/gcc	1382	fluoroquinolones (FQ)	yes
+6734	a	g	coding	Rv0005	gyrB	5240	7267	+	Asn499Asp	aac/gac	1495	fluoroquinolones (FQ)	yes
+6735	a	c	coding	Rv0005	gyrB	5240	7267	+	Asn499Thr	aac/acc	1496	fluoroquinolones (FQ)	yes
+6736	c	g	coding	Rv0005	gyrB	5240	7267	+	Asn499Lys	aac/aag	1497	fluoroquinolones (FQ)	yes
+6737	a	c	coding	Rv0005	gyrB	5240	7267	+	Thr500Pro	acc/ccc	1498	fluoroquinolones (FQ)	yes
+6738	c	a	coding	Rv0005	gyrB	5240	7267	+	Thr500Asn	acc/aac	1499	fluoroquinolones (FQ)	yes
+6741	a	t	coding	Rv0005	gyrB	5240	7267	+	Glu501Val	gaa/gta	1502	fluoroquinolones (FQ)	yes
+6742	a	t	coding	Rv0005	gyrB	5240	7267	+	Glu501Asp	gaa/gat	1503	fluoroquinolones (FQ)	yes
+6749	g	a	coding	Rv0005	gyrB	5240	7267	+	Ala504Thr	gcg/acg	1510	fluoroquinolones (FQ)	
+6750	c	t	coding	Rv0005	gyrB	5240	7267	+	Ala504Val	gcg/gtg	1511	fluoroquinolones (FQ)	yes
+7563	g	t	coding	Rv0006	gyrA	7302	9818	+	Gly88Cys	ggc/tgc	262	fluoroquinolones (FQ)	yes
+7564	g	c	coding	Rv0006	gyrA	7302	9818	+	Gly88Ala	ggc/gcc	263	fluoroquinolones (FQ)	yes
+7566	g	a	coding	Rv0006	gyrA	7302	9818	+	Asp89Asn	gac/aac	265	fluoroquinolones (FQ)	
+7570	c	t	coding	Rv0006	gyrA	7302	9818	+	Ala90Val	gcg/gtg	269	fluoroquinolones (FQ)	yes
+7572	t	c	coding	Rv0006	gyrA	7302	9818	+	Ser91Pro	tcg/ccg	271	fluoroquinolones (FQ)	yes
+7581	g	c	coding	Rv0006	gyrA	7302	9818	+	Asp94His	gac/cac	280	fluoroquinolones (FQ)	yes
+7581	g	a	coding	Rv0006	gyrA	7302	9818	+	Asp94Asn	gac/aac	280	fluoroquinolones (FQ)	yes
+7581	g	t	coding	Rv0006	gyrA	7302	9818	+	Asp94Tyr	gac/tac	280	fluoroquinolones (FQ)	yes
+7582	a	g	coding	Rv0006	gyrA	7302	9818	+	Asp94Gly	gac/ggc	281	fluoroquinolones (FQ)	yes
+7582	a	c	coding	Rv0006	gyrA	7302	9818	+	Asp94Ala	gac/gcc	281	fluoroquinolones (FQ)	yes
+7582	a	t	coding	Rv0006	gyrA	7302	9818	+	Asp94Val	gac/gtc	281	fluoroquinolones (FQ)	
+575729	c	t	coding	Rv0486	mshA	575348	576790	+	Gln128STOP	cag/tag	382	ethionamide (ETH)	
+576164	c	t	coding	Rv0486	mshA	575348	576790	+	Arg273Cys	cgc/tgc	817	ethionamide (ETH)	
+576242	g	t	coding	Rv0486	mshA	575348	576790	+	Gly299Cys	ggc/tgc	895	ethionamide (ETH)	
+576338	c	t	coding	Rv0486	mshA	575348	576790	+	Gln331STOP	cag/tag	991	ethionamide (ETH)	
+576414	g	a	coding	Rv0486	mshA	575348	576790	+	Gly356Asp	ggc/gac	1067	ethionamide (ETH)	
+576429	a	c	coding	Rv0486	mshA	575348	576790	+	Glu361Ala	gag/gcg	1082	ethionamide (ETH)	
+760314	g	t	coding	Rv0667	rpoB	759807	763325	+	Val170Phe	gtc/ttc	508	rifampicin (RMP)	yes
+761004	a	g	coding	Rv0667	rpoB	759807	763325	+	Thr400Ala	acc/gcc	1198	rifampicin (RMP)	
+761093	g	c	coding	Rv0667	rpoB	759807	763325	+	Gln429His	cag/cac	1287	rifampicin (RMP)	
+761095	t	c	coding	Rv0667	rpoB	759807	763325	+	Leu430Pro	ctg/ccg	1289	rifampicin (RMP)	
+761095	t	g	coding	Rv0667	rpoB	759807	763325	+	Leu430Arg	ctg/cgg	1289	rifampicin (RMP)	
+761098	g	t	coding	Rv0667	rpoB	759807	763325	+	Ser431Ile	agc/atc	1292	rifampicin (RMP)	
+761098	g	c	coding	Rv0667	rpoB	759807	763325	+	Ser431Thr	agc/acc	1292	rifampicin (RMP)	
+761100	c	a	coding	Rv0667	rpoB	759807	763325	+	Gln432Lys	caa/aaa	1294	rifampicin (RMP)	
+761101	a	c	coding	Rv0667	rpoB	759807	763325	+	Gln432Pro	caa/cca	1295	rifampicin (RMP)	
+761101	a	t	coding	Rv0667	rpoB	759807	763325	+	Gln432Leu	caa/cta	1295	rifampicin (RMP)	yes
+761108	g	t	coding	Rv0667	rpoB	759807	763325	+	Met434Ile	atg/att	1302	rifampicin (RMP)	
+761109	g	t	coding	Rv0667	rpoB	759807	763325	+	Asp435Tyr	gac/tac	1303	rifampicin (RMP)	yes
+761110	a	g	coding	Rv0667	rpoB	759807	763325	+	Asp435Gly	gac/ggc	1304	rifampicin (RMP)	yes
+761110	a	t	coding	Rv0667	rpoB	759807	763325	+	Asp435Val	gac/gtc	1304	rifampicin (RMP)	yes
+761111	c	g	coding	Rv0667	rpoB	759807	763325	+	Asp435Glu	gac/gag	1305	rifampicin (RMP)	
+761120	caac	c	coding	Rv0667	rpoB	759807	763325	+	Asn438-	aac/_	1312	rifampicin (RMP)	
+761120	c	g	coding	Rv0667	rpoB	759807	763325	+	Asn438Lys	aac/aag	1314	rifampicin (RMP)	
+761128	c	t	coding	Rv0667	rpoB	759807	763325	+	Ser441Leu	tcg/ttg	1322	rifampicin (RMP)	
+761128	c	g	coding	Rv0667	rpoB	759807	763325	+	Ser441Trp	tcg/tgg	1322	rifampicin (RMP)	
+761139	c	a	coding	Rv0667	rpoB	759807	763325	+	His445Asn	cac/aac	1333	rifampicin (RMP)	yes
+761139	c	g	coding	Rv0667	rpoB	759807	763325	+	His445Asp	cac/gac	1333	rifampicin (RMP)	yes
+761139	c	t	coding	Rv0667	rpoB	759807	763325	+	His445Tyr	cac/tac	1333	rifampicin (RMP)	yes
+761140	a	c	coding	Rv0667	rpoB	759807	763325	+	His445Pro	cac/ccc	1334	rifampicin (RMP)	yes
+761140	a	g	coding	Rv0667	rpoB	759807	763325	+	His445Arg	cac/cgc	1334	rifampicin (RMP)	yes
+761140	a	t	coding	Rv0667	rpoB	759807	763325	+	His445Leu	cac/ctc	1334	rifampicin (RMP)	
+761141	c	a	coding	Rv0667	rpoB	759807	763325	+	His445Gln	cac/caa	1335	rifampicin (RMP)	
+761154	t	g	coding	Rv0667	rpoB	759807	763325	+	Ser450Ala	tcg/gcg	1348	rifampicin (RMP)	
+761155	c	g	coding	Rv0667	rpoB	759807	763325	+	Ser450Trp	tcg/tgg	1349	rifampicin (RMP)	yes
+761155	c	t	coding	Rv0667	rpoB	759807	763325	+	Ser450Leu	tcg/ttg	1349	rifampicin (RMP)	yes
+761161	t	c	coding	Rv0667	rpoB	759807	763325	+	Leu452Pro	ctg/ccg	1355	rifampicin (RMP)	yes
+761277	a	t	coding	Rv0667	rpoB	759807	763325	+	Ile491Phe	atc/ttc	1471	rifampicin (RMP)	yes
+781687	a	g	coding	Rv0682	rpsL	781560	781934	+	Lys43Arg	aag/agg	128	streptomycin (SM)	yes
+781821	a	c	coding	Rv0682	rpsL	781560	781934	+	Lys88Gln	aag/cag	262	streptomycin (SM)	
+781822	a	g	coding	Rv0682	rpsL	781560	781934	+	Lys88Arg	aag/agg	263	streptomycin (SM)	yes
+801268	t	c	coding	Rv0701	rplC	800809	801462	+	Cys154Arg	tgt/cgt	460	linezolid (LZD)	
+1472337	c	t	ribosomal	Rvnr01	rrs	1471846	1473382	+	---	-	492	streptomycin (SM)	
+1472358	c	t	ribosomal	Rvnr01	rrs	1471846	1473382	+	---	-	513	streptomycin (SM)	
+1472359	a	c	ribosomal	Rvnr01	rrs	1471846	1473382	+	---	-	514	streptomycin (SM)	
+1472362	c	t	ribosomal	Rvnr01	rrs	1471846	1473382	+	---	-	517	streptomycin (SM)	
+1472750	c	a	ribosomal	Rvnr01	rrs	1471846	1473382	+	---	-	905	streptomycin (SM)	
+1472751	a	g	ribosomal	Rvnr01	rrs	1471846	1473382	+	---	-	906	streptomycin (SM)	
+1472752	a	t	ribosomal	Rvnr01	rrs	1471846	1473382	+	---	-	907	streptomycin (SM)	
+1473246	a	g	ribosomal	Rvnr01	rrs	1471846	1473382	+	---	-	1401	amikacin (AMK) kanamycin (KAN) capreomycin (CPR)	yes
+1473247	c	t	ribosomal	Rvnr01	rrs	1471846	1473382	+	---	-	1402	amikacin (AMK) kanamycin (KAN) capreomycin (CPR)	yes
+1473329	g	t	ribosomal	Rvnr01	rrs	1471846	1473382	+	---	-	1484	amikacin (AMK) kanamycin (KAN) capreomycin (CPR)	yes
+1475956	g	t	ribosomal	Rvnr02	rrl	1473658	1476795	+	---	-	2299	linezolid (LZD)	
+1476471	g	t	ribosomal	Rvnr02	rrl	1473658	1476795	+	---	-	2814	linezolid (LZD)	
+1673423	g	t	intergenic	Rv1483	fabG1	1673440	1674183	+	---	-	-17	isoniazid (INH)	
+1673424	a	g	intergenic	Rv1483	fabG1	1673440	1674183	+	---	-	-16	isoniazid (INH)	
+1673425	c	t	intergenic	Rv1483	fabG1	1673440	1674183	+	---	-	-15	isoniazid (INH)	yes
+1673432	t	a	intergenic	Rv1483	fabG1	1673440	1674183	+	---	-	-8	isoniazid (INH)	yes
+1673432	t	c	intergenic	Rv1483	fabG1	1673440	1674183	+	---	-	-8	isoniazid (INH)	yes
+1674481	t	g	coding	Rv1484	inhA	1674202	1675011	+	Ser94Ala	tcg/gcg	280	isoniazid (INH) ethionamide (ETH)	yes
+1674782	t	c	coding	Rv1484	inhA	1674202	1675011	+	Ile194Thr	atc/acc	581	isoniazid (INH) ethionamide (ETH)	
+1833909	a	c	coding	Rv1630	rpsA	1833542	1834987	+	Asp123Ala	gac/gcc	368	pyrazinamide (PZA)	
+1834325	g	a	coding	Rv1630	rpsA	1833542	1834987	+	Val262Met	gtg/atg	784	pyrazinamide (PZA)	
+1834855	cgcc	c	coding	Rv1630	rpsA	1833542	1834987	+	Ala438-	gcc/_	1312	pyrazinamide (PZA)	
+1917946	c	t	coding	Rv1694	tlyA	1917940	1918746	+	Arg3STOP	cga/tga	7	capreomycin (CPR)	
+1917979	c	t	coding	Rv1694	tlyA	1917940	1918746	+	Arg14Trp	cgg/tgg	40	capreomycin (CPR)	
+1917991	c	t	coding	Rv1694	tlyA	1917940	1918746	+	Arg18STOP	cga/tga	52	capreomycin (CPR)	
+1918003	c	t	coding	Rv1694	tlyA	1917940	1918746	+	Gln22STOP	cag/tag	64	capreomycin (CPR)	
+1918139	c	a	coding	Rv1694	tlyA	1917940	1918746	+	Ala67Glu	gcg/gag	200	capreomycin (CPR)	
+1918144	a	g	coding	Rv1694	tlyA	1917940	1918746	+	Lys69Glu	aaa/gaa	205	capreomycin (CPR)	
+1918211	c	a	coding	Rv1694	tlyA	1917940	1918746	+	Ala91Glu	gca/gaa	272	capreomycin (CPR)	
+1918292	t	c	coding	Rv1694	tlyA	1917940	1918746	+	Leu118Pro	ctg/ccg	353	capreomycin (CPR)	
+1918322	t	a	coding	Rv1694	tlyA	1917940	1918746	+	Val128Glu	gtg/gag	383	capreomycin (CPR)	
+1918388	t	c	coding	Rv1694	tlyA	1917940	1918746	+	Leu150Pro	ctg/ccg	449	capreomycin (CPR)	
+1918487	c	t	coding	Rv1694	tlyA	1917940	1918746	+	Pro183Leu	ccg/ctg	548	capreomycin (CPR)	
+1918489	c	a	coding	Rv1694	tlyA	1917940	1918746	+	Gln184Lys	cag/aag	550	capreomycin (CPR)	
+1918489	c	t	coding	Rv1694	tlyA	1917940	1918746	+	Gln184STOP	cag/tag	550	capreomycin (CPR)	
+1918494	t	g	coding	Rv1694	tlyA	1917940	1918746	+	Phe185Leu	ttt/ttg	555	capreomycin (CPR)	
+1918651	g	a	coding	Rv1694	tlyA	1917940	1918746	+	Glu238Lys	gag/aag	712	capreomycin (CPR)	
+2102240	g	a	coding	Rv1854c	ndh	2103042	2101651	-	Arg268His	cgc/cac	803	isoniazid (INH) ethionamide (ETH)	
+2102715	a	g	coding	Rv1854c	ndh	2103042	2101651	-	Thr110Ala	acc/gcc	328	isoniazid (INH) ethionamide (ETH)	
+2155167	c	g	coding	Rv1908c	katG	2156111	2153889	-	Ser315Arg	agc/agg	945	isoniazid (INH)	
+2155167	c	a	coding	Rv1908c	katG	2156111	2153889	-	Ser315Arg	agc/aga	945	isoniazid (INH)	
+2155168	g	c	coding	Rv1908c	katG	2156111	2153889	-	Ser315Thr	agc/acc	944	isoniazid (INH)	yes
+2155168	g	a	coding	Rv1908c	katG	2156111	2153889	-	Ser315Asn	agc/aac	944	isoniazid (INH)	yes
+2155168	g	t	coding	Rv1908c	katG	2156111	2153889	-	Ser315Ile	agc/atc	944	isoniazid (INH)	yes
+2155169	a	g	coding	Rv1908c	katG	2156111	2153889	-	Ser315Gly	agc/ggc	943	isoniazid (INH)	yes
+2155206	c	g	coding	Rv1908c	katG	2156111	2153889	-	Ser302Arg	agc/agg	906	isoniazid (INH)	
+2155212	g	c	coding	Rv1908c	katG	2156111	2153889	-	Trp300Cys	tgg/tgc	900	isoniazid (INH)	
+2155214	t	g	coding	Rv1908c	katG	2156111	2153889	-	Trp300Gly	tgg/ggg	898	isoniazid (INH)	yes
+2155222	g	t	coding	Rv1908c	katG	2156111	2153889	-	Gly297Val	ggc/gtc	890	isoniazid (INH)	
+2155289	a	c	coding	Rv1908c	katG	2156111	2153889	-	Thr275Pro	acc/ccc	823	isoniazid (INH)	yes
+2155699	a	g	coding	Rv1908c	katG	2156111	2153889	-	Asn138Ser	aac/agc	413	isoniazid (INH)	
+2288683	t	c	coding	Rv2043c	pncA	2289241	2288681	-	STOP187Arg	tga/cga	559	pyrazinamide (PZA)	yes
+2288697	t	c	coding	Rv2043c	pncA	2289241	2288681	-	Leu182Ser	ttg/tcg	545	pyrazinamide (PZA)	yes
+2288703	t	c	coding	Rv2043c	pncA	2289241	2288681	-	Val180Ala	gtc/gcc	539	pyrazinamide (PZA)	yes
+2288703	t	g	coding	Rv2043c	pncA	2289241	2288681	-	Val180Gly	gtc/ggc	539	pyrazinamide (PZA)	yes
+2288704	g	t	coding	Rv2043c	pncA	2289241	2288681	-	Val180Phe	gtc/ttc	538	pyrazinamide (PZA)	
+2288718	t	c	coding	Rv2043c	pncA	2289241	2288681	-	Met175Thr	atg/acg	524	pyrazinamide (PZA)	yes
+2288719	a	g	coding	Rv2043c	pncA	2289241	2288681	-	Met175Val	atg/gtg	523	pyrazinamide (PZA)	yes
+2288727	t	c	coding	Rv2043c	pncA	2289241	2288681	-	Leu172Pro	ctg/ccg	515	pyrazinamide (PZA)	
+2288730	c	t	coding	Rv2043c	pncA	2289241	2288681	-	Ala171Val	gcg/gtg	512	pyrazinamide (PZA)	
+2288740	a	c	coding	Rv2043c	pncA	2289241	2288681	-	Thr168Pro	acc/ccc	502	pyrazinamide (PZA)	yes
+2288752	t	c	coding	Rv2043c	pncA	2289241	2288681	-	Ser164Pro	tcg/ccg	490	pyrazinamide (PZA)	yes
+2288754	t	c	coding	Rv2043c	pncA	2289241	2288681	-	Val163Ala	gtg/gcg	488	pyrazinamide (PZA)	yes
+2288757	g	a	coding	Rv2043c	pncA	2289241	2288681	-	Gly162Asp	ggt/gat	485	pyrazinamide (PZA)	
+2288761	g	c	coding	Rv2043c	pncA	2289241	2288681	-	Ala161Pro	gcg/ccg	481	pyrazinamide (PZA)	yes
+2288764	a	c	coding	Rv2043c	pncA	2289241	2288681	-	Thr160Pro	aca/cca	478	pyrazinamide (PZA)	yes
+2288766	t	g	coding	Rv2043c	pncA	2289241	2288681	-	Leu159Arg	ctg/cgg	476	pyrazinamide (PZA)	
+2288772	t	c	coding	Rv2043c	pncA	2289241	2288681	-	Val157Ala	gtg/gcg	470	pyrazinamide (PZA)	yes
+2288772	t	g	coding	Rv2043c	pncA	2289241	2288681	-	Val157Gly	gtg/ggg	470	pyrazinamide (PZA)	yes
+2288778	t	g	coding	Rv2043c	pncA	2289241	2288681	-	Val155Gly	gtg/ggg	464	pyrazinamide (PZA)	yes
+2288779	g	a	coding	Rv2043c	pncA	2289241	2288681	-	Val155Met	gtg/atg	463	pyrazinamide (PZA)	yes
+2288782	a	g	coding	Rv2043c	pncA	2289241	2288681	-	Arg154Gly	agg/ggg	460	pyrazinamide (PZA)	
+2288805	c	a	coding	Rv2043c	pncA	2289241	2288681	-	Ala146Glu	gcg/gag	437	pyrazinamide (PZA)	
+2288805	c	t	coding	Rv2043c	pncA	2289241	2288681	-	Ala146Val	gcg/gtg	437	pyrazinamide (PZA)	yes
+2288806	g	c	coding	Rv2043c	pncA	2289241	2288681	-	Ala146Pro	gcg/ccg	436	pyrazinamide (PZA)	yes
+2288806	g	a	coding	Rv2043c	pncA	2289241	2288681	-	Ala146Thr	gcg/acg	436	pyrazinamide (PZA)	
+2288817	c	a	coding	Rv2043c	pncA	2289241	2288681	-	Thr142Lys	acg/aag	425	pyrazinamide (PZA)	yes
+2288817	c	t	coding	Rv2043c	pncA	2289241	2288681	-	Thr142Met	acg/atg	425	pyrazinamide (PZA)	yes
+2288818	a	g	coding	Rv2043c	pncA	2289241	2288681	-	Thr142Ala	acg/gcg	424	pyrazinamide (PZA)	yes
+2288820	a	c	coding	Rv2043c	pncA	2289241	2288681	-	Gln141Pro	cag/ccg	422	pyrazinamide (PZA)	
+2288821	c	t	coding	Rv2043c	pncA	2289241	2288681	-	Gln141STOP	cag/tag	421	pyrazinamide (PZA)	
+2288823	g	c	coding	Rv2043c	pncA	2289241	2288681	-	Arg140Pro	cgc/ccc	419	pyrazinamide (PZA)	yes
+2288826	t	g	coding	Rv2043c	pncA	2289241	2288681	-	Val139Gly	gtg/ggg	416	pyrazinamide (PZA)	yes
+2288827	g	c	coding	Rv2043c	pncA	2289241	2288681	-	Val139Leu	gtg/ctg	415	pyrazinamide (PZA)	yes
+2288828	t	g	coding	Rv2043c	pncA	2289241	2288681	-	Cys138Trp	tgt/tgg	414	pyrazinamide (PZA)	yes
+2288830	t	c	coding	Rv2043c	pncA	2289241	2288681	-	Cys138Arg	tgt/cgt	412	pyrazinamide (PZA)	yes
+2288832	a	g	coding	Rv2043c	pncA	2289241	2288681	-	His137Arg	cat/cgt	410	pyrazinamide (PZA)	yes
+2288832	a	c	coding	Rv2043c	pncA	2289241	2288681	-	His137Pro	cat/cct	410	pyrazinamide (PZA)	yes
+2288833	c	g	coding	Rv2043c	pncA	2289241	2288681	-	His137Asp	cat/gat	409	pyrazinamide (PZA)	yes
+2288836	g	a	coding	Rv2043c	pncA	2289241	2288681	-	Asp136Asn	gat/aat	406	pyrazinamide (PZA)	
+2288836	g	t	coding	Rv2043c	pncA	2289241	2288681	-	Asp136Tyr	gat/tat	406	pyrazinamide (PZA)	
+2288838	c	a	coding	Rv2043c	pncA	2289241	2288681	-	Thr135Asn	acc/aac	404	pyrazinamide (PZA)	yes
+2288839	a	c	coding	Rv2043c	pncA	2289241	2288681	-	Thr135Pro	acc/ccc	403	pyrazinamide (PZA)	yes
+2288841	c	t	coding	Rv2043c	pncA	2289241	2288681	-	Ala134Val	gcc/gtc	401	pyrazinamide (PZA)	yes
+2288844	t	c	coding	Rv2043c	pncA	2289241	2288681	-	Ile133Thr	att/act	398	pyrazinamide (PZA)	
+2288847	g	c	coding	Rv2043c	pncA	2289241	2288681	-	Gly132Ala	ggt/gct	395	pyrazinamide (PZA)	yes
+2288847	g	a	coding	Rv2043c	pncA	2289241	2288681	-	Gly132Asp	ggt/gat	395	pyrazinamide (PZA)	yes
+2288848	g	t	coding	Rv2043c	pncA	2289241	2288681	-	Gly132Cys	ggt/tgt	394	pyrazinamide (PZA)	yes
+2288848	g	a	coding	Rv2043c	pncA	2289241	2288681	-	Gly132Ser	ggt/agt	394	pyrazinamide (PZA)	
+2288853	t	c	coding	Rv2043c	pncA	2289241	2288681	-	Val130Ala	gtg/gcg	389	pyrazinamide (PZA)	yes
+2288853	t	g	coding	Rv2043c	pncA	2289241	2288681	-	Val130Gly	gtg/ggg	389	pyrazinamide (PZA)	yes
+2288857	g	t	coding	Rv2043c	pncA	2289241	2288681	-	Asp129Tyr	gat/tat	385	pyrazinamide (PZA)	yes
+2288859	t	g	coding	Rv2043c	pncA	2289241	2288681	-	Val128Gly	gtc/ggc	383	pyrazinamide (PZA)	
+2288868	t	g	coding	Rv2043c	pncA	2289241	2288681	-	Val125Gly	gtc/ggc	374	pyrazinamide (PZA)	yes
+2288869	g	t	coding	Rv2043c	pncA	2289241	2288681	-	Val125Phe	gtc/ttc	373	pyrazinamide (PZA)	yes
+2288874	g	c	coding	Rv2043c	pncA	2289241	2288681	-	Arg123Pro	cgc/ccc	368	pyrazinamide (PZA)	yes
+2288880	g	c	coding	Rv2043c	pncA	2289241	2288681	-	Arg121Pro	cgg/ccg	362	pyrazinamide (PZA)	yes
+2288883	t	g	coding	Rv2043c	pncA	2289241	2288681	-	Leu120Arg	ctg/cgg	359	pyrazinamide (PZA)	
+2288883	t	a	coding	Rv2043c	pncA	2289241	2288681	-	Leu120Gln	ctg/cag	359	pyrazinamide (PZA)	yes
+2288883	t	c	coding	Rv2043c	pncA	2289241	2288681	-	Leu120Pro	ctg/ccg	359	pyrazinamide (PZA)	yes
+2288885	g	a	coding	Rv2043c	pncA	2289241	2288681	-	Trp119STOP	tgg/tga	357	pyrazinamide (PZA)	
+2288886	g	c	coding	Rv2043c	pncA	2289241	2288681	-	Trp119Ser	tgg/tcg	356	pyrazinamide (PZA)	yes
+2288886	g	a	coding	Rv2043c	pncA	2289241	2288681	-	Trp119STOP	tgg/tag	356	pyrazinamide (PZA)	yes
+2288887	t	c	coding	Rv2043c	pncA	2289241	2288681	-	Trp119Arg	tgg/cgg	355	pyrazinamide (PZA)	yes
+2288887	t	g	coding	Rv2043c	pncA	2289241	2288681	-	Trp119Gly	tgg/ggg	355	pyrazinamide (PZA)	yes
+2288895	t	g	coding	Rv2043c	pncA	2289241	2288681	-	Leu116Arg	ctg/cgg	347	pyrazinamide (PZA)	yes
+2288895	t	c	coding	Rv2043c	pncA	2289241	2288681	-	Leu116Pro	ctg/ccg	347	pyrazinamide (PZA)	yes
+2288902	a	c	coding	Rv2043c	pncA	2289241	2288681	-	Thr114Pro	acg/ccg	340	pyrazinamide (PZA)	
+2288920	g	a	coding	Rv2043c	pncA	2289241	2288681	-	Gly108Arg	gga/aga	322	pyrazinamide (PZA)	yes
+2288920	g	c	coding	Rv2043c	pncA	2289241	2288681	-	Gly108Arg	gga/cga	322	pyrazinamide (PZA)	yes
+2288928	g	a	coding	Rv2043c	pncA	2289241	2288681	-	Gly105Asp	ggc/gac	314	pyrazinamide (PZA)	yes
+2288930	c	a	coding	Rv2043c	pncA	2289241	2288681	-	Ser104Arg	agc/aga	312	pyrazinamide (PZA)	yes
+2288931	g	t	coding	Rv2043c	pncA	2289241	2288681	-	Ser104Ile	agc/atc	311	pyrazinamide (PZA)	yes
+2288933	c	g	coding	Rv2043c	pncA	2289241	2288681	-	Tyr103STOP	tac/tag	309	pyrazinamide (PZA)	yes
+2288934	a	g	coding	Rv2043c	pncA	2289241	2288681	-	Tyr103Cys	tac/tgc	308	pyrazinamide (PZA)	yes
+2288934	a	c	coding	Rv2043c	pncA	2289241	2288681	-	Tyr103Ser	tac/tcc	308	pyrazinamide (PZA)	
+2288935	t	g	coding	Rv2043c	pncA	2289241	2288681	-	Tyr103Asp	tac/gac	307	pyrazinamide (PZA)	yes
+2288938	g	a	coding	Rv2043c	pncA	2289241	2288681	-	Ala102Thr	gcg/acg	304	pyrazinamide (PZA)	yes
+2288944	a	g	coding	Rv2043c	pncA	2289241	2288681	-	Thr100Ala	acc/gcc	298	pyrazinamide (PZA)	yes
+2288944	a	c	coding	Rv2043c	pncA	2289241	2288681	-	Thr100Pro	acc/ccc	298	pyrazinamide (PZA)	yes
+2288945	c	a	coding	Rv2043c	pncA	2289241	2288681	-	Tyr99STOP	tac/taa	297	pyrazinamide (PZA)	yes
+2288952	g	c	coding	Rv2043c	pncA	2289241	2288681	-	Gly97Ala	ggt/gct	290	pyrazinamide (PZA)	yes
+2288952	g	a	coding	Rv2043c	pncA	2289241	2288681	-	Gly97Asp	ggt/gat	290	pyrazinamide (PZA)	yes
+2288953	g	a	coding	Rv2043c	pncA	2289241	2288681	-	Gly97Ser	ggt/agt	289	pyrazinamide (PZA)	
+2288954	g	a	coding	Rv2043c	pncA	2289241	2288681	-	Lys96Asn	aag/aac	288	pyrazinamide (PZA)	yes
+2288955	a	g	coding	Rv2043c	pncA	2289241	2288681	-	Lys96Arg	aag/agg	287	pyrazinamide (PZA)	yes
+2288955	a	c	coding	Rv2043c	pncA	2289241	2288681	-	Lys96Thr	aag/acg	287	pyrazinamide (PZA)	yes
+2288956	a	c	coding	Rv2043c	pncA	2289241	2288681	-	Lys96Gln	aag/cag	286	pyrazinamide (PZA)	yes
+2288956	a	g	coding	Rv2043c	pncA	2289241	2288681	-	Lys96Glu	aag/gag	286	pyrazinamide (PZA)	
+2288957	c	g	coding	Rv2043c	pncA	2289241	2288681	-	Tyr95STOP	tac/tag	285	pyrazinamide (PZA)	yes
+2288960	c	a	coding	Rv2043c	pncA	2289241	2288681	-	Phe94Leu	ttc/tta	282	pyrazinamide (PZA)	yes
+2288960	c	g	coding	Rv2043c	pncA	2289241	2288681	-	Phe94Leu	ttc/ttg	282	pyrazinamide (PZA)	yes
+2288961	t	g	coding	Rv2043c	pncA	2289241	2288681	-	Phe94Cys	ttc/tgc	281	pyrazinamide (PZA)	yes
+2288961	t	c	coding	Rv2043c	pncA	2289241	2288681	-	Phe94Ser	ttc/tcc	281	pyrazinamide (PZA)	yes
+2288962	t	c	coding	Rv2043c	pncA	2289241	2288681	-	Phe94Leu	ttc/ctc	280	pyrazinamide (PZA)	yes
+2288971	g	t	coding	Rv2043c	pncA	2289241	2288681	-	Glu91STOP	gag/tag	271	pyrazinamide (PZA)	yes
+2288982	c	t	coding	Rv2043c	pncA	2289241	2288681	-	Thr87Met	acg/atg	260	pyrazinamide (PZA)	
+2288988	t	g	coding	Rv2043c	pncA	2289241	2288681	-	Leu85Arg	ctg/cgg	254	pyrazinamide (PZA)	yes
+2288988	t	c	coding	Rv2043c	pncA	2289241	2288681	-	Leu85Pro	ctg/ccg	254	pyrazinamide (PZA)	
+2288997	a	g	coding	Rv2043c	pncA	2289241	2288681	-	His82Arg	cat/cgt	245	pyrazinamide (PZA)	yes
+2288998	c	g	coding	Rv2043c	pncA	2289241	2288681	-	His82Asp	cat/gat	244	pyrazinamide (PZA)	yes
+2289000	t	g	coding	Rv2043c	pncA	2289241	2288681	-	Phe81Cys	ttc/tgc	242	pyrazinamide (PZA)	yes
+2289000	t	c	coding	Rv2043c	pncA	2289241	2288681	-	Phe81Ser	ttc/tcc	242	pyrazinamide (PZA)	yes
+2289001	t	g	coding	Rv2043c	pncA	2289241	2288681	-	Phe81Val	ttc/gtc	241	pyrazinamide (PZA)	yes
+2289016	a	c	coding	Rv2043c	pncA	2289241	2288681	-	Thr76Pro	act/cct	226	pyrazinamide (PZA)	
+2289028	t	c	coding	Rv2043c	pncA	2289241	2288681	-	Cys72Arg	tgc/cgc	214	pyrazinamide (PZA)	yes
+2289029	t	a	coding	Rv2043c	pncA	2289241	2288681	-	His71Gln	cat/caa	213	pyrazinamide (PZA)	yes
+2289030	a	g	coding	Rv2043c	pncA	2289241	2288681	-	His71Arg	cat/cgt	212	pyrazinamide (PZA)	yes
+2289031	c	t	coding	Rv2043c	pncA	2289241	2288681	-	His71Tyr	cat/tat	211	pyrazinamide (PZA)	
+2289036	c	t	coding	Rv2043c	pncA	2289241	2288681	-	Pro69Leu	cca/cta	206	pyrazinamide (PZA)	
+2289038	g	c	coding	Rv2043c	pncA	2289241	2288681	-	Trp68Cys	tgg/tgc	204	pyrazinamide (PZA)	yes
+2289038	g	t	coding	Rv2043c	pncA	2289241	2288681	-	Trp68Cys	tgg/tgt	204	pyrazinamide (PZA)	yes
+2289039	g	c	coding	Rv2043c	pncA	2289241	2288681	-	Trp68Ser	tgg/tcg	203	pyrazinamide (PZA)	
+2289039	g	a	coding	Rv2043c	pncA	2289241	2288681	-	Trp68STOP	tgg/tag	203	pyrazinamide (PZA)	yes
+2289040	t	c	coding	Rv2043c	pncA	2289241	2288681	-	Trp68Arg	tgg/cgg	202	pyrazinamide (PZA)	
+2289040	t	g	coding	Rv2043c	pncA	2289241	2288681	-	Trp68Gly	tgg/ggg	202	pyrazinamide (PZA)	
+2289043	t	c	coding	Rv2043c	pncA	2289241	2288681	-	Ser67Pro	tcg/ccg	199	pyrazinamide (PZA)	yes
+-	a	at	coding	Rv2043c	pncA	2289241	2288681	-	Ser65-	tcc/atcc	193	pyrazinamide (PZA)	
+2289050	t	g	coding	Rv2043c	pncA	2289241	2288681	-	Tyr64STOP	tat/tag	192	pyrazinamide (PZA)	yes
+2289052	t	g	coding	Rv2043c	pncA	2289241	2288681	-	Tyr64Asp	tat/gat	190	pyrazinamide (PZA)	
+2289054	a	g	coding	Rv2043c	pncA	2289241	2288681	-	Asp63Gly	gac/ggc	188	pyrazinamide (PZA)	
+2289057	c	t	coding	Rv2043c	pncA	2289241	2288681	-	Pro62Leu	ccg/ctg	185	pyrazinamide (PZA)	yes
+2289061	a	c	coding	Rv2043c	pncA	2289241	2288681	-	Thr61Pro	aca/cca	181	pyrazinamide (PZA)	
+2289068	c	a	coding	Rv2043c	pncA	2289241	2288681	-	Phe58Leu	ttc/tta	174	pyrazinamide (PZA)	yes
+2289068	c	g	coding	Rv2043c	pncA	2289241	2288681	-	Phe58Leu	ttc/ttg	174	pyrazinamide (PZA)	yes
+2289070	t	c	coding	Rv2043c	pncA	2289241	2288681	-	Phe58Leu	ttc/ctc	172	pyrazinamide (PZA)	yes
+2289071	c	g	coding	Rv2043c	pncA	2289241	2288681	-	His57Gln	cac/ag	171	pyrazinamide (PZA)	yes
+2289072	a	g	coding	Rv2043c	pncA	2289241	2288681	-	His57Arg	cac/cgc	170	pyrazinamide (PZA)	yes
+2289072	a	c	coding	Rv2043c	pncA	2289241	2288681	-	His57Pro	cac/ccc	170	pyrazinamide (PZA)	yes
+2289073	c	g	coding	Rv2043c	pncA	2289241	2288681	-	His57Asp	cac/gac	169	pyrazinamide (PZA)	
+2289073	c	t	coding	Rv2043c	pncA	2289241	2288681	-	His57Tyr	cac/tac	169	pyrazinamide (PZA)	
+2289081	c	g	coding	Rv2043c	pncA	2289241	2288681	-	Pro54Arg	ccg/cgg	161	pyrazinamide (PZA)	yes
+2289081	c	a	coding	Rv2043c	pncA	2289241	2288681	-	Pro54Gln	ccg/cag	161	pyrazinamide (PZA)	yes
+2289081	c	t	coding	Rv2043c	pncA	2289241	2288681	-	Pro54Leu	ccg/ctg	161	pyrazinamide (PZA)	
+2289082	c	t	coding	Rv2043c	pncA	2289241	2288681	-	Pro54Ser	ccg/tcg	160	pyrazinamide (PZA)	yes
+2289089	c	a	coding	Rv2043c	pncA	2289241	2288681	-	His51Gln	cac/caa	153	pyrazinamide (PZA)	yes
+2289090	a	g	coding	Rv2043c	pncA	2289241	2288681	-	His51Arg	cac/cgc	152	pyrazinamide (PZA)	yes
+2289090	a	c	coding	Rv2043c	pncA	2289241	2288681	-	His51Pro	cac/ccc	152	pyrazinamide (PZA)	yes
+2289091	c	t	coding	Rv2043c	pncA	2289241	2288681	-	His51Tyr	cac/tac	151	pyrazinamide (PZA)	yes
+2289096	a	c	coding	Rv2043c	pncA	2289241	2288681	-	Asp49Ala	gac/gcc	146	pyrazinamide (PZA)	
+2289096	a	g	coding	Rv2043c	pncA	2289241	2288681	-	Asp49Gly	gac/ggc	146	pyrazinamide (PZA)	
+2289097	g	a	coding	Rv2043c	pncA	2289241	2288681	-	Asp49Asn	gac/aac	145	pyrazinamide (PZA)	yes
+2289100	a	g	coding	Rv2043c	pncA	2289241	2288681	-	Lys48Glu	aag/gag	142	pyrazinamide (PZA)	yes
+2289100	a	t	coding	Rv2043c	pncA	2289241	2288681	-	Lys48STOP	aag/tag	142	pyrazinamide (PZA)	yes
+2289103	a	g	coding	Rv2043c	pncA	2289241	2288681	-	Thr47Ala	acc/gcc	139	pyrazinamide (PZA)	
+2289103	a	c	coding	Rv2043c	pncA	2289241	2288681	-	Thr47Pro	acc/ccc	139	pyrazinamide (PZA)	yes
+2289108	t	g	coding	Rv2043c	pncA	2289241	2288681	-	Val45Gly	gtg/ggg	134	pyrazinamide (PZA)	
+2289111	t	g	coding	Rv2043c	pncA	2289241	2288681	-	Val44Gly	gtc/ggc	131	pyrazinamide (PZA)	yes
+2289133	g	t	coding	Rv2043c	pncA	2289241	2288681	-	Glu37top	gaa/taa	109	pyrazinamide (PZA)	yes
+2289138	t	c	coding	Rv2043c	pncA	2289241	2288681	-	Leu35Pro	ctg/ccg	104	pyrazinamide (PZA)	yes
+2289140	c	g	coding	Rv2043c	pncA	2289241	2288681	-	Tyr34STOP	tac/tag	102	pyrazinamide (PZA)	yes
+2289150	t	g	coding	Rv2043c	pncA	2289241	2288681	-	Ile31Ser	atc/agc	92	pyrazinamide (PZA)	yes
+2289159	c	a	coding	Rv2043c	pncA	2289241	2288681	-	Ala28Asp	gcc/gac	83	pyrazinamide (PZA)	
+2289162	t	c	coding	Rv2043c	pncA	2289241	2288681	-	Leu27Pro	ctg/ccg	80	pyrazinamide (PZA)	yes
+2289171	g	a	coding	Rv2043c	pncA	2289241	2288681	-	Gly24Asp	ggc/gac	71	pyrazinamide (PZA)	yes
+2289180	t	g	coding	Rv2043c	pncA	2289241	2288681	-	Val21Gly	gta/gga	62	pyrazinamide (PZA)	yes
+2289186	t	c	coding	Rv2043c	pncA	2289241	2288681	-	Leu19Pro	ctg/ccg	56	pyrazinamide (PZA)	yes
+2289193	g	a	coding	Rv2043c	pncA	2289241	2288681	-	Gly17Ser	ggc/agc	49	pyrazinamide (PZA)	yes
+2289200	c	a	coding	Rv2043c	pncA	2289241	2288681	-	Cys14STOP	tgc/tga	42	pyrazinamide (PZA)	yes
+2289201	g	a	coding	Rv2043c	pncA	2289241	2288681	-	Cys14Tyr	tgc/tac	41	pyrazinamide (PZA)	
+2289202	t	c	coding	Rv2043c	pncA	2289241	2288681	-	Cys14Arg	tgc/cgc	40	pyrazinamide (PZA)	yes
+2289203	c	g	coding	Rv2043c	pncA	2289241	2288681	-	Phe13Leu	ttc/ttg	39	pyrazinamide (PZA)	yes
+2289204	t	c	coding	Rv2043c	pncA	2289241	2288681	-	Phe13Ser	ttc/tcc	38	pyrazinamide (PZA)	
+2289206	c	g	coding	Rv2043c	pncA	2289241	2288681	-	Asp12Glu	gac/gag	36	pyrazinamide (PZA)	yes
+2289207	a	c	coding	Rv2043c	pncA	2289241	2288681	-	Asp12Ala	gac/gcc	35	pyrazinamide (PZA)	yes
+2289208	g	a	coding	Rv2043c	pncA	2289241	2288681	-	Asp12Asn	gac/aac	34	pyrazinamide (PZA)	
+2289213	a	g	coding	Rv2043c	pncA	2289241	2288681	-	Gln10Arg	cag/cgg	29	pyrazinamide (PZA)	
+2289213	a	c	coding	Rv2043c	pncA	2289241	2288681	-	Gln10Pro	cag/ccg	29	pyrazinamide (PZA)	
+2289214	c	a	coding	Rv2043c	pncA	2289241	2288681	-	Gln10Lys	cag/aag	28	pyrazinamide (PZA)	yes
+2289216	t	c	coding	Rv2043c	pncA	2289241	2288681	-	Val9Ala	gtg/gcg	26	pyrazinamide (PZA)	
+2289216	t	g	coding	Rv2043c	pncA	2289241	2288681	-	Val9Gly	gtg/ggg	26	pyrazinamide (PZA)	
+2289218	c	a	coding	Rv2043c	pncA	2289241	2288681	-	Asp8Glu	gac/gaa	24	pyrazinamide (PZA)	yes
+2289219	a	c	coding	Rv2043c	pncA	2289241	2288681	-	Asp8Ala	gac/gcc	23	pyrazinamide (PZA)	yes
+2289219	a	g	coding	Rv2043c	pncA	2289241	2288681	-	Asp8Gly	gac/ggc	23	pyrazinamide (PZA)	
+2289220	g	a	coding	Rv2043c	pncA	2289241	2288681	-	Asp8Asn	gac/aac	22	pyrazinamide (PZA)	yes
+2289222	t	a	coding	Rv2043c	pncA	2289241	2288681	-	Val7Asp	gtc/gac	20	pyrazinamide (PZA)	
+2289222	t	g	coding	Rv2043c	pncA	2289241	2288681	-	Val7Gly	gtc/ggc	20	pyrazinamide (PZA)	yes
+2289223	g	t	coding	Rv2043c	pncA	2289241	2288681	-	Val7Phe	gtc/ttc	19	pyrazinamide (PZA)	yes
+2289225	t	c	coding	Rv2043c	pncA	2289241	2288681	-	Ile6Thr	atc/acc	17	pyrazinamide (PZA)	yes
+-	t	tg	coding	Rv2043c	pncA	2289241	2288681	-	Ile6-	atc/catc	16	pyrazinamide (PZA)	
+2289231	t	c	coding	Rv2043c	pncA	2289241	2288681	-	Leu4Ser	ttg/tcg	11	pyrazinamide (PZA)	yes
+2289231	t	g	coding	Rv2043c	pncA	2289241	2288681	-	Leu4Trp	ttg/tgg	11	pyrazinamide (PZA)	
+2289234	c	a	coding	Rv2043c	pncA	2289241	2288681	-	Ala3Glu	gcg/gag	8	pyrazinamide (PZA)	yes
+2289235	g	c	coding	Rv2043c	pncA	2289241	2288681	-	Ala3Pro	gcg/ccg	7	pyrazinamide (PZA)	
+2289239	g	t	coding	Rv2043c	pncA	2289241	2288681	-	Met1Ile	atg/att	3	pyrazinamide (PZA)	
+2289239	g	a	coding	Rv2043c	pncA	2289241	2288681	-	Met1Ile	atg/ata	3	pyrazinamide (PZA)	yes
+2289240	t	a	coding	Rv2043c	pncA	2289241	2288681	-	Met1Lys	atg/aag	2	pyrazinamide (PZA)	yes
+2289240	t	c	coding	Rv2043c	pncA	2289241	2288681	-	Met1Thr	atg/acg	2	pyrazinamide (PZA)	yes
+2289248	t	c	intergenic	Rv2043c	pncA	2289241	2288681	-	---	-	-7	pyrazinamide (PZA)	yes
+2289248	t	g	intergenic	Rv2043c	pncA	2289241	2288681	-	---	-	-7	pyrazinamide (PZA)	yes
+2289252	a	g	intergenic	Rv2043c	pncA	2289241	2288681	-	---	-	-11	pyrazinamide (PZA)	yes
+2289252	a	c	intergenic	Rv2043c	pncA	2289241	2288681	-	---	-	-11	pyrazinamide (PZA)	yes
+2289252	a	t	intergenic	Rv2043c	pncA	2289241	2288681	-	---	-	-11	pyrazinamide (PZA)	yes
+2715342	g	a	intergenic	Rv2416c	eis	2715332	2714124	-	---	-	-10	kanamycin (KAN)	
+2715346	c	t	intergenic	Rv2416c	eis	2715332	2714124	-	---	-	-14	kanamycin (KAN)	
+2726136	c	t	intergenic	Rv2428	ahpC	2726193	2726780	+	---	-	-57	isoniazid (INH)	
+2726145	g	a	intergenic	Rv2428	ahpC	2726193	2726780	+	---	-	-48	isoniazid (INH)	
+3073808	c	g	coding	Rv2764c	thyA	3074471	3073680	-	Arg222Gly	cgc/ggc	664	para-aminosalicylic acid (PAS)	
+4241078	a	g	coding	Rv3793	embC	4239863	4243147	+	Ile406Val	atc/gtc	1216	ethambutol (EMB)	
+4243221	c	t	intergenic	Rv3794	embA	4243233	4246517	+	---	-	-12	ethambutol (EMB)	
+4243225	c	a	intergenic	Rv3794	embA	4243233	4246517	+	---	-	-8	ethambutol (EMB)	
+4243242	g	a	coding	Rv3794	embA	4243233	4246517	+	Asp4Asn	gac/aac	10	ethambutol (EMB)	
+4243245	g	a	coding	Rv3794	embA	4243233	4246517	+	Gly5Ser	ggt/agt	13	ethambutol (EMB)	
+4243833	g	a	coding	Rv3794	embA	4243233	4246517	+	Ala201Thr	gcg/acg	601	ethambutol (EMB)	
+4244193	g	a	coding	Rv3794	embA	4243233	4246517	+	Gly321Ser	ggc/agc	961	ethambutol (EMB)	
+4244281	g	a	coding	Rv3794	embA	4243233	4246517	+	Gly350Asp	ggc/gac	1049	ethambutol (EMB)	
+4244617	c	t	coding	Rv3794	embA	4243233	4246517	+	Ala462Val	gcg/gtg	1385	ethambutol (EMB)	
+4245730	a	c	coding	Rv3794	embA	4243233	4246517	+	Asp833Ala	gac/gcc	2498	ethambutol (EMB)	
+4246734	t	g	coding	Rv3795	embB	4246514	4249810	+	Leu74Arg	ctg/cgg	221	ethambutol (EMB)	
+4247402	t	g	coding	Rv3795	embB	4246514	4249810	+	Ser297Ala	tcg/gcg	889	ethambutol (EMB)	
+4247429	a	g	coding	Rv3795	embB	4246514	4249810	+	Met306Val	atg/gtg	916	ethambutol (EMB)	yes
+4247429	a	c	coding	Rv3795	embB	4246514	4249810	+	Met306Leu	atg/ctg	916	ethambutol (EMB)	yes
+4247430	t	c	coding	Rv3795	embB	4246514	4249810	+	Met306Thr	atg/acg	917	ethambutol (EMB)	yes
+4247431	g	a	coding	Rv3795	embB	4246514	4249810	+	Met306Ile	atg/ata	918	ethambutol (EMB)	yes
+4247431	g	c	coding	Rv3795	embB	4246514	4249810	+	Met306Ile	atg/atc	918	ethambutol (EMB)	yes
+4247431	g	t	coding	Rv3795	embB	4246514	4249810	+	Met306Ile	atg/att	918	ethambutol (EMB)	yes
+4247469	a	c	coding	Rv3795	embB	4246514	4249810	+	Tyr319Ser	tat/tct	956	ethambutol (EMB)	
+4247495	g	t	coding	Rv3795	embB	4246514	4249810	+	Asp328Tyr	gat/tat	982	ethambutol (EMB)	
+4247496	a	g	coding	Rv3795	embB	4246514	4249810	+	Asp328Gly	gat/ggt	983	ethambutol (EMB)	
+4247507	t	c	coding	Rv3795	embB	4246514	4249810	+	Trp332Arg	tgg/cgg	994	ethambutol (EMB)	
+4247513	t	c	coding	Rv3795	embB	4246514	4249810	+	Tyr334His	tac/cac	1000	ethambutol (EMB)	
+4247573	g	a	coding	Rv3795	embB	4246514	4249810	+	Asp354Asn	gac/aac	1060	ethambutol (EMB)	
+4247717	c	g	coding	Rv3795	embB	4246514	4249810	+	Leu402Val	ctg/gtg	1204	ethambutol (EMB)	
+4247723	c	t	coding	Rv3795	embB	4246514	4249810	+	Pro404Ser	ccg/tcg	1210	ethambutol (EMB)	
+4247729	g	a	coding	Rv3795	embB	4246514	4249810	+	Gly406Ser	ggc/agc	1216	ethambutol (EMB)	yes
+4247729	g	t	coding	Rv3795	embB	4246514	4249810	+	Gly406Cys	ggc/tgc	1216	ethambutol (EMB)	yes
+4247730	g	c	coding	Rv3795	embB	4246514	4249810	+	Gly406Ala	ggc/gcc	1217	ethambutol (EMB)	yes
+4247730	g	a	coding	Rv3795	embB	4246514	4249810	+	Gly406Asp	ggc/gac	1217	ethambutol (EMB)	yes
+4247863	c	g	coding	Rv3795	embB	4246514	4249810	+	Ile450Met	atc/atg	1350	ethambutol (EMB)	
+4247873	g	a	coding	Rv3795	embB	4246514	4249810	+	Ala454Thr	gcg/acg	1360	ethambutol (EMB)	
+4248002	c	a	coding	Rv3795	embB	4246514	4249810	+	Gln497Lys	cag/aag	1489	ethambutol (EMB)	
+4248003	a	g	coding	Rv3795	embB	4246514	4249810	+	Gln497Arg	cag/cgg	1490	ethambutol (EMB)	yes
+4248747	g	a	coding	Rv3795	embB	4246514	4249810	+	Gly745Asp	ggc/gac	2234	ethambutol (EMB)	
+4249518	a	g	coding	Rv3795	embB	4246514	4249810	+	His1002Arg	cac/cgc	3005	ethambutol (EMB)	
+4326087	c	a	coding	Rv3854c	ethA	4327473	4326004	-	Arg463Ser	cgt/agt	1387	ethionamide (ETH)	
+4326236	g	a	coding	Rv3854c	ethA	4327473	4326004	-	Gly413Asp	ggt/gat	1238	ethionamide (ETH)	
+4326300	a	g	coding	Rv3854c	ethA	4327473	4326004	-	Thr392Ala	acg/gcg	1174	ethionamide (ETH)	
+4326320	g	a	coding	Rv3854c	ethA	4327473	4326004	-	Gly385Asp	ggc/gac	1154	ethionamide (ETH)	
+4326333	g	c	coding	Rv3854c	ethA	4327473	4326004	-	Ala381Pro	gcc/ccc	1141	ethionamide (ETH)	
+4326449	c	a	coding	Rv3854c	ethA	4327473	4326004	-	Thr342Lys	acg/aag	1025	ethionamide (ETH)	
+4326461	t	g	coding	Rv3854c	ethA	4327473	4326004	-	Ile338Ser	atc/agc	1013	ethionamide (ETH)	
+4326738	c	t	coding	Rv3854c	ethA	4327473	4326004	-	Gln246STOP	cag/tag	736	ethionamide (ETH)	
+4326807	g	a	coding	Rv3854c	ethA	4327473	4326004	-	Glu223Lys	gag/aag	667	ethionamide (ETH)	
+4326917	c	a	coding	Rv3854c	ethA	4327473	4326004	-	Thr186Lys	acg/aag	557	ethionamide (ETH)	
+4327224	t	g	coding	Rv3854c	ethA	4327473	4326004	-	Tyr84Asp	tac/gac	250	ethionamide (ETH)	
+4327301	a	c	coding	Rv3854c	ethA	4327473	4326004	-	Asp58Ala	gac/gcc	173	ethionamide (ETH)	
+4327307	a	c	coding	Rv3854c	ethA	4327473	4326004	-	Asp56Ala	gac/gcc	167	ethionamide (ETH)	
+4327322	c	t	coding	Rv3854c	ethA	4327473	4326004	-	Pro51Leu	ccc/ctc	152	ethionamide (ETH)	
+4327346	g	a	coding	Rv3854c	ethA	4327473	4326004	-	Gly43Asp	ggc/gac	128	ethionamide (ETH)	
+4327347	g	t	coding	Rv3854c	ethA	4327473	4326004	-	Gly43Cys	ggc/tgc	127	ethionamide (ETH)	
+4407604	c	a	coding	Rv3919c	gidB	4408202	4407528	-	Ala200Glu	gcg/gag	599	streptomycin (SM)	
+4407790	c	t	coding	Rv3919c	gidB	4408202	4407528	-	Ala138Val	gcg/gtg	413	streptomycin (SM)	
+4407824	c	t	coding	Rv3919c	gidB	4408202	4407528	-	Gln127STOP	caa/taa	379	streptomycin (SM)	
+4407931	t	c	coding	Rv3919c	gidB	4408202	4407528	-	Leu91Pro	cta/cca	272	streptomycin (SM)	
+4407940	t	c	coding	Rv3919c	gidB	4408202	4407528	-	Val88Ala	gta/gca	263	streptomycin (SM)	
+4407992	g	a	coding	Rv3919c	gidB	4408202	4407528	-	Gly71Arg	gga/aga	211	streptomycin (SM)	
+4408009	t	g	coding	Rv3919c	gidB	4408202	4407528	-	Val65Gly	gtc/ggc	194	streptomycin (SM)	
+4408102	g	c	coding	Rv3919c	gidB	4408202	4407528	-	Gly34Ala	ggg/gcg	101	streptomycin (SM)	
+156593	t	c	coding	Rv0129c	fbpC	157600	156578	-	Ala336Ala	gct/gcc	1008	phylo (M. canettii)	
+157129	g	a	coding	Rv0129c	fbpC	157600	156578	-	Gly158Ser	ggc/agc	472	phylo (Delhi/CAS)	
+157292	g	a	coding	Rv0129c	fbpC	157600	156578	-	Glu103Glu	gag/gaa	309	phylo (LAM)	
+273265	g	t	coding	Rv0228	-	273055	274278	+	Gly71Cys	ggc/tgc	211	phylo (West African 2)	
+491591	a	t	coding	Rv0407	fgd1	490783	491793	+	Lys270Met	aag/atg	809	phylo (Haarlem)	
+491668	a	g	coding	Rv0407	fgd1	490783	491793	+	Lys296Glu	aag/gag	886	phylo (West African 2)	
+491742	t	c	coding	Rv0407	fgd1	490783	491793	+	Phe320Phe	ttt/ttc	960	phylo (not Euro-American, M. africanum, M. bovis, M. canettii, M. caprae, M. microti, M. pinipedii, Beijing, Delhi/CAS, EAI)	
+495108	c	a	coding	Rv0410c	pknG	497314	495062	-	Thr736Lys	acg/aag	2207	phylo (West African 2)	
+495322	g	a	coding	Rv0410c	pknG	497314	495062	-	Ala665Thr	gcc/acc	1993	phylo (West African 1a, West African 1b)	
+495473	g	a	coding	Rv0410c	pknG	497314	495062	-	Ser614Ser	tcg/tca	1842	phylo (EAI)	
+497108	g	a	coding	Rv0410c	pknG	497314	495062	-	Pro69Pro	ccg/cca	207	phylo (M. bovis, M. caprae)	
+648756	c	t	coding	Rv0557	mgtA	648536	649672	+	Thr74Ile	acg/atg	221	phylo (West African 1a, West African 1b)	
+648856	t	c	coding	Rv0557	mgtA	648536	649672	+	Gly107Gly	ggt/ggc	321	phylo (not Euro-American, M. africanum, M. bovis, M. canettii, M. caprae, M. microti, M. pinipedii, Beijing, Delhi/CAS, EAI)	
+648990	g	c	coding	Rv0557	mgtA	648536	649672	+	Arg152Pro	cgc/ccc	455	phylo (Haarlem)	
+648992	c	g	coding	Rv0557	mgtA	648536	649672	+	Leu153Val	ctg/gtg	457	phylo (S-type)	
+649067	c	g	coding	Rv0557	mgtA	648536	649672	+	Arg178Gly	cgg/ggg	532	phylo (Cameroon)	
+649345	c	t	coding	Rv0557	mgtA	648536	649672	+	Ala270Ala	gcc/gct	810	phylo (EAI)	
+649446	g	a	coding	Rv0557	pimB	648536	649672	+	Gly304Asp	ggc/gac	911	phylo (West African 1a, West African 1b)	
+649585	g	a	coding	Rv0557	mgtA	648536	649672	+	Val350Val	gtg/gta	1050	phylo (M. caprae)	
+649601	c	t	coding	Rv0557	mgtA	648536	649672	+	Pro356Ser	ccg/tcg	1066	phylo (M. canettii)	
+1128814	g	a	coding	Rv1009	rpfB	1128091	1129179	+	Glu242Lys	gag/aag	724	phylo (EAI Manila)	
+1128825	c	t	coding	Rv1009	rpfB	1128091	1129179	+	Gly245Gly	ggc/ggt	735	phylo (M. microti, M. pinipedii)	
+1128915	g	c	coding	Rv1009	rpfB	1128091	1129179	+	Glu275Asp	gag/gac	825	phylo (M. canettii)	
+1128935	g	a	coding	Rv1009	rpfB	1128091	1129179	+	Gly282Glu	gga/gaa	845	phylo (M. bovis, M. caprae)	
+1129124	t	a	coding	Rv1009	rpfB	1128091	1129179	+	Leu345Gln	ctg/cag	1034	phylo (M. canettii)	
+1129128	t	c	coding	Rv1009	rpfB	1128091	1129179	+	Arg346Arg	cgt/cgc	1038	phylo (M. canettii)	
+1129160	c	t	coding	Rv1009	rpfB	1128091	1129179	+	Ala357Val	gca/gta	1070	phylo (M. bovis)	
+1129165	g	a	coding	Rv1009	rpfB	1128091	1129179	+	Ala359Thr	gcg/acg	1075	phylo (TUR)	
+1816848	g	t	coding	Rv1617	pykA	1816189	1817607	+	Glu220Asp	gag/gat	660	phylo (M. africanum, M. caprae, M. microti, M. pinipedii)	
+2053454	g	a	coding	Rv1811	mgtC	2053443	2054147	+	Leu4Leu	ctg/cta	12	phylo (Ural)	
+2053487	c	t	coding	Rv1811	mgtC	2053443	2054147	+	Val15Val	gtc/gtt	45	phylo (M. canettii)	
+2053682	c	t	coding	Rv1811	mgtC	2053443	2054147	+	Ile80Ile	atc/att	240	phylo (LAM)	
+2053726	c	t	coding	Rv1811	mgtC	2053443	2054147	+	Thr95Met	acg/atg	284	phylo (West African 1b)	
+2053762	c	t	coding	Rv1811	mgtC	2053443	2054147	+	Ala107Val	gcc/gtc	320	phylo (West African 2)	
+2053987	g	a	coding	Rv1811	mgtC	2053443	2054147	+	Arg182His	cgc/cac	545	phylo (Haarlem)	
+2134258	c	t	coding	Rv1884c	rpfC	2134261	2133731	-	His2Tyr	cat/tat	4	phylo (M. canettii)	
+2223896	t	c	coding	Rv1980c	mpt64	2224029	2223343	-	Met45Thr	atg/acg	134	phylo (M. canettii)	
+2223902	t	a	coding	Rv1980c	mpt64	2224029	2223343	-	Ile43Asn	att/aat	128	phylo (West African 1a, West African 1b)	
+2279228	g	t	coding	Rv2032	acg	2279129	2280124	+	Ala34Ser	gcc/tcc	100	phylo (M. caprae)	
+2279314	g	c	coding	Rv2032	acg	2279129	2280124	+	Gly62Gly	ggg/ggc	186	phylo (M. canettii)	
+2280081	c	t	coding	Rv2032	acg	2279129	2280124	+	Pro318Leu	cca/cta	953	phylo (M. bovis, M. caprae)	
+2726105	g	a	intergenic	Rv2428	ahpC	2726193	2726780	+	---	-	-88	phylo (Delhi/CAS, 3)	
+2751764	g	a	coding	Rv2450c	rpfE	2752180	2751662	-	Gly139Gly	ggg/gga	417	phylo (M. canettii)	
+2751866	g	a	coding	Rv2450c	rpfE	2752180	2751662	-	Ala105Ala	gcg/gca	315	phylo (M. canettii)	
+2752122	c	g	coding	Rv2450c	rpfE	2752180	2751662	-	Thr20Arg	acg/agg	59	phylo (Beijing)	
+2752132	t	c	coding	Rv2450c	rpfE	2752180	2751662	-	Leu17Leu	ttg/ctg	49	phylo (West African 1a, West African 1b)	
+2936944	c	g	coding	Rv2609c	-	2937865	2936810	-	Gln308Glu	cag/gag	922	phylo (M. canettii)	
+2939177	t	c	coding	Rv2611c	-	2939962	2939012	-	Tyr262Tyr	tat/tac	786	phylo (West African 2)	
+2939577	t	g	coding	Rv2611c	-	2939962	2939012	-	Leu129Arg	ctc/cgc	386	phylo (M. canettii)	
+2939716	t	c	coding	Rv2611c	-	2939962	2939012	-	Cys83Arg	tgc/cgc	247	phylo (M. canettii)	
+2940461	t	c	coding	Rv2612c	pgsA1	2940612	2939959	-	Met51Thr	atg/acg	152	phylo (M. canettii)	
+2940562	c	t	coding	Rv2612c	pgsA1	2940612	2939959	-	Thr17Thr	acc/act	51	phylo (M. canettii)	
+2940608	g	a	coding	Rv2612c	pgsA1	2940612	2939959	-	Ser2Asn	agc/aac	5	phylo (EAI)	
+2940930	c	t	coding	Rv2613c	-	2941196	2940609	-	Pro89Pro	ccc/cct	267	phylo (M. canettii)	
+2941179	c	t	coding	Rv2613c	-	2941196	2940609	-	Arg6Arg	cgc/cgt	18	phylo (Delhi/CAS)	
+2955135	a	c	coding	Rv2628	-	2955058	2955420	+	Ile26Ile	ata/atc	78	phylo (M. canettii)	
+2955202	t	g	coding	Rv2628	-	2955058	2955420	+	Ser49Ala	tcc/gcc	145	phylo (M. canettii)	
+2955233	c	t	coding	Rv2628	-	2955058	2955420	+	Ser59Leu	tcg/ttg	176	phylo (M.africanum, M. bovis, M. canettii, M. caprae, M. microti, M. pinipedii, EAI)	
+2955305	t	g	coding	Rv2628	-	2955058	2955420	+	Leu83Trp	ttg/tgg	248	phylo (M. microti, M. pinipedii)	
+2955310	a	g	coding	Rv2628	-	2955058	2955420	+	Thr85Ala	acc/gcc	253	phylo (M. canettii)	
+2955343	g	a	coding	Rv2628	-	2955058	2955420	+	Ala96Thr	gcg/acg	286	phylo (West African 1a, West African 1b)	
+2955957	a	c	coding	Rv2629	-	2955767	2956891	+	Asp64Ala	gat/gct	191	phylo (Beijing)	
+2956731	c	t	coding	Rv2629	-	2955767	2956891	+	Pro322Leu	ccg/ctg	965	phylo (Ghana)	
+-	g	gccgcggc	coding	Rv2947c	pks15	3297840	3296350	-	Gly490-	ggc/gggccgcggc	1470	phylo (not Euro-American, M. africanum, M. bovis, M. canettii, M. caprae, M. microti, M. pinipedii, Beijing, Delhi/CAS, EAI)	
+3986987	g	t	coding	Rv3547	ddn	3986844	3987299	+	Leu48Leu	ctg/ctt	144	phylo (West African 1a, West African 1b)	
+3987050	c	t	coding	Rv3547	ddn	3986844	3987299	+	Asp69Asp	gac/gat	207	phylo (M. canettii)	
+3987111	c	g	coding	Rv3547	ddn	3986844	3987299	+	Leu90Val	ctc/gtc	268	phylo (M. microti, M. pinipedii)	
+3987180	g	a	coding	Rv3547	ddn	3986844	3987299	+	Asp113Asn	gac/aac	337	phylo (West African 1a, West African 1b)	
+3987287	t	c	coding	Rv3547	ddn	3986844	3987299	+	Val148Val	gtt/gtc	444	phylo (M. canettii)	
+7539	a	g	coding	Rv0006	gyrA	7302	9818	+	Thr80Ala	acc/gcc	238	phylo (Uganda I+II, 4,6,1)	
+7585	g	c	coding	Rv0006	gyrA	7302	9818	+	Ser95Thr	agc/acc	284	phylo (not H37Rv)	
+491595	c	t	coding	Rv0407	fgd1	490783	491793	+	Ala271Ala	gcc/gct	813	phylo (West African 1a)	
+575665	g	c	coding	Rv0486	mshA	575348	576790	+	Gly106Gly	ggg/ggc	318	phylo (M. canettii)	
+575679	a	g	coding	Rv0486	mshA	575348	576790	+	Asn111Ser	aac/agc	332	phylo (Haarlem)	
+575907	c	t	coding	Rv0486	mshA	575348	576790	+	Ala187Val	gca/gta	560	phylo (Beijing)	
+576077	c	t	coding	Rv0486	mshA	575348	576790	+	Leu244Leu	ctg/ttg	730	phylo (Tur)	
+1461251	g	t	coding	Rv1305	atpE	1461045	1461290	+	Ala69Ala	gcg/gct	207	phylo (West African 2)	
+-	t	tt	ribosomal	Rvnr01	rrs	1471846	1473382	+	---	-	4	phylo (M. canettii)	
+1471851	t	g	ribosomal	Rvnr01	rrs	1471846	1473382	+	---	-	6	phylo (M. canettii)	
+1473079	g	a	ribosomal	Rvnr01	rrs	1471846	1473382	+	---	-	1234	phylo (M. microti)	
+1473094	t	c	ribosomal	Rvnr01	rrs	1471846	1473382	+	---	-	1249	phylo (M. pinipedii)	
+1673338	g	a	intergenic	Rv1483	fabG1	1673440	1674183	+	---	-	-102	phylo (West African 1a, West African 1b)	
+1674434	t	c	coding	Rv1484	inhA	1674202	1675011	+	Val78Ala	gtg/gcg	233	phylo (West African 2, 6)	
+1674520	c	t	coding	Rv1484	inhA	1674202	1675011	+	Pro107Ser	ccg/tcg	319	phylo (M. pinipedii)	
+1674816	t	c	coding	Rv1484	inhA	1674202	1675011	+	Gly205Gly	ggt/ggc	615	phylo (M. canettii)	
+1833554	a	g	coding	Rv1630	rpsA	1833542	1834987	+	Thr5Ala	acc/gcc	13	phylo (M. canettii)	
+1833568	g	c	coding	Rv1630	rpsA	1833542	1834987	+	Pro9Pro	ccg/ccc	27	phylo (M. canettii)	
+1834169	a	g	coding	Rv1630	rpsA	1833542	1834987	+	Thr210Ala	acc/gcc	628	phylo (M. canettii)	
+1834177	a	c	coding	Rv1630	rpsA	1833542	1834987	+	Arg212Arg	cga/cgc	636	phylo (Beijing, 2)	
+1834859	g	a	coding	Rv1630	rpsA	1833542	1834987	+	Ala440Thr	gcg/acg	1318	phylo (M. bovis, M. caprae)	
+1834912	a	g	coding	Rv1630	rpsA	1833542	1834987	+	Glu457Glu	gaa/gag	1371	phylo (M. canettii)	
+2154724	g	t	coding	Rv1908c	katG	2156111	2153889	-	Arg463Leu	cgg/ctg	1388	phylo (not Euro-American, M. africanum, M. bovis, M . canettii, M. caprae, M. Microti, M. pinipedii, Beijing, Delhi/CAS, EAI, 4)	
+2289047	c	t	coding	Rv2043c	pncA	2289241	2288681	-	Ser65Ser	tcc/tct	195	phylo (Delhi/CAS)	
+2289073	c	g	coding	Rv2043c	pncA	2289241	2288681	-	His57Asp	cac/gac	169	phylo (M. bovis)	
+2289104	a	g	coding	Rv2043c	pncA	2289241	2288681	-	Ala46Ala	gca/gcg	138	phylo (M. canettii)	
+3073868	a	g	coding	Rv2764c	thyA	3074471	3073680	-	Thr202Ala	acc/gcc	604	phylo (LAM)	
+3326554	a	c	coding	Rv2971	-	3326101	3326949	+	Asn152His	aac/cac	454	phylo (not Euro-American, M. africanum, M. bovis, M . canettii, M. caprae, M. Microti, M. pinipedii, Beijing, Delhi/CAS, EAI)	
+4240671	c	t	coding	Rv3793	embC	4239863	4243147	+	Thr270Ile	acc/atc	809	phylo (M. africanum, M. bovis, M. canettii, M.caprae, M. Microti, M. pinipedii, EAI)	
+4242075	g	a	coding	Rv3793	embC	4239863	4243147	+	Arg738Gln	cgg/cag	2213	phylo (Delhi/CAS, 3)	
+4242803	g	c	coding	Rv3793	embC	4239863	4243147	+	Val981Leu	gtg/ctg	2941	phylo (Ghana, Haarlem, X-Type, 4,1)	
+4242970	c	t	coding	Rv3793	embC	4239863	4243147	+	Thr1036Thr	acc/act	3108	phylo (M. bovis, M. caprae)	
+4243377	a	c	coding	Rv3794	embA	4243233	4246517	+	Ser49Arg	agc/cgc	145	phylo (M. canettii)	
+4243460	c	t	coding	Rv3794	embA	4243233	4246517	+	Cys76Cys	tgc/tgt	228	phylo (Beijing, 2,2)	
+4243690	t	c	coding	Rv3794	embA	4243233	4246517	+	Met153Thr	atg/acg	458	phylo (M. canettii)	
+4247590	a	g	coding	Rv3795	embB	4246514	4249810	+	Leu359Leu	cta/ctg	1077	phylo (M. canettii)	
+4247646	a	c	coding	Rv3795	embB	4246514	4249810	+	Glu378Ala	gag/gcg	1133	phylo (M. africanum, M. bovis, M. canettii, M. caprae, M. Microti, M. pinipedii, EAI)	
+4247815	c	t	coding	Rv3795	embB	4246514	4249810	+	Ala434Ala	gcc/gct	1302	phylo (M. canettii)	
+4248195	a	g	coding	Rv3795	embB	4246514	4249810	+	Lys561Arg	aag/agg	1682	phylo (M. canettii)	
+4248206	a	g	coding	Rv3795	embB	4246514	4249810	+	Ser565Gly	agc/ggc	1693	phylo (M. canettii)	
+4248439	c	t	coding	Rv3795	embB	4246514	4249810	+	Thr642Thr	acc/act	1926	phylo (M. canettii)	
+4407588	a	g	coding	Rv3919c	gidB	4408202	4407528	-	Ala205Ala	gca/gcg	615	phylo (M. africanum, M. bovis, M. canettii, M. caprae, M. Microti, M. pinipedii, Beijing, Delhi/CAS, EAI, 4)	
+4407873	g	t	coding	Rv3919c	gidB	4408202	4407528	-	Val110Val	gtg/gtt	330	phylo (EAI, 1)	
+4407927	a	c	coding	Rv3919c	gidB	4408202	4407528	-	Glu92Asp	gaa/gac	276	phylo (Beijing, 2,2)	
+4408156	t	g	coding	Rv3919c	gidB	4408202	4407528	-	Leu16Arg	ctt/cgt	47	phylo (LAM, 4,3)	
+4408185	c	t	coding	Rv3919c	gidB	4408202	4407528	-	Pro6Pro	ccc/cct	18	phylo (M. canettii)	
+4408213	c	t	intergenic	Rv3919c	gidB	4408202	4407528	-	---	-	-11	phylo (Ural)	
+5520	c	t	coding	Rv0005	gyrB	5240	7267	+	Pro94Leu	ccg/ctg	281	phylo (4,3,2,1)	
+6112	g	c	coding	Rv0005	gyrB	5240	7267	+	Met291Ile	atg/atc	873	phylo (1)	
+6124	c	t	coding	Rv0005	gyrB	5240	7267	+	Ala295Ala	gcc/gct	885	phylo (1,1,2)	
+7222	c	t	coding	Rv0005	gyrB	5240	7267	+	Ser661Ser	agc/agt	1983	phylo (4,3,2,1)	
+7892	g	a	coding	Rv0006	gyrA	7302	9818	+	Leu197Leu	ctg/cta	591	phylo (4,5)	
+8040	g	a	coding	Rv0006	gyrA	7302	9818	+	Gly247Ser	ggc/agc	739	phylo (4,3,3)	
+8452	c	t	coding	Rv0006	gyrA	7302	9818	+	Ala384Val	gca/gta	1151	phylo (1)	
+8876	c	t	coding	Rv0006	gyrA	7302	9818	+	Tyr525Tyr	tac/tat	1575	phylo (7)	
+9260	g	c	coding	Rv0006	gyrA	7302	9818	+	Leu653Leu	ctg/ctc	1959	phylo (1,2,1)	
+9566	c	t	coding	Rv0006	gyrA	7302	9818	+	Tyr755Tyr	tac/tat	2265	phylo (5)	
+9611	c	t	coding	Rv0006	gyrA	7302	9818	+	Asp770Asp	gac/gat	2310	phylo (3,1,2,2)	
+62657	g	a	coding	Rv0058	dnaB	60396	63020	+	Pro754Pro	ccg/cca	2262	phylo (4,1)	
+107794	c	t	coding	Rv0098	fcoT	107600	108151	+	Ala65Ala	gcc/gct	195	phylo (4,1,2,1)	
+346693	g	t	coding	Rv0284	eccC3	345635	349627	+	Ser353Ser	tcg/tct	1059	phylo (2,2,2)	
+355181	g	a	coding	Rv0291	mycP3	354498	355883	+	Lys228Lys	aag/aaa	684	phylo (4,4,1,1)	
+403364	c	t	coding	Rv0338c	-	405841	403193	-	Pro826Pro	ccc/cct	2478	phylo (4,3,3)	
+497491	c	t	coding	Rv0411c	glnH	498300	497314	-	Asp270Asp	gac/gat	810	phylo (2)	
+514245	g	a	coding	Rv0425c	ctpH	515321	510702	-	Val359Val	gtg/gta	1077	phylo (4,1,1)	
+541048	a	c	coding	Rv0450c	mmpL4	541491	538588	-	Ser148Ser	tca/tcc	444	phylo (4,1,1,2)	
+615614	c	a	coding	Rv0524	hemL	614835	616223	+	Ala260Ala	gcc/gca	780	phylo (4,3,1)	
+615938	g	a	coding	Rv0524	hemL	614835	616223	+	Glu368Glu	gag/gaa	1104	phylo (1)	
+762434	t	g	coding	Rv0667	rpoB	759807	763325	+	Gly876Gly	ggt/ggg	2628	phylo (3)	
+763031	t	c	coding	Rv0667	rpoB	759807	763325	+	Ala1075Ala	gct/gcc	3225	phylo (4)	
+763884	c	t	coding	Rv0668	rpoC	763370	767320	+	Ala172Val	gcc/gtc	515	phylo (1)	
+763886	c	a	coding	Rv0668	rpoC	763370	767320	+	Arg173Arg	cgg/agg	517	phylo (1)	
+764013	a	c	coding	Rv0668	rpoC	763370	767320	+	Glu215Ala	gag/gcg	644	phylo (7)	
+764995	c	g	coding	Rv0668	rpoC	763370	767320	+	Ala542Ala	gcc/gcg	1626	phylo (4,3)	
+765150	g	a	coding	Rv0668	rpoC	763370	767320	+	Gly594Glu	ggg/gag	1781	phylo (4,1)	
+765171	c	t	coding	Rv0668	rpoC	763370	767320	+	Pro601Leu	ccg/ctg	1802	phylo (1,1)	
+765230	g	a	coding	Rv0668	rpoC	763370	767320	+	Ala621Thr	gcg/acg	1861	phylo (1,1,3)	
+766955	g	a	coding	Rv0668	rpoC	763370	767320	+	Glu1196Lys	gag/aag	3586	phylo (7)	
+783601	a	c	coding	Rv0684	fusA1	782485	784590	+	Arg373Arg	agg/cgg	1117	phylo (4,2,1)	
+797736	c	t	coding	Rv0697	-	796933	798372	+	Leu268Leu	ctc/ctt	804	phylo (2,2,1)	
+874787	g	a	coding	Rv0782	ptrBb	874732	876390	+	Arg19Gln	cgg/cag	56	phylo (4,6,1,1)	
+891756	t	c	coding	Rv0798c	cfp29	892269	891472	-	Leu172Leu	ttg/ctg	514	phylo (4,1,2)	
+931123	t	c	coding	Rv0835	lpqQ	930953	931597	+	Tyr57Tyr	tat/tac	171	phylo (not 4)	
+1084911	c	t	coding	Rv0973c	accA2	1085750	1083747	-	Tyr280Tyr	tac/tat	840	phylo (3,1,1)	
+1132368	c	t	coding	Rv1013	pks16	1131625	1133259	+	Thr248Thr	acc/act	744	phylo (4,3,4,2)	
+1137518	c	t	coding	Rv1018c	glmU	1138060	1136573	-	Asn181Asn	aac/aat	543	phylo (7)	
+1237818	g	c	coding	Rv1111c	-	1238192	1237209	-	Leu125Leu	ctg/ctc	375	phylo (3,1,2,1)	
+1416410	t	g	coding	Rv1267c	embR	1417347	1416181	-	Leu313Arg	ctg/cgg	938	phylo (4,6,1,2)	
+1416702	t	c	coding	Rv1267c	embR	1417347	1416181	-	Tyr216His	tac/cac	646	phylo (4,6,2,1)	
+1416977	a	g	coding	Rv1267c	embR	1417347	1416181	-	His124Arg	cac/cgc	371	phylo (7)	
+1417019	g	a	coding	Rv1267c	embR	1417347	1416181	-	Cys110Tyr	tgc/tac	329	phylo (1)	
+1455780	t	c	coding	Rv1299	prfA	1455495	1456568	+	Leu96Leu	ttg/ctg	286	phylo (4,2,2,1)	
+1472337	c	t	ribosomal	Rvnr01	rrs	1471846	1473382	+	---	-	492	phylo (4,3,2)	
+1487796	c	a	coding	Rv1324	-	1487161	1488075	+	Ile212Ile	atc/ata	636	phylo (4,2,2)	
+1491275	c	t	coding	Rv1326c	glgB	1492312	1490117	-	His346His	cac/cat	1038	phylo (1,1,3)	
+1501468	g	c	coding	Rv1332	-	1500926	1501582	+	Pro181Pro	ccg/ccc	543	phylo (4,6,1,2)	
+1502120	c	a	coding	Rv1333	-	1501599	1502633	+	Thr174Thr	acc/aca	522	phylo (4,3,4,2,1)	
+1719757	g	t	coding	Rv1524	-	1718726	1719970	+	Pro344Pro	ccg/cct	1032	phylo (4,5)	
+1759252	g	t	coding	Rv1552	frdA	1757681	1759432	+	Ser524Ser	tcg/tct	1572	phylo (not 4,9)	
+1799921	c	a	coding	Rv1599	hisD	1799583	1800899	+	Gly113Gly	ggc/gga	339	phylo (5)	
+1816587	c	g	coding	Rv1617	pykA	1816189	1817607	+	Val133Val	gtc/gtg	399	phylo (6)	
+1834916	a	c	coding	Rv1630	rpsA	1833542	1834987	+	Thr459Pro	acc/ccc	1375	phylo (7)	
+1850119	g	a	coding	Rv1640c	lysX	1852035	1848517	-	Thr639Thr	acg/aca	1917	phylo (4,1,1,1)	
+1881090	c	t	coding	Rv1661	pks7	1875304	1881684	+	Gly1929Gly	ggc/ggt	5787	phylo (2,1)	
+1882180	c	t	coding	Rv1662	pks8	1881704	1886512	+	Ala159Ala	gcc/gct	477	phylo (BOV_AFRI)	
+1918281	a	c	coding	Rv1694	tlyA	1917940	1918746	+	Gly114Gly	gga/ggc	342	phylo (7)	
+2101921	g	a	coding	Rv1854c	ndh	2103042	2101651	-	Ser374Ser	tcg/tca	1122	phylo (5)	
+2102218	c	t	coding	Rv1854c	ndh	2103042	2101651	-	Val275Val	gtc/gtt	825	phylo (7)	
+2102990	t	c	coding	Rv1854c	ndh	2103042	2101651	-	Val18Ala	gtg/gcg	53	phylo (4,4,1)	
+2155503	c	t	coding	Rv1908c	katG	2156111	2153889	-	Thr203Thr	acc/act	609	phylo (BOV_AFRI)	
+2411730	c	g	coding	Rv2152c	murC	2412122	2410638	-	Ser131Ser	tcc/tcg	393	phylo (4,2)	
+2505085	c	t	coding	Rv2231c	cobC	2505699	2504605	-	Ala205Ala	gcc/gct	615	phylo (2,2)	
+2518919	g	a	coding	Rv2245	kasA	2518115	2519365	+	Gly269Ser	ggt/agt	805	phylo (4,3,3)	
+2622402	c	t	coding	Rv2343c	dnaG	2622452	2620533	-	Ala17Ala	gcc/gct	51	phylo (1,1,2)	
+2694560	c	g	coding	Rv2397c	cysA1	2694964	2693909	-	Leu135Leu	ctc/ctg	405	phylo (4,4,1,2)	
+2831482	t	c	coding	Rv2515c	-	2832591	2831344	-	Gly370Gly	ggt/ggc	1110	phylo (BOV)	
+2874344	c	t	coding	Rv2555c	alaS	2876485	2873771	-	Arg714Arg	cgc/cgt	2142	phylo (3,1,2,2)	
+2875883	g	a	coding	Rv2555c	alaS	2876485	2873771	-	Leu201Leu	ctg/cta	603	phylo (4,6,2,2)	
+3021283	g	a	coding	Rv2707	-	3020573	3021547	+	Arg237Arg	cgg/cga	711	phylo (1,1,1)	
+3216553	c	t	coding	Rv2907c	rimM	3216891	3216361	-	Val113Val	gtc/gtt	339	phylo (1,1,1,1)	
+3273107	c	a	coding	Rv2936	drrA	3272214	3273209	+	Ala298Ala	gcc/gca	894	phylo (3)	
+3388166	g	c	coding	Rv3029c	fixA	3388870	3388070	-	Thr235Thr	acg/acc	705	phylo (4,3,2,1)	
+3466426	c	t	coding	Rv3097c	lipY	3467091	3465778	-	Val222Val	gtc/gtt	666	phylo (4,6)	
+3470377	g	a	coding	Rv3101c	ftsX	3470679	3469786	-	Gln101Gln	cag/caa	303	phylo (1,2,2)	
+3479545	c	a	coding	Rv3111	moaC1	3479171	3479683	+	Ala125Ala	gcc/gca	375	phylo (1,2,1)	
+3513538	a	t	coding	Rv3148	nuoD	3513338	3514660	+	Glu67Asp	gaa/gat	201	phylo (2,1)	
+3514512	g	c	coding	Rv3148	nuoD	3513338	3514660	+	Gly392Ala	ggt/gct	1175	phylo (4,3,4,2)	
+3570528	g	c	coding	Rv3198c	uvrD2	3571211	3569109	-	Arg228Arg	cgg/cgc	684	phylo (4,6,2,1)	
+3722702	c	g	coding	Rv3336c	trpS	3723631	3722621	-	Leu310Leu	ctc/ctg	930	phylo (3,1,2)	
+3836274	c	t	coding	Rv3417c	groEL1	3836891	3835272	-	Phe206Phe	ttc/ttt	618	phylo (2,2,1,2)	
+3836739	c	t	coding	Rv3417c	groEL1	3836891	3835272	-	Asp51Asp	gac/gat	153	phylo (4,8)	
+3977226	g	a	coding	Rv3538	-	3977062	3977922	+	Leu55Leu	ttg/tta	165	phylo (4,3,4)	
+4125058	g	c	coding	Rv3683	-	4124417	4125376	+	Arg214Arg	cgg/cgc	642	phylo (4,6,2)	
+4151558	c	t	coding	Rv3708c	asd	4152217	4151180	-	Gly220Gly	ggc/ggt	660	phylo (4,4,1)	
+4229087	c	t	coding	Rv3782	glfT1	4228347	4229261	+	Asn247Asn	aac/aat	741	phylo (4,1,1,3)	
+4238120	g	a	coding	Rv3792	aftA	4237932	4239863	+	Gln63Gln	cag/caa	189	phylo (1,2,2)	
+4238778	g	a	coding	Rv3792	aftA	4237932	4239863	+	Val283Met	gtg/atg	847	phylo (7)	
+4238963	c	t	coding	Rv3792	aftA	4237932	4239863	+	His344His	cac/cat	1032	phylo (4,4)	
+4239298	c	t	coding	Rv3792	aftA	4237932	4239863	+	Ala456Val	gcc/gtc	1367	phylo (4,1,2,1)	
+4239843	a	c	coding	Rv3792	aftA	4237932	4239863	+	Lys638Gln	aag/cag	1912	phylo (5)	
+4240153	g	a	coding	Rv3793	embC	4239863	4243147	+	Ser97Ser	tcg/tca	291	phylo (7)	
+4240897	c	g	coding	Rv3793	embC	4239863	4243147	+	Arg345Arg	cgc/cgg	1035	phylo (4,1,1,1)	
+4241042	a	g	coding	Rv3793	embC	4239863	4243147	+	Asn394Asp	aac/gac	1180	phylo (1)	
+4241562	g	a	coding	Rv3793	embC	4239863	4243147	+	Arg567His	cgc/cac	1700	phylo (3,1,1)	
+4242643	c	t	coding	Rv3793	embC	4239863	4243147	+	Arg927Arg	cgc/cgt	2781	phylo (4,9)	
+4242883	c	t	coding	Rv3793	embC	4239863	4243147	+	Pro1007Pro	ccc/cct	3021	phylo (4,6,2,1)	
+4243848	g	a	coding	Rv3794	embA	4243233	4246517	+	Val206Met	gtg/atg	616	phylo (1,1)	
+4244420	g	c	coding	Rv3794	embA	4243233	4246517	+	Val396Val	gtg/gtc	1188	phylo (1,2,1)	
+4245055	c	a	coding	Rv3794	embA	4243233	4246517	+	Thr608Asn	acc/aac	1823	phylo (4,6,1,2)	
+4245969	c	t	coding	Rv3794	embA	4243233	4246517	+	Pro913Ser	ccg/tcg	2737	phylo (1)	
+4246088	a	g	coding	Rv3794	embA	4243233	4246517	+	Gln952Gln	caa/cag	2856	phylo (2,1)	
+4246508	g	a	coding	Rv3794	embA	4243233	4246517	+	Ala1092Ala	gcg/gca	3276	phylo (4,4,2)	
+4246864	c	t	coding	Rv3795	embB	4246514	4249810	+	Val117Val	gtc/gtt	351	phylo (BOV_AFRI)	
+4246930	g	c	coding	Rv3795	embB	4246514	4249810	+	Gln139His	cag/cac	417	phylo (4,1,1,2)	
+4248073	c	t	coding	Rv3795	embB	4246514	4249810	+	Thr520Thr	acc/act	1560	phylo (7)	
+4248115	c	t	coding	Rv3795	embB	4246514	4249810	+	Asp534Asp	gac/gat	1602	phylo (2,2,1,1)	
+4249012	g	a	coding	Rv3795	embB	4246514	4249810	+	Leu833Leu	ctg/cta	2499	phylo (4,4,1,2)	
+4249732	c	g	coding	Rv3795	embB	4246514	4249810	+	Ala1073Ala	gcc/gcg	3219	phylo (4,7)	
+4260268	c	g	coding	Rv3800c	pks13	4261146	4255945	-	Ala293Ala	gcc/gcg	879	phylo (4,6,1)	
+4268928	c	t	coding	Rv3806c	ubiA	4269833	4268925	-	Gly302Gly	ggc/ggt	906	phylo (4,4,2)	
+4269351	c	t	coding	Rv3806c	ubiA	4269833	4268925	-	Ala161Ala	gcc/gct	483	phylo (BOV_AFRI)	
+4269375	g	a	coding	Rv3806c	ubiA	4269833	4268925	-	Val153Val	gtg/gta	459	phylo (4,4,2)	
+4307886	c	t	coding	Rv3834c	serS	4308914	4307655	-	Arg343Arg	cgc/cgt	1029	phylo (4,4)	
+4316114	c	t	coding	Rv3843c	-	4316596	4315568	-	Ala161Ala	gcc/gct	483	phylo (4,3,2)	
+4326176	a	c	coding	Rv3854c	ethA	4327473	4326004	-	Glu433Ala	gag/gcg	1298	phylo (3,1,2,2)	
+4326439	c	a	coding	Rv3854c	ethA	4327473	4326004	-	Asn345Lys	aac/aaa	1035	phylo (1,2,2)	
+4326739	c	g	coding	Rv3854c	ethA	4327473	4326004	-	Arg245Arg	cgc/cgg	735	phylo (4,6,2,2)	
+4328004	g	a	coding	Rv3855	ethR	4327549	4328199	+	Val152Val	gtg/gta	456	phylo (4,6,2,2)	
+4398141	g	a	coding	Rv3910	-	4396597	4400151	+	Ser515Ser	tcg/tca	1545	phylo (4,3,4,1)	
+4404247	g	a	coding	Rv3915	-	4403192	4404412	+	Leu352Leu	ctg/cta	1056	phylo (1,1)	
+4407780	g	a	coding	Rv3919c	gid	4408202	4407528	-	Ala141Ala	gcg/gca	423	phylo (1,1,3)	

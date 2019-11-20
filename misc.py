@@ -134,7 +134,7 @@ def get_snpeff_path():
     return final_path_config
 
 
-def execute_subprocess(cmd):
+def execute_subprocess(cmd, log_file=False):
     """
     https://crashcourse.housegordon.org/python-subprocess.html
     https://docs.python.org/3/library/subprocess.html 
@@ -159,6 +159,11 @@ def execute_subprocess(cmd):
                 + BOLD + "WITH PARAMETERS: " + END_FORMATTING + " ".join(param) + "\n"
                 + BOLD + "EXIT-CODE: %d\n" % command.returncode +
                 "ERROR:\n" + END_FORMATTING + command.stderr.decode().strip())
+        if log_file != False:
+            with open(log_file, 'a+') as f:
+                f.write(command.stdout)
+                f.write("\n")
+                f.write(command.stderr)
     except OSError as e:
         sys.exit(RED + BOLD + "failed to execute program '%s': %s" % (prog, str(e)) + END_FORMATTING)
 

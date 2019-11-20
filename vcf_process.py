@@ -645,7 +645,7 @@ def poorly_covered_to_bed(coverage_folder, output_file_name, reference="CHROM", 
     list_to_bed(list_uncovered, coverage_folder, output_file_name, reference)
 
 def vcf_consensus_filter(vcf_file, distance=1, AF=0.75, QD=15, window_10=3, dp_limit=8, dp_AF=10, AF_dp=0.80, 
-    highly_hetz=False, non_genotyped=False, poorly_covered=False, bed_to_filter=False, var_type="SNP"):
+    highly_hetz=False, non_genotyped=False, poorly_covered=False, var_type="SNP"):
     """
     Apply custom filter to individual vcf based on:
     AF
@@ -670,10 +670,6 @@ def vcf_consensus_filter(vcf_file, distance=1, AF=0.75, QD=15, window_10=3, dp_l
     check_create_dir(table_outputt_dir)
 
     #Add polymorphic regions info (Phage, Transposon or PE/PPE regions for TB)
-    if bed_to_filter == False:
-        df_vcf['is_polymorphic'] = False
-    else:
-        annotate_bed_s(df_vcf, bed_to_filter)
     
     if highly_hetz != False:
         annotate_bed_s(df_vcf, highly_hetz)
@@ -730,8 +726,7 @@ def vcf_consensus_filter(vcf_file, distance=1, AF=0.75, QD=15, window_10=3, dp_l
                                 ((df_vcf.dp < dp_AF) & (df_vcf.AF < AF_dp)) |
                                 (df_vcf.highly_hetz == True) |
                                 (df_vcf.poorly_covered == True) |
-                                (df_vcf.non_genotyped == True) |
-                                (df_vcf.is_polymorphic == True))].tolist()
+                                (df_vcf.non_genotyped == True))].tolist()
 
     final_vcf_name = tab_name + extend_final
     filter_vcf_list(vcf_path, list_positions_to_filter, final_vcf_name)

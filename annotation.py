@@ -76,7 +76,7 @@ def replace_reference(input_vcf, output, ref_old=False, ref_new="Chromosome" ):
                 line = line.replace(ref, new)
                 fo.write(line)
 
-def snpeff_annotation(args, vcf_file, database="Mycobacterium_tuberculosis_h37rv"):
+def snpeff_annotation(args, vcf_file, database=False):
     #http://snpeff.sourceforge.net/SnpEff_manual.html
     # java -jar snpEff.jar -ud 0 -c path/to/snpEff/snpEff.config -stats SAMPLE.starts.annot.html
     #   Mycobacterium_tuberculosis_h37rv VCF_FILE > FILE.annot

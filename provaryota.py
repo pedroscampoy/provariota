@@ -30,12 +30,13 @@ from compare_snp import ddtb_add, ddtb_compare
 HEADER
 =============================================================
 
-INSTITUTION:IiSGM
+INSTITUTION:IiSGM + CNM-ISCIII
 AUTHOR: Pedro J. Sola (pedroscampoy@gmail.com)
 d^v^b
 VERSION=0.1
 CREATED: 28 April 2019
 REVISION: 
+        20191119 - Adapt to other samples
 
 TODO:
     Check file with multiple arguments
@@ -68,12 +69,11 @@ def get_arguments():
     input_group.add_argument('-r', '--reference', metavar="reference", type=str, required=True, help='REQUIRED. File to map against')
     input_group.add_argument('-s', '--sample', metavar="sample", type=str, required=False, help='Sample to identify further files')
     input_group.add_argument('-S', '--sample_list', type=str, required=False, help='Sample names to analyse only in the file supplied')
-    input_group.add_argument('-a', '--annot', type=str, required=False, action='append', help='bed file to annotate')
+    input_group.add_argument('-B', '--annot_bed', type=str, required=False, action='append', help='bed file to annotate')
     
     output_group = parser.add_argument_group('Output', 'Required parameter to output results')
 
     output_group.add_argument('-o', '--output', type=str, required=True, help='REQUIRED. Output directory to extract all results')
-    output_group.add_argument('--tuberculosis', required=False, action='store_true', help='Specific parameters for Mycobacterium tuberculosis')
 
     trimming_group = parser.add_argument_group('Trimming parameters', 'parameters for diferent triming conditions')
 
@@ -82,7 +82,6 @@ def get_arguments():
 
     gatk_group = parser.add_argument_group('GATK parameters', 'parameters for diferent variant calling')
 
-    gatk_group.add_argument('-p', '--ploidy', type=str, required=False, default=2, help='Set ploidy when HC call, default 2')
     gatk_group.add_argument('-E', '--enrich_gvcf', required=False,  default=False, help='Point a directory with g.vcf files to enrich the analysis')
     gatk_group.add_argument('-A', '--all_cohort', required=False,  action='store_true', help='Output vcf of all samples instead of just the one inputted before cohort')
 
@@ -94,14 +93,14 @@ def get_arguments():
     annot_group = parser.add_argument_group('Annotation', 'parameters for variant annotation')
 
     annot_group.add_argument('--mash_database', type=str, required=False, default="/home/pjsola/REFERENCES/mash/refseq.genomes.k21s1000.msh", help='MASH ncbi annotation containing all species database')
-    annot_group.add_argument('--snpeff_database', type=str, required=False, default="Mycobacterium_tuberculosis_h37rv", help='snpEFF annotation database')
+    annot_group.add_argument('--snpeff_database', type=str, required=False, default=False, help='snpEFF annotation database')
 
     params_group = parser.add_argument_group('Parameters', 'parameters for diferent stringent conditions')
 
     params_group.add_argument('-C', '--noclean', required=False, action='store_false', help='Clean unwanted files for standard execution')
     params_group.add_argument('-c', '--mincov', type=int, required=False, default=20, help='Minimun coverage to add samples into analysis')
-    params_group.add_argument('-T', '--threads', type=str, dest = "threads", required=False, default=16, help='Threads to use')
-    params_group.add_argument('-M', '--memory', type=str, dest = "memory", required=False, default=32, help='MAx memory to use')
+    params_group.add_argument('-T', '--threads', type=str, dest = "threads", required=False, default=24, help='Threads to use')
+    params_group.add_argument('-M', '--memory', type=str, dest = "memory", required=False, default=64, help='Max memory to use')
 
 
     arguments = parser.parse_args()
@@ -157,19 +156,6 @@ is_esential_bed = os.path.join(annotation_dir, "is_essential.bed")
 is_polymorphic = os.path.join(annotation_dir, "is_polymorphic.bed")
 product_bed = os.path.join(annotation_dir, "product.bed")
 drug_related_bed = os.path.join(resistance_dir, "drug_related.bed")
-
-if ("NC_000962.3" in args.reference) or ("h37rv" in args.reference.lower()) or ("ancestor" in args.reference):
-    args.tuberculosis = True
-    args.bed_remove = "TB"
-    if args.annot == None:
-        args.annot = [is_esential_bed, is_polymorphic, product_bed, drug_related_bed]
-    else:
-        args.annot[0:0] = [is_esential_bed, is_polymorphic, product_bed, drug_related_bed]
-
-if args.bed_remove == "TB":
-    bed_polymorphism = os.path.join(annotation_dir, "is_polymorphic.bed")
-else:
-    bed_polymorphism = False
 
 #Output related
 out_trim_dir = os.path.join(args.output, "Trimmed")
@@ -303,7 +289,7 @@ for r1_file, r2_file in zip(r1, r2):
                 print(YELLOW + DIM + output_gvcfr_file + " EXIST\nOmmiting Haplotype Call (Recall) for sample " + sample + END_FORMATTING)
             else:
                 print(GREEN + "Haplotype Calling (Recall) in sample " + sample + END_FORMATTING)
-                haplotype_caller(args, recalibrate=True, ploidy=args.ploidy, bamout=False, forceactive=False)
+                haplotype_caller(args, recalibrate=True, ploidy=2, bamout=False, forceactive=False)
         
         else:
             print(YELLOW + DIM + "\nOMMITING BAM HANDLING FOR SAMPLE " + sample + END_FORMATTING)
@@ -466,7 +452,7 @@ for r1_file, r2_file in zip(r1, r2):
             print(YELLOW + DIM + output_gvcf_file + " EXIST\nOmmiting Haplotype Call for sample " + sample + END_FORMATTING)
         else:
             print(GREEN + "Haplotype Calling in sample " + sample + END_FORMATTING)
-            haplotype_caller(args, recalibrate=False, ploidy=args.ploidy, bamout=False, forceactive=False)
+            haplotype_caller(args, recalibrate=False, ploidy=2, bamout=False, forceactive=False)
 
 #ONCE ALL GVCF VARIANTS ARE CALLED, THEY ARE GATHERED AND FILTERED 
 # FOR FINAL CALLING
@@ -576,7 +562,6 @@ for r1_file, r2_file in zip(r1, r2):
              highly_hetz=highly_hetz_bed, 
              non_genotyped=non_genotyped_bed, 
              poorly_covered=poorly_covered_bed, 
-             bed_to_filter=bed_polymorphism, 
              var_type="SNP")
 
 #DETEMINING MIXED ORIGIN IN GROUP######################
@@ -605,8 +590,8 @@ print("\n\n" + MAGENTA + BOLD + "VARIANT CALL FINISHED IN GROUP: " + group_name 
 #######################################################################################################################################
 #################################END OF VARIANT CALLING################################################################################
 #######################################################################################################################################
-
-if args.tuberculosis == True:
+tuberculosis = False
+if tuberculosis == True:
     print("\n\n" + BLUE + BOLD + "STARTING ANNOTATION IN GROUP: " + group_name + END_FORMATTING + "\n")
 
     for root, _, files in os.walk(out_vcf_dir):
@@ -631,39 +616,10 @@ if args.tuberculosis == True:
                         vcf_path = (".").join(output_path.split(".")[:-1])
                         annot_vcf = vcf_path + ".annot"
                         #This function add SPECIFIC anotation
-                        if args.annot:
-                            final_annotation(annot_vcf, *args.annot)
+                        if args.annot_bed:
+                            final_annotation(annot_vcf, *args.annot_bed)
                         else:
                             final_annotation(annot_vcf)
-
-    print("\n\n" + BLUE + BOLD + "STARTING REPORT IN GROUP: " + group_name + END_FORMATTING + "\n")
-
-    report_name = group_name + ".all.annot.report.html"
-    all_report_file = os.path.join(out_annot_dir, report_name)
-
-    with open(all_report_file, 'w+') as fa:
-        #Include common css for all reports and change height to adapt to bigger sizes
-        css_report = css_report.replace("height: 100%;", "height: auto;")
-        fa.write(css_report)
-        for r1_file, r2_file in zip(r1, r2):
-            args.r1_file = r1_file
-            args.r2_file = r2_file
-            sample = extract_sample(r1_file, r2_file)
-            if sample in sample_list_F:
-                out_mash_name = sample + ".screen.tab"
-                output_mash_file = os.path.join(out_species_dir, out_mash_name)
-
-                for root, _, files in os.walk(out_annot_dir):
-                    for name in files:
-                        filename = os.path.join(root, name)
-                        output_path = os.path.join(out_annot_dir, name)
-                        if filename.endswith(".annot.tsv") and sample in filename:
-                            print(GREEN + "Creating report in sample: " + sample + END_FORMATTING)
-                            sample_report = extract_species_from_screen(output_mash_file)
-                            report_sample = create_report(filename, species=sample_report[0], species_report=sample_report[1])
-                            fa.write(report_sample)
-                            fa.write("<br /> <hr>")
-                            print(GREEN + "Report created for sample: " + sample + END_FORMATTING)
 
 
     print("\n\n" + MAGENTA + BOLD + "ANNOTATION FINISHED IN GROUP: " + group_name + END_FORMATTING + "\n")

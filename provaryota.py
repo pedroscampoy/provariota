@@ -70,10 +70,12 @@ def get_arguments():
     input_group.add_argument('-s', '--sample', metavar="sample", type=str, required=False, help='Sample to identify further files')
     input_group.add_argument('-S', '--sample_list', type=str, required=False, help='Sample names to analyse only in the file supplied')
     input_group.add_argument('-B', '--annot_bed', type=str, required=False, action='append', help='bed file to annotate')
+    input_group.add_argument('-V', '--annot_vcf', type=str, required=False, action='append', help='vcf file to annotate')
     
     output_group = parser.add_argument_group('Output', 'Required parameter to output results')
 
     output_group.add_argument('-o', '--output', type=str, required=True, help='REQUIRED. Output directory to extract all results')
+    output_group.add_argument('-C', '--noclean', required=False, action='store_false', help='Clean unwanted files for standard execution')
 
     trimming_group = parser.add_argument_group('Trimming parameters', 'parameters for diferent triming conditions')
 
@@ -97,7 +99,7 @@ def get_arguments():
 
     params_group = parser.add_argument_group('Parameters', 'parameters for diferent stringent conditions')
 
-    params_group.add_argument('-C', '--noclean', required=False, action='store_false', help='Clean unwanted files for standard execution')
+    
     params_group.add_argument('-c', '--mincov', type=int, required=False, default=20, help='Minimun coverage to add samples into analysis')
     params_group.add_argument('-T', '--threads', type=str, dest = "threads", required=False, default=24, help='Threads to use')
     params_group.add_argument('-M', '--memory', type=str, dest = "memory", required=False, default=64, help='Max memory to use')

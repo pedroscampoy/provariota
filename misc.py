@@ -502,8 +502,7 @@ def extrach_variants_summary(vcf_table, distance=15, quality=10 ):
                                 (df.QD <= QD) |
                                 (df.highly_hetz == True) |
                                 (df.poorly_covered == True) |
-                                (df.non_genotyped == True) |
-                                (df.is_polymorphic == True))].tolist()
+                                (df.non_genotyped == True))].tolist()
     
     filtered_df = df[~df.POS.isin(position_to_filter)]
     

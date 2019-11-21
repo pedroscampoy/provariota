@@ -3,9 +3,12 @@ import os
 import sys
 import re
 import subprocess
+import logging
 import pandas as pd
 import numpy as np
 
+
+logger = logging.getLogger()
 
 #COLORS AND AND FORMATTING
 """
@@ -35,7 +38,7 @@ def check_file_exists(file_name):
     file_info = os.stat(file_name) #Retrieve the file info to check if has size > 0
 
     if not os.path.isfile(file_name) or file_info.st_size == 0:
-        print(RED + BOLD + "File: %s not found or empty\n" % file_name + END_FORMATTING)
+        logger.info(RED + BOLD + "File: %s not found or empty\n" % file_name + END_FORMATTING)
         sys.exit(1)
     return os.path.isfile(file_name)
 
@@ -134,12 +137,16 @@ def get_snpeff_path():
     return final_path_config
 
 
-def execute_subprocess(cmd, log_file=False):
+def execute_subprocess(cmd):
     """
     https://crashcourse.housegordon.org/python-subprocess.html
     https://docs.python.org/3/library/subprocess.html 
     Execute and handle errors with subprocess, outputting stderr instead of the subprocess CalledProcessError
     """
+
+    logger.debug("")
+    logger.debug(cmd)
+
     if cmd[0] == "java":
         prog = cmd[2].split("/")[-1] + " " + cmd[3]
         param = cmd[4:]
@@ -153,17 +160,14 @@ def execute_subprocess(cmd, log_file=False):
     try:
         command = subprocess.run(cmd , stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         if command.returncode == 0:
-            print(GREEN + DIM + "Program %s successfully executed" % prog + END_FORMATTING)
+            logger.debug(GREEN + DIM + "Program %s successfully executed" % prog + END_FORMATTING)
         else:
-            print (RED + BOLD + "Command %s FAILED\n" % prog + END_FORMATTING
+            logger.info(RED + BOLD + "Command %s FAILED\n" % prog + END_FORMATTING
                 + BOLD + "WITH PARAMETERS: " + END_FORMATTING + " ".join(param) + "\n"
                 + BOLD + "EXIT-CODE: %d\n" % command.returncode +
                 "ERROR:\n" + END_FORMATTING + command.stderr.decode().strip())
-        if log_file != False:
-            with open(log_file, 'a+') as f:
-                f.write(command.stdout)
-                f.write("\n")
-                f.write(command.stderr)
+        logger.debug(command.stdout)
+        logger.debug(command.stderr.decode().strip())
     except OSError as e:
         sys.exit(RED + BOLD + "failed to execute program '%s': %s" % (prog, str(e)) + END_FORMATTING)
 
@@ -190,7 +194,7 @@ def extract_read_list_legacy(input_dir):
                     elif r2:
                         r2_list.append(filename)
                     else:
-                        print(RED + "ERROR, file is not R1 nor R2" + END_FORMATTING)
+                        logger.info(RED + "ERROR, file is not R1 nor R2" + END_FORMATTING)
                         sys.exit(1)
     r1_list = sorted(r1_list)
     r2_list = sorted(r2_list)
@@ -221,7 +225,7 @@ def extract_read_list(input_dir):
             elif index % 1 == 0:
                 r2_list.append(fasta_file)          
     else:
-        print('ERROR: The number of fastq sequence are not paired')
+        logger.info('ERROR: The number of fastq sequence are not paired')
         
     r1_list = sorted(r1_list)
     r2_list = sorted(r2_list)
@@ -240,7 +244,7 @@ def return_codon_position(number):
     position = number % 3
     if position == 0:
         position = 3
-    print("number= %s, pos= %s" % (number,position))
+    logger.info("number= %s, pos= %s" % (number,position))
 
 def file_to_list(file_name):
     list_F = []
@@ -378,20 +382,20 @@ def clean_unwanted_files(args):
         for name in files:
             filename = os.path.join(root, name)
             if root.endswith("Bam") and not "bqsr" in filename:
-                print("Removed: " + filename)
+                logger.info("Removed: " + filename)
                 os.remove(filename)
             #elif filename.endswith("cohort.g.vcf") or filename.endswith("cohort.g.vcf.idx"):
             #    print("Removed: " + filename)
             #    os.remove(filename)
             elif root.endswith("Annotation") and (filename.endswith("annot.genes.txt") or filename.endswith(".vcf") or filename.endswith(".annot.html")):
-                print("Removed: " + filename)
+                logger.info("Removed: " + filename)
                 os.remove(filename)
             elif root.endswith("Trimmed"):
-                print("Removed: " + filename)
+                logger.info("Removed: " + filename)
                 os.remove(filename)
                 
     if Trimmed_dir:
-        print("Removed folder: " + Trimmed_dir)
+        logger.info("Removed folder: " + Trimmed_dir)
         os.rmdir(Trimmed_dir)
                 
 def longest_common_suffix(list_of_strings):
@@ -453,10 +457,10 @@ def check_reanalysis(output_dir):
         samples_fastq = len([ x for x in samples_fastq if x.endswith('fastq.gz')]) / 2
         
         if samples_analyzed >= samples_fastq:
-            print(MAGENTA + "\nPREVIOUS ANALYSIS DETECTED, NO NEW SEQUENCES ADDED\n" + END_FORMATTING)
+            logger.info(MAGENTA + "\nPREVIOUS ANALYSIS DETECTED, NO NEW SEQUENCES ADDED\n" + END_FORMATTING)
         
         else:
-            print(MAGENTA + "\nPREVIOUS ANALYSIS DETECTED, NEW SEQUENCES ADDED\n" + END_FORMATTING)
+            logger.info(MAGENTA + "\nPREVIOUS ANALYSIS DETECTED, NEW SEQUENCES ADDED\n" + END_FORMATTING)
             for root, _, files in os.walk(output_dir):
                     if root ==  gvcf_dir or root == gvcfr_dir or root == vcfr_dir:
                         for name in files:

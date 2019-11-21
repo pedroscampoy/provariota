@@ -4,6 +4,7 @@
 import os
 import sys
 import re
+import logging
 
 # Third party imports
 import argparse
@@ -46,6 +47,8 @@ END_OF_HEADER
 ================================================================
 """
 
+#COLORS AND AND FORMATTING
+
 END_FORMATTING = '\033[0m'
 WHITE_BG = '\033[0;30;47m'
 BOLD = '\033[1m'
@@ -58,6 +61,9 @@ CYAN = '\033[36m'
 YELLOW = '\033[93m'
 DIM = '\033[2m'
 
+
+
+#ARGUMENTS
 
 def get_arguments():
 
@@ -101,8 +107,8 @@ def get_arguments():
 
     
     params_group.add_argument('-c', '--mincov', type=int, required=False, default=20, help='Minimun coverage to add samples into analysis')
-    params_group.add_argument('-T', '--threads', type=str, dest = "threads", required=False, default=24, help='Threads to use')
-    params_group.add_argument('-M', '--memory', type=str, dest = "memory", required=False, default=64, help='Max memory to use')
+    params_group.add_argument('-T', '--threads', type=str, dest = "threads", required=False, default=16, help='Threads to use')
+    params_group.add_argument('-M', '--memory', type=str, dest = "memory", required=False, default=32, help='Max memory to use')
 
 
     arguments = parser.parse_args()
@@ -111,8 +117,45 @@ def get_arguments():
 
 args = get_arguments()
 
-print("ARGUMENTS:")
-print(args)
+
+######################################################################
+#####################START PIPELINE###################################
+######################################################################
+output = os.path.abspath(args.output)
+group_name = output.split("/")[-1]
+
+#LOGGING
+#Create log file with date and time
+right_now = str(datetime.datetime.now())
+right_now_full = "_".join(right_now.split(" "))
+log_filename = right_now_full + ".log"
+log_full_path = os.path.join(output, log_filename)
+
+
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
+
+formatter = logging.Formatter('%(asctime)s:%(message)s')
+
+file_handler = logging.FileHandler(log_full_path)
+file_handler.setLevel(logging.DEBUG)
+file_handler.setFormatter(formatter)
+
+stream_handler = logging.StreamHandler()
+stream_handler.setLevel(logging.INFO)
+#stream_handler.setFormatter(formatter)
+
+logger.addHandler(stream_handler)
+logger.addHandler(file_handler)
+
+
+
+logger.info("\n\n" + BLUE + BOLD + "STARTING PIPELINE IN GROUP: " + group_name + END_FORMATTING)
+
+today = str(datetime.date.today())
+
+logger.info("ARGUMENTS:")
+logger.info(str(args))
 
 check_reanalysis(args.output)
 
@@ -122,23 +165,16 @@ r1, r2 = extract_read_list(args.input_dir)
 #Check if there are samples to filter
 sample_list_F = []
 if args.sample_list == None:
-    print("\n" + "No samples to filter")
+    logger.info("\n" + "No samples to filter")
     for r1_file, r2_file in zip(r1, r2):
         sample = extract_sample(r1_file, r2_file)
         sample_list_F.append(sample)
 else:
-    print("samples will be filtered")
+    logger.info("samples will be filtered")
     sample_list_F = file_to_list(args.sample_list)
-print("\n%d samples will be analysed: %s" % (len(sample_list_F), ",".join(sample_list_F)))
+logger.info("\n%d samples will be analysed: %s" % (len(sample_list_F), ",".join(sample_list_F)))
 
 
-######################################################################
-#####################START PIPELINE###################################
-######################################################################
-output = os.path.abspath(args.output)
-group_name = output.split("/")[-1]
-
-print("\n\n" + BLUE + BOLD + "STARTING PIPELINE IN GROUP: " + group_name + END_FORMATTING)
 
 
 #PREPARE REFERENCE FOR MAPPING + FAI + DICT #########
@@ -152,26 +188,20 @@ samtools_faidx(args)
 #####################################################
 #Annotation related parameters
 script_dir = os.path.dirname(os.path.realpath(__file__))
-annotation_dir = os.path.join(script_dir, "annotation/genes")
-resistance_dir = os.path.join(script_dir, "annotation/resistance")
-is_esential_bed = os.path.join(annotation_dir, "is_essential.bed")
-is_polymorphic = os.path.join(annotation_dir, "is_polymorphic.bed")
-product_bed = os.path.join(annotation_dir, "product.bed")
-drug_related_bed = os.path.join(resistance_dir, "drug_related.bed")
 
 #Output related
-out_trim_dir = os.path.join(args.output, "Trimmed")
-out_map_dir = os.path.join(args.output, "Bam")
-out_cov_dir = os.path.join(args.output, "Coverage")
-out_gvcfr_dir = os.path.join(args.output, "GVCF_recal")
-out_vcfr_dir = os.path.join(args.output, "VCF_recal")
-out_gvcf_dir = os.path.join(args.output, "GVCF")
-out_vcf_dir = os.path.join(args.output, "VCF")
-out_annot_dir = os.path.join(args.output, "Annotation")
-out_species_dir = os.path.join(args.output, "Species")
-out_uncovered_dir = os.path.join(args.output, "Uncovered")
-out_compare_dir = os.path.join(args.output, "Compare")
-out_table_dir = os.path.join(args.output, "Table")
+out_trim_dir = os.path.join(output, "Trimmed")
+out_map_dir = os.path.join(output, "Bam")
+out_cov_dir = os.path.join(output, "Coverage")
+out_gvcfr_dir = os.path.join(output, "GVCF_recal")
+out_vcfr_dir = os.path.join(output, "VCF_recal")
+out_gvcf_dir = os.path.join(output, "GVCF")
+out_vcf_dir = os.path.join(output, "VCF")
+out_annot_dir = os.path.join(output, "Annotation")
+out_species_dir = os.path.join(output, "Species")
+out_uncovered_dir = os.path.join(output, "Uncovered")
+out_compare_dir = os.path.join(output, "Compare")
+out_table_dir = os.path.join(output, "Table")
 
 highly_hetz_bed = os.path.join(out_vcf_dir, "highly_hetz.bed")
 non_genotyped_bed = os.path.join(out_vcf_dir, "non_genotyped.bed")
@@ -193,7 +223,7 @@ for r1_file, r2_file in zip(r1, r2):
             args.r1_file = r1_file
             args.r2_file = r2_file
 
-            print("\n" + WHITE_BG + "STARTING SAMPLE: " + sample + " (" + sample_number + "/" + sample_total + ")" + END_FORMATTING)
+            logger.info("\n" + WHITE_BG + "STARTING SAMPLE: " + sample + " (" + sample_number + "/" + sample_total + ")" + END_FORMATTING)
 
             ##############START PIPELINE#####################
             #################################################
@@ -220,9 +250,9 @@ for r1_file, r2_file in zip(r1, r2):
             output_trimming_file_r2 = os.path.join(out_trim_dir, out_trim_name_r2)
             
             if os.path.isfile(output_trimming_file_r1) and os.path.isfile(output_trimming_file_r2):
-                print(YELLOW + DIM + output_trimming_file_r1 + " EXIST\nOmmiting Trimming for sample " + sample + END_FORMATTING)
+                logger.info(YELLOW + DIM + output_trimming_file_r1 + " EXIST\nOmmiting Trimming for sample " + sample + END_FORMATTING)
             else:
-                print(GREEN + "Trimming sample " + sample + END_FORMATTING)
+                logger.info(GREEN + "Trimming sample " + sample + END_FORMATTING)
                 bbduk_trimming(args)
 
             #MAPPING WITH BWA - SAM TO SORTED BAM - ADD HEADER SG
@@ -237,10 +267,10 @@ for r1_file, r2_file in zip(r1, r2):
             args.r2_file = output_trimming_file_r2
 
             if os.path.isfile(output_map_file) or os.path.isfile(output_markdup_file):
-                print(YELLOW + DIM + output_map_file + " EXIST\nOmmiting Mapping for sample " + sample + END_FORMATTING)
+                logger.info(YELLOW + DIM + output_map_file + " EXIST\nOmmiting Mapping for sample " + sample + END_FORMATTING)
             else:
-                print(GREEN + "Mapping sample " + sample + END_FORMATTING)
-                print("R1: " + output_trimming_file_r1 + "\nR2: " + output_trimming_file_r2 + "\nReference: " + args.reference)
+                logger.info(GREEN + "Mapping sample " + sample + END_FORMATTING)
+                logger.info("R1: " + output_trimming_file_r1 + "\nR2: " + output_trimming_file_r2 + "\nReference: " + args.reference)
                 bwa_mapping(args)
                 sam_to_index_bam(args)
 
@@ -253,10 +283,10 @@ for r1_file, r2_file in zip(r1, r2):
             args.input_bam = output_map_file
 
             if os.path.isfile(output_markdup_file):
-                print(YELLOW + DIM + output_markdup_file + " EXIST\nOmmiting Duplucate Mark for sample " + sample + END_FORMATTING)
+                logger.info(YELLOW + DIM + output_markdup_file + " EXIST\nOmmiting Duplucate Mark for sample " + sample + END_FORMATTING)
             else:
-                print(GREEN + "Marking Dupes in sample " + sample + END_FORMATTING)
-                print("Input Bam: " + args.input_bam)
+                logger.info(GREEN + "Marking Dupes in sample " + sample + END_FORMATTING)
+                logger.info("Input Bam: " + args.input_bam)
                 picard_markdup(args)
             
             #CALCULATE COVERAGE FOR EACH POSITION##################
@@ -265,9 +295,9 @@ for r1_file, r2_file in zip(r1, r2):
             output_cov_file = os.path.join(out_cov_dir, out_cov_name)
 
             if os.path.isfile(output_cov_file):
-                print(YELLOW + DIM + output_cov_file + " EXIST\nOmmiting coverage calculation for sample " + sample + END_FORMATTING)
+                logger.info(YELLOW + DIM + output_cov_file + " EXIST\nOmmiting coverage calculation for sample " + sample + END_FORMATTING)
             else:
-                print(GREEN + "Calculating coverage in sample " + sample + END_FORMATTING)
+                logger.info(GREEN + "Calculating coverage in sample " + sample + END_FORMATTING)
                 get_coverage(args, output_markdup_file, output_fmt="-d")
 
             #SPECIES DETERMINATION USING mash #################
@@ -276,9 +306,9 @@ for r1_file, r2_file in zip(r1, r2):
             output_mash_file = os.path.join(out_species_dir, out_mash_name)
             
             if os.path.isfile(output_mash_file):
-                print(YELLOW + DIM + output_mash_file + " EXIST\nOmmiting Species calculation for sample " + sample + END_FORMATTING)
+                logger.info(YELLOW + DIM + output_mash_file + " EXIST\nOmmiting Species calculation for sample " + sample + END_FORMATTING)
             else:
-                print(GREEN + "Determining species content in sample " + sample + END_FORMATTING)
+                logger.info(GREEN + "Determining species content in sample " + sample + END_FORMATTING)
                 mash_screen(args, winner=True, r2=False, mash_database=args.mash_database)
             
 
@@ -288,40 +318,40 @@ for r1_file, r2_file in zip(r1, r2):
             output_gvcfr_file = os.path.join(out_gvcfr_dir, out_gvcfr_name)
 
             if os.path.isfile(output_gvcfr_file):
-                print(YELLOW + DIM + output_gvcfr_file + " EXIST\nOmmiting Haplotype Call (Recall) for sample " + sample + END_FORMATTING)
+                logger.info(YELLOW + DIM + output_gvcfr_file + " EXIST\nOmmiting Haplotype Call (Recall) for sample " + sample + END_FORMATTING)
             else:
-                print(GREEN + "Haplotype Calling (Recall) in sample " + sample + END_FORMATTING)
+                logger.info(GREEN + "Haplotype Calling (Recall) in sample " + sample + END_FORMATTING)
                 haplotype_caller(args, recalibrate=True, ploidy=2, bamout=False, forceactive=False)
         
         else:
-            print(YELLOW + DIM + "\nOMMITING BAM HANDLING FOR SAMPLE " + sample + END_FORMATTING)
+            logger.info(YELLOW + DIM + "\nOMMITING BAM HANDLING FOR SAMPLE " + sample + END_FORMATTING)
 
 
 
 #GROUP COVERAGE SUMMARY STATS##########################
 #######################################################
 group_name = output.split("/")[-1]
-print("\n\n" + BLUE + BOLD + "CHECKING LOW COVERED SAMPLES IN GROUP: " + group_name + END_FORMATTING + "\n")
+logger.info("\n\n" + BLUE + BOLD + "CHECKING LOW COVERED SAMPLES IN GROUP: " + group_name + END_FORMATTING + "\n")
 
 out_cov_name = group_name + ".coverage.tab"
 output_cov_file = os.path.join(out_cov_dir, out_cov_name)
 
 if os.path.isfile(output_cov_file):
-    print(YELLOW + DIM + output_cov_file + " EXIST\nOmmiting group coverage calculation for group " + group_name + END_FORMATTING)
+    logger.info(YELLOW + DIM + output_cov_file + " EXIST\nOmmiting group coverage calculation for group " + group_name + END_FORMATTING)
     saples_low_covered = []
 else:
-    print(GREEN + "Group coverage stats in group " + group_name + END_FORMATTING)
+    logger.info(GREEN + "Group coverage stats in group " + group_name + END_FORMATTING)
     saples_low_covered = obtain_group_cov_stats(out_cov_dir, low_cov_threshold=args.mincov, unmmaped_threshold=20)
 
 
 if os.path.isfile(poorly_covered_bed):
-    print(YELLOW + DIM + output_cov_file + " EXIST\nOmmiting poorly covered calculation for group " + group_name + END_FORMATTING)
+    logger.info(YELLOW + DIM + output_cov_file + " EXIST\nOmmiting poorly covered calculation for group " + group_name + END_FORMATTING)
 else:
-    print(GREEN + "Calculating low covered regions " + group_name + END_FORMATTING)
+    logger.info(GREEN + "Calculating low covered regions " + group_name + END_FORMATTING)
     poorly_covered_to_bed(out_cov_dir, "poorly_covered", reference="CHROM", min_coverage=2, nocall_fr=0.5)
 
 if len(saples_low_covered) > 0:
-    print("\n" + YELLOW + BOLD + "There are sample(s) with low coverage that will be removed from the analysis: " + "\n"\
+    logger.info("\n" + YELLOW + BOLD + "There are sample(s) with low coverage that will be removed from the analysis: " + "\n"\
          + ",".join(saples_low_covered) + END_FORMATTING + "\n")
     remove_low_covered_mixed(args.output, saples_low_covered, "Uncovered")
     #Remove sample from the list of filtered samples
@@ -329,7 +359,7 @@ if len(saples_low_covered) > 0:
     for samples_to_remove in saples_low_covered:
         sample_list_F.remove(samples_to_remove)
 else:
-    print("\n" + YELLOW + BOLD + "All samples have a decent depth of coverage according to threshold supplied" + "\n")
+    logger.info("\n" + YELLOW + BOLD + "All samples have a decent depth of coverage according to threshold supplied" + "\n")
 
 
 
@@ -341,7 +371,7 @@ else:
 ######################################################################
 
 group_name = output.split("/")[-1]
-print("\n\n" + BLUE + BOLD + "STARTING JOINT CALL FOR RECALIBATION IN GROUP: " + group_name + END_FORMATTING + "\n")
+logger.info("\n\n" + BLUE + BOLD + "STARTING JOINT CALL FOR RECALIBATION IN GROUP: " + group_name + END_FORMATTING + "\n")
 
 #CALL VARIANTS 1/2 FOR HARD FILTERING AND RECALIBRATION
 #######################################################
@@ -349,9 +379,9 @@ out_gvcfr_name = group_name + ".cohort.g.vcf"
 output_gvcfr_file = os.path.join(out_gvcfr_dir, out_gvcfr_name)
 
 if os.path.isfile(output_gvcfr_file):
-    print(YELLOW + DIM + output_gvcfr_file + " EXIST\nOmmiting GVCF Combination (Recall) for group " + group_name + END_FORMATTING)
+    logger.info(YELLOW + DIM + output_gvcfr_file + " EXIST\nOmmiting GVCF Combination (Recall) for group " + group_name + END_FORMATTING)
 else:
-    print(GREEN + "GVCF Combination (Recall) in group " + group_name + END_FORMATTING)
+    logger.info(GREEN + "GVCF Combination (Recall) in group " + group_name + END_FORMATTING)
     combine_gvcf(args, recalibrate=True, all_gvcf=False)
 
 #CALL VARIANTS 1/2 FOR HARD FILTERING AND RECALIBRATION
@@ -360,9 +390,9 @@ out_vcfr_name = group_name + ".cohort.raw.vcf"
 output_vcfr_file = os.path.join(out_vcfr_dir, out_vcfr_name)
 
 if os.path.isfile(output_vcfr_file):
-    print(YELLOW + DIM + output_vcfr_file + " EXIST\nOmmiting Variant Calling (Recall-Group) for group " + group_name + END_FORMATTING)
+    logger.info(YELLOW + DIM + output_vcfr_file + " EXIST\nOmmiting Variant Calling (Recall-Group) for group " + group_name + END_FORMATTING)
 else:
-    print(GREEN + "Variant Calling (Recall-Group) in group " + group_name + END_FORMATTING)
+    logger.info(GREEN + "Variant Calling (Recall-Group) in group " + group_name + END_FORMATTING)
     call_variants(args, recalibrate=True, group=True)
 
 #SELECT VARIANTS 1/2 FOR HARD FILTERING AND RECALIBRATION
@@ -373,9 +403,9 @@ output_vcfsnpr_file = os.path.join(out_vcfr_dir, out_vcfsnpr_name)
 output_vcfindelr_file = os.path.join(out_vcfr_dir, out_vcfindelr_name)
 
 if os.path.isfile(output_vcfsnpr_file) and os.path.isfile(output_vcfindelr_file):
-    print(YELLOW + DIM + output_vcfsnpr_file + " EXIST\nOmmiting Variant Selection (Recall-Group) for group " + group_name + END_FORMATTING)
+    logger.info(YELLOW + DIM + output_vcfsnpr_file + " EXIST\nOmmiting Variant Selection (Recall-Group) for group " + group_name + END_FORMATTING)
 else:
-    print(GREEN + "Selecting Variants (Recall-Group) in group " + group_name + END_FORMATTING)
+    logger.info(GREEN + "Selecting Variants (Recall-Group) in group " + group_name + END_FORMATTING)
     select_variants(output_vcfr_file, select_type='SNP') #select_variants(output_vcfr_file, select_type='INDEL')
     select_variants(output_vcfr_file, select_type='INDEL')
 
@@ -388,9 +418,9 @@ output_vcfhfindelr_file = os.path.join(out_vcfr_dir, out_vcfhfindelr_name)
 
 
 if os.path.isfile(output_vcfhfsnpr_file) and os.path.isfile(output_vcfhfindelr_file):
-    print(YELLOW + DIM + output_vcfhfsnpr_file + " EXIST\nOmmiting Hard Filtering (Recall-Group) for group " + group_name + END_FORMATTING)
+    logger.info(YELLOW + DIM + output_vcfhfsnpr_file + " EXIST\nOmmiting Hard Filtering (Recall-Group) for group " + group_name + END_FORMATTING)
 else:
-    print(GREEN + "Hard Filtering Variants (Recall-Group) in group " + group_name + END_FORMATTING)
+    logger.info(GREEN + "Hard Filtering Variants (Recall-Group) in group " + group_name + END_FORMATTING)
     hard_filter(output_vcfsnpr_file, select_type='SNP')
     hard_filter(output_vcfindelr_file, select_type='INDEL')
 
@@ -403,9 +433,9 @@ output_vcfhfindelpass_file = os.path.join(out_vcfr_dir, out_vcfhfindelpass_name)
 
 
 if os.path.isfile(output_vcfhfsnpr_file) and os.path.isfile(output_vcfhfsnppass_file):
-    print(YELLOW + DIM + output_vcfhfsnppass_file + " EXIST\nOmmiting PASS Filtering (Recall-Group) for group " + group_name + END_FORMATTING)
+    logger.info(YELLOW + DIM + output_vcfhfsnppass_file + " EXIST\nOmmiting PASS Filtering (Recall-Group) for group " + group_name + END_FORMATTING)
 else:
-    print(GREEN + "PASS Filtering Variants (Recall-Group) in group " + group_name + END_FORMATTING)
+    logger.info(GREEN + "PASS Filtering Variants (Recall-Group) in group " + group_name + END_FORMATTING)
     select_pass_variants(output_vcfhfsnpr_file, nocall_fr=0.2)
     select_pass_variants(output_vcfhfindelr_file, nocall_fr=0.2)
 
@@ -414,7 +444,7 @@ else:
     ##############START RECALIBRATION AND FINAL CALL######################
     ######################################################################
 
-print("\n\n" + BLUE + BOLD + "STARTING RECALIBATION IN GROUP: " + group_name + END_FORMATTING)
+logger.info("\n\n" + BLUE + BOLD + "STARTING RECALIBATION IN GROUP: " + group_name + END_FORMATTING)
 
 for r1_file, r2_file in zip(r1, r2):
     sample = extract_sample(r1_file, r2_file)
@@ -427,7 +457,7 @@ for r1_file, r2_file in zip(r1, r2):
         sample_number = str(sample_list_F.index(sample) + 1)
         sample_total = str(len(sample_list_F))
 
-        print("\n" + WHITE_BG + "RECALIBRATION AND CALL ON SAMPLE: " + sample + " (" + sample_number + "/" + sample_total + ")" + END_FORMATTING)
+        logger.info("\n" + WHITE_BG + "RECALIBRATION AND CALL ON SAMPLE: " + sample + " (" + sample_number + "/" + sample_total + ")" + END_FORMATTING)
 
         ##############START BAM RECALIBRATION############
         #################################################
@@ -438,9 +468,9 @@ for r1_file, r2_file in zip(r1, r2):
         output_bqsr_file = os.path.join(out_map_dir, out_bqsr_name)
 
         if os.path.isfile(output_bqsr_file):
-            print(YELLOW + DIM + output_bqsr_file + " EXIST\nOmmiting Recalibration for sample " + sample + END_FORMATTING)
+            logger.info(YELLOW + DIM + output_bqsr_file + " EXIST\nOmmiting Recalibration for sample " + sample + END_FORMATTING)
         else:
-            print(GREEN + "Recalibration in sample " + sample + END_FORMATTING)
+            logger.info(GREEN + "Recalibration in sample " + sample + END_FORMATTING)
             recalibrate_bam(args)
 
         #HAPLOTYPE CALL 1/2 FOR HARD FILTERING AND RECALIBRATION
@@ -451,9 +481,9 @@ for r1_file, r2_file in zip(r1, r2):
         #args.input_bam = output_bqsr_file
 
         if os.path.isfile(output_gvcf_file):
-            print(YELLOW + DIM + output_gvcf_file + " EXIST\nOmmiting Haplotype Call for sample " + sample + END_FORMATTING)
+            logger.info(YELLOW + DIM + output_gvcf_file + " EXIST\nOmmiting Haplotype Call for sample " + sample + END_FORMATTING)
         else:
-            print(GREEN + "Haplotype Calling in sample " + sample + END_FORMATTING)
+            logger.info(GREEN + "Haplotype Calling in sample " + sample + END_FORMATTING)
             haplotype_caller(args, recalibrate=False, ploidy=2, bamout=False, forceactive=False)
 
 #ONCE ALL GVCF VARIANTS ARE CALLED, THEY ARE GATHERED AND FILTERED 
@@ -462,7 +492,7 @@ for r1_file, r2_file in zip(r1, r2):
 ##############START GROUP CALLING FOR FINAL CALL######################
 ######################################################################
 group_name = args.output.split("/")[-1]
-print("\n\n" + BLUE + BOLD + "STARTING JOINT CALL FOR FINAL CALL IN GROUP: " + group_name + END_FORMATTING + "\n")
+logger.info("\n\n" + BLUE + BOLD + "STARTING JOINT CALL FOR FINAL CALL IN GROUP: " + group_name + END_FORMATTING + "\n")
 
 #CALL VARIANTS 2/2 FOR HARD FILTERING AND RECALIBRATION
 #######################################################
@@ -470,9 +500,9 @@ out_gvcf_name = group_name + ".cohort.g.vcf"
 output_gvcf_file = os.path.join(out_gvcf_dir, out_gvcf_name)
 
 if os.path.isfile(output_gvcf_file):
-    print(YELLOW + DIM + output_gvcfr_file + " EXIST\nOmmiting GVCF Combination for group " + group_name + END_FORMATTING)
+    logger.info(YELLOW + DIM + output_gvcfr_file + " EXIST\nOmmiting GVCF Combination for group " + group_name + END_FORMATTING)
 else:
-    print(GREEN + "GVCF Combination in group " + group_name + END_FORMATTING)
+    logger.info(GREEN + "GVCF Combination in group " + group_name + END_FORMATTING)
     combine_gvcf(args, recalibrate=False, all_gvcf=args.enrich_gvcf)
 
 #CALL VARIANTS 2/2 FOR HARD FILTERING AND RECALIBRATION
@@ -481,9 +511,9 @@ out_vcf_name = group_name + ".cohort.raw.vcf"
 output_vcf_file = os.path.join(out_vcf_dir, out_vcf_name)
 
 if os.path.isfile(output_vcf_file):
-    print(YELLOW + DIM + output_vcf_file + " EXIST\nOmmiting Variant Calling (Group) for group " + group_name + END_FORMATTING)
+    logger.info(YELLOW + DIM + output_vcf_file + " EXIST\nOmmiting Variant Calling (Group) for group " + group_name + END_FORMATTING)
 else:
-    print(GREEN + "Variant Calling (Group) in group " + group_name + END_FORMATTING)
+    logger.info(GREEN + "Variant Calling (Group) in group " + group_name + END_FORMATTING)
     call_variants(args, recalibrate=False, group=True)
 
 #SELECT VARIANTS 2/2 FOR HARD FILTERING AND RECALIBRATION
@@ -494,9 +524,9 @@ output_vcfsnp_file = os.path.join(out_vcf_dir, out_vcfsnp_name)
 output_vcfindel_file = os.path.join(out_vcf_dir, out_vcfindel_name)
 
 if os.path.isfile(output_vcfsnp_file) and os.path.isfile(output_vcfindel_file):
-    print(YELLOW + DIM + output_vcfsnp_file + " EXIST\nOmmiting Variant Selection (Group) for group " + group_name + END_FORMATTING)
+    logger.info(YELLOW + DIM + output_vcfsnp_file + " EXIST\nOmmiting Variant Selection (Group) for group " + group_name + END_FORMATTING)
 else:
-    print(GREEN + "Selecting Variants (Group) in group " + group_name + END_FORMATTING)
+    logger.info(GREEN + "Selecting Variants (Group) in group " + group_name + END_FORMATTING)
     select_variants(output_vcf_file, select_type='SNP')
     select_variants(output_vcf_file, select_type='INDEL')
 
@@ -509,9 +539,9 @@ output_vcfhfindel_file = os.path.join(out_vcf_dir, out_vcfhfindel_name)
 
 
 if os.path.isfile(output_vcfhfsnp_file) and os.path.isfile(output_vcfhfindel_file):
-    print(YELLOW + DIM + output_vcfhfsnp_file + " EXIST\nOmmiting Hard Filtering (Group) for group " + group_name + END_FORMATTING)
+    logger.info(YELLOW + DIM + output_vcfhfsnp_file + " EXIST\nOmmiting Hard Filtering (Group) for group " + group_name + END_FORMATTING)
 else:
-    print(GREEN + "Hard Filtering Variants (Group) in group " + group_name + END_FORMATTING)
+    logger.info(GREEN + "Hard Filtering Variants (Group) in group " + group_name + END_FORMATTING)
     hard_filter(output_vcfsnp_file, select_type='SNP')
     hard_filter(output_vcfindel_file, select_type='INDEL')
 
@@ -523,9 +553,9 @@ output_vcfhfcombined_file = os.path.join(out_vcf_dir, out_vcfhfcombined_name)
 
 
 if os.path.isfile(output_vcfhfcombined_file):
-    print(YELLOW + DIM + output_vcfhfcombined_file + " EXIST\nOmmiting combination for group " + group_name + END_FORMATTING)
+    logger.info(YELLOW + DIM + output_vcfhfcombined_file + " EXIST\nOmmiting combination for group " + group_name + END_FORMATTING)
 else:
-    print(GREEN + "Combining both vcf SNP and INDEL in group " + group_name + END_FORMATTING)
+    logger.info(GREEN + "Combining both vcf SNP and INDEL in group " + group_name + END_FORMATTING)
     combine_vcf(output_vcfhfsnp_file, output_vcfhfindel_file, name_out=False)
 
 if args.all_cohort == True:
@@ -536,7 +566,7 @@ else:
 ###########################################################################
 ###########################################################################
 
-print(GREEN + "Determinind highly heterozygous and poorly genotyped regions in " + group_name + END_FORMATTING)
+logger.info(GREEN + "Determinind highly heterozygous and poorly genotyped regions in " + group_name + END_FORMATTING)
 highly_hetz_to_bed(output_vcfhfcombined_file, "highly_hetz", reference="CHROM", nocall_fr=0.5)
 non_genotyped_to_bed(output_vcfhfcombined_file, "non_genotyped", reference="CHROM", nocall_fr=0.5)
 
@@ -547,7 +577,7 @@ for r1_file, r2_file in zip(r1, r2):
 
     if sample in sample_list_F:
 
-        print("\n" + WHITE_BG + "FINAL FILTERING IN SAMPLE " + sample + END_FORMATTING)
+        logger.info("\n" + WHITE_BG + "FINAL FILTERING IN SAMPLE " + sample + END_FORMATTING)
 
         ################FINAL VCF FILTERING##################
         #####################################################
@@ -557,9 +587,9 @@ for r1_file, r2_file in zip(r1, r2):
         in_final_vcf = os.path.join(out_vcf_dir, in_final_name)
 
         if os.path.isfile(output_final_vcf):
-            print(YELLOW + DIM + output_final_vcf + " EXIST\nOmmiting Final filter for sample " + sample + END_FORMATTING)
+            logger.info(YELLOW + DIM + output_final_vcf + " EXIST\nOmmiting Final filter for sample " + sample + END_FORMATTING)
         else:
-            print(GREEN + "Final filter in sample " + sample + END_FORMATTING)
+            logger.info(GREEN + "Final filter in sample " + sample + END_FORMATTING)
             vcf_consensus_filter(in_final_vcf, distance=1, AF=0.75, QD=15, window_10=3, dp_limit=8, dp_AF=10, AF_dp=0.80,
              highly_hetz=highly_hetz_bed, 
              non_genotyped=non_genotyped_bed, 
@@ -570,14 +600,14 @@ for r1_file, r2_file in zip(r1, r2):
 #######################################################
 output_vcfstat_file = os.path.join(out_table_dir, "vcf_stat.tab")
 if os.path.isfile(output_vcfstat_file):
-    print("\n" + YELLOW + DIM + output_vcfstat_file + " EXIST\nOmmiting Mixed search in group " + group_name + END_FORMATTING)
+    logger.info("\n" + YELLOW + DIM + output_vcfstat_file + " EXIST\nOmmiting Mixed search in group " + group_name + END_FORMATTING)
     samples_mixed = []
 else:
-    print(GREEN + "Finding Mixed samples in " + group_name + END_FORMATTING)
+    logger.info(GREEN + "Finding Mixed samples in " + group_name + END_FORMATTING)
     samples_mixed = vcf_stats(out_table_dir, distance=15, quality=10)
 
 if len(samples_mixed) > 0:
-    print("\n" + YELLOW + BOLD + "There are mixed sample(s): " + "\n"\
+    logger.info("\n" + YELLOW + BOLD + "There are mixed sample(s): " + "\n"\
          + ",".join(samples_mixed) + END_FORMATTING + "\n")
     remove_low_covered_mixed(args.output, samples_mixed, "Mixed")
     #Remove sample from the list of filtered samples
@@ -585,16 +615,16 @@ if len(samples_mixed) > 0:
     for samples_to_remove in samples_mixed:
         sample_list_F.remove(samples_to_remove)
 else:
-    print("\n" + YELLOW + BOLD + "No mixed samples have been detected" + "\n")
+    logger.info("\n" + YELLOW + BOLD + "No mixed samples have been detected" + "\n")
 
-print("\n\n" + MAGENTA + BOLD + "VARIANT CALL FINISHED IN GROUP: " + group_name + END_FORMATTING + "\n")
+logger.info("\n\n" + MAGENTA + BOLD + "VARIANT CALL FINISHED IN GROUP: " + group_name + END_FORMATTING + "\n")
 
 #######################################################################################################################################
 #################################END OF VARIANT CALLING################################################################################
 #######################################################################################################################################
 tuberculosis = False
 if tuberculosis == True:
-    print("\n\n" + BLUE + BOLD + "STARTING ANNOTATION IN GROUP: " + group_name + END_FORMATTING + "\n")
+    logger.info("\n\n" + BLUE + BOLD + "STARTING ANNOTATION IN GROUP: " + group_name + END_FORMATTING + "\n")
 
     for root, _, files in os.walk(out_vcf_dir):
         for name in files:
@@ -609,9 +639,9 @@ if tuberculosis == True:
                     output_annot_file = os.path.join(out_annot_dir, out_annot_name)
 
                     if os.path.isfile(output_annot_file):
-                        print(YELLOW + DIM + output_annot_file + " EXIST\nOmmiting Annotation for sample " + sample + END_FORMATTING)
+                        logger.info(YELLOW + DIM + output_annot_file + " EXIST\nOmmiting Annotation for sample " + sample + END_FORMATTING)
                     else:
-                        print(GREEN + "Annotating snps in sample " + sample + END_FORMATTING)
+                        logger.info(GREEN + "Annotating snps in sample " + sample + END_FORMATTING)
                         replace_reference(filename, output_path)
                         snpeff_annotation(args, output_path, database=args.snpeff_database)
                         #Handle output vcf file from SnpEff annotation
@@ -624,17 +654,16 @@ if tuberculosis == True:
                             final_annotation(annot_vcf)
 
 
-    print("\n\n" + MAGENTA + BOLD + "ANNOTATION FINISHED IN GROUP: " + group_name + END_FORMATTING + "\n")
+    logger.info("\n\n" + MAGENTA + BOLD + "ANNOTATION FINISHED IN GROUP: " + group_name + END_FORMATTING + "\n")
 else:
-    print("NO TB Selected, snpEff won't be executed")
+    logger.info("NO TB Selected, snpEff won't be executed")
 
 
 
 
-print("\n\n" + BLUE + BOLD + "STARTING COMPARISON IN GROUP: " + group_name + END_FORMATTING + "\n")
+logger.info("\n\n" + BLUE + BOLD + "STARTING COMPARISON IN GROUP: " + group_name + END_FORMATTING + "\n")
 
 check_create_dir(out_compare_dir)
-today = str(datetime.date.today())
 folder_compare = today + "_" + group_name
 path_compare = os.path.join(out_compare_dir, folder_compare)
 check_create_dir(path_compare)
@@ -645,16 +674,16 @@ compare_snp_matrix = full_path_compare + ".revised.tsv"
 ddtb_add(out_vcf_dir, full_path_compare, recalibrate=args.output)
 ddtb_compare(compare_snp_matrix)
 
-print("\n\n" + MAGENTA + BOLD + "COMPARING FINISHED IN GROUP: " + group_name + END_FORMATTING + "\n")
+logger.info("\n\n" + MAGENTA + BOLD + "COMPARING FINISHED IN GROUP: " + group_name + END_FORMATTING + "\n")
 
 
 if args.noclean == True:
-    print("\n\n" + BLUE + BOLD + "STARTING CLEANING IN GROUP: " + group_name + END_FORMATTING + "\n")
+    logger.info("\n\n" + BLUE + BOLD + "STARTING CLEANING IN GROUP: " + group_name + END_FORMATTING + "\n")
     clean_unwanted_files(args)
 else:
-    print("No cleaning was requested")
+    logger.info("No cleaning was requested")
 
-print("\n\n" + MAGENTA + BOLD + "#####END OF PIPELINE SNPTB#####" + END_FORMATTING + "\n")
+logger.info("\n\n" + MAGENTA + BOLD + "#####END OF PIPELINE SNPTB#####" + END_FORMATTING + "\n")
 
 #./snptb_runner.py -i /home/laura/ANALYSIS/Lofreq/coinfection_designed/raw -r reference/MTB_ancestorII_reference.fasta -o /home/laura/ANALYSIS/Lofreq/coinfection_designed/TEST -s sample_list.txt
 #/home/laura/DEVELOP/SNPTB/snptb_runner.py -i /home/laura/RAW/Mixtas_Italia/ -r /home/laura/DATABASES/REFERENCES/ancestorII/MTB_ancestorII_reference.fasta -o /home/laura/ANALYSIS/Lofreq/coinfection_italy/

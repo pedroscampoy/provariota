@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os
+import logging
 import sys
 import argparse
 import pandas as pd

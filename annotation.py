@@ -12,33 +12,11 @@ from tabulate import tabulate
 from misc import get_snpeff_path, check_create_dir
 from vcf_process import bed_to_df,bed_to_df, add_bed_info, annotate_bed_s, obtain_output_dir, calculate_ALT_AD, calculate_true_ALT
 
+logger = logging.getLogger()
+
+
 ##Import files containing annotation info and convert them to dictionary
-##TO DO: Compensatory mutations
-script_dir = os.path.dirname(os.path.realpath(__file__))
-
-annotation_dir = os.path.join(script_dir, "annotation/genes")
-annotation_dir_res = os.path.join(script_dir, "annotation/resistance")
-
-resistance_file_V1 = os.path.join(annotation_dir_res, "dict_position_resistance_v1.txt") #PhyResSE
-resistance_file_v2 = os.path.join(annotation_dir_res, "dict_position_resistance_v2_inf.txt") #Crated on 190718
-resistance_file_v3 = os.path.join(annotation_dir_res, "dict_position_resistance_v2.txt") #Crated on 190718
-high_confidence_file = os.path.join(annotation_dir_res, "dict_position_resistance_high_conf.txt")
-ecoli_annot_file = os.path.join(annotation_dir_res, "EColi.txt")
-
-
-def file_to_dict(file_format):
-    formatted_dict = {}
-    with open (file_format, 'r') as f:
-        for line in f:
-            formatted_dict[int(line.split(":")[0])] = line.split(":")[1].strip().split(",")
-    return formatted_dict
-
-
-dict_res_v1 = file_to_dict(resistance_file_V1)
-dict_res_v2 = file_to_dict(resistance_file_v2)
-dict_res_v3 = file_to_dict(resistance_file_v3)
-dict_high_conf = file_to_dict(high_confidence_file)
-dict_ecoli_annot = file_to_dict(ecoli_annot_file)
+#script_dir = os.path.dirname(os.path.realpath(__file__))
 
 
 def extract_reference_vcf(input_vcf):
@@ -202,153 +180,6 @@ def import_annot_to_pandas(vcf_file, sep='\t'):
     return dataframe
 
 
-def add_lineage_Coll(vcf_df):
-    dict_lineage_position = {
-        '615938' : ['A', '1'],
-        '4404247' : ['A', '1.1'],
-        '3021283' : ['A', '1.1.1'],
-        '3216553' : ['A', '1.1.1.1'],
-        '2622402' : ['A', '1.1.2'],
-        '1491275' : ['A', '1.1.3'],
-        '3479545' : ['A', '1.2.1'],
-        '3470377' : ['T', '1.2.2'],
-        '497491' : ['A', '2'],
-        '1881090' : ['T', '2.1'],
-        '2505085' : ['A', '2.2'],
-        '797736' : ['T', '2.2.1'],
-        '4248115' : ['T', '2.2.1.1'],
-        '3836274' : ['A', '2.2.1.2'],
-        '346693' : ['T', '2.2.2'],
-        '3273107' : ['A', '3'],
-        '1084911' : ['A', '3.1.1'],
-        '3722702' : ['C', '3.1.2'],
-        '1237818' : ['G', '3.1.2.1'],
-        '2874344' : ['A', '3.1.2.2'],
-        '931123' : ['T', '4'],
-        '62657' : ['A', '4.1'],
-        '514245' : ['T', '4.1.1'],
-        '1850119' : ['T', '4.1.1.1'],
-        '541048' : ['G', '4.1.1.2'],
-        '4229087' : ['T', '4.1.1.3'],
-        '891756' : ['G', '4.1.2'],
-        '107794' : ['T', '4.1.2.1'],
-        '2411730' : ['C', '4.2'],
-        '783601' : ['C', '4.2.1'],
-        '1487796' : ['A', '4.2.2'],
-        '1455780' : ['C', '4.2.2.1'],
-        '764995' : ['G', '4.3'],
-        '615614' : ['A', '4.3.1'],
-        '4316114' : ['A', '4.3.2'],
-        '3388166' : ['G', '4.3.2.1'],
-        '403364' : ['A', '4.3.3'],
-        '3977226' : ['A', '4.3.4'],
-        '4398141' : ['A', '4.3.4.1'],
-        '1132368' : ['T', '4.3.4.2'],
-        '1502120' : ['A', '4.3.4.2.1'],
-        '4307886' : ['A', '4.4'],
-        '4151558' : ['A', '4.4.1'],
-        '355181' : ['A', '4.4.1.1'],
-        '2694560' : ['C', '4.4.1.2'],
-        '4246508' : ['A', '4.4.2'],
-        '1719757' : ['T', '4.5'],
-        '3466426' : ['A', '4.6'],
-        '4260268' : ['C', '4.6.1'],
-        '874787' : ['A', '4.6.1.1'],
-        '1501468' : ['C', '4.6.1.2'],
-        '4125058' : ['C', '4.6.2'],
-        '3570528' : ['G', '4.6.2.1'],
-        '2875883' : ['T', '4.6.2.2'],
-        '4249732' : ['G', '4.7'],
-        '3836739' : ['A', '4.8'],
-        '1759252' : ['G', '4.9'],
-        '1799921' : ['A', '5'],
-        '1816587' : ['G', '6'],
-        '1137518' : ['A', '7'],
-        '2831482' : ['G', 'MTB_BOVIS'],
-        '1882180' : ['T', 'BOV_AFRI']
-                }
-    list_lineage = []
-    
-    vcf_df['Lineage'] = np.nan
-
-    for index, _ in vcf_df.iterrows():
-        position = str(vcf_df.loc[index,'POS'])
-        if position in dict_lineage_position.keys():
-            if str(vcf_df.loc[index,'ALT']) == dict_lineage_position[str(position)][0]:
-                lineage = dict_lineage_position[str(position)][1]
-                vcf_df.loc[index,'Lineage'] = lineage
-                list_lineage.append(lineage)
-                
-    if len(list_lineage) > 0:
-        list_lineage.sort(reverse=True)
-        asterix = ""
-        for sublineage_n in range(len(list_lineage)):
-            if sublineage_n < (len(list_lineage) - 1):
-                if str(list_lineage[sublineage_n]).startswith(str(list_lineage[sublineage_n + 1])):
-                    asterix = asterix + "*"
-        final_lineage = list_lineage[0] + " " + asterix
-        print("This strain has lineage position(s):\n: " + " ".join([list_lineage[0],asterix]))
-        return final_lineage
-    else:
-        print("No lineage were found\n")
-
-
-def add_resistance_snp(vcf_df, dict_high_confidence=dict_high_conf, dict_resistance_position=dict_res_v1,
-                       dict_resistance_v2=dict_res_v2, dict_ecoli_annot=dict_ecoli_annot):
-    
-    """
-    TODO:Function for REs_v1, Res_V2 and ecoli
-    """
-    
-    vcf_df['Resistance'] = np.nan
-    vcf_df['Resistance_inf'] = np.nan
-    vcf_df['ecoli_annot'] = np.nan
-
-    for index, _ in vcf_df.iterrows():
-        position = int(vcf_df.loc[index,'POS'])
-        alt_nucleotide = str(vcf_df.loc[index,'ALT'])
-        
-        if position in dict_resistance_position.keys():
-            #Check position in resistance dict
-            #Create a list with all possible nucleotydes in each position
-            nucleotides = dict_resistance_position[position][1:]
-            if alt_nucleotide in nucleotides:
-                resistance = dict_resistance_position[int(position)][0] #Resist name
-                vcf_df.loc[index, 'Resistance'] = resistance
-                #Evaluate High confidence (1.Position; 2. Nucleotide; 3. yes value)
-                if position in dict_high_confidence.keys() and \
-                (alt_nucleotide in dict_high_confidence[int(position)][1:] and \
-                dict_high_confidence[int(position)][0] == 'no'):
-                    vcf_df.loc[index,'Resistance'] = resistance + "*"
-                    
-        if position in dict_resistance_v2.keys():
-            #Check position in resistance dict
-            #Create a list with all possible nucleotydes in each position
-            nucleotides = dict_resistance_v2[position][1:]
-            if alt_nucleotide in nucleotides:
-                resistance_2 = dict_resistance_v2[int(position)][0] #Resist name
-                vcf_df.loc[index, 'Resistance_inf'] = resistance_2
-                
-        if position in dict_ecoli_annot.keys():
-            #Check position in resistance dict
-            #Create a list with all possible nucleotydes in each position
-            nucleotides = dict_ecoli_annot[position][1:]
-            if alt_nucleotide in nucleotides:
-                resistance_eco = dict_ecoli_annot[int(position)][0] #Resist name
-                vcf_df.loc[index, 'ecoli_annot'] = resistance_eco
-
-"""
-def add_essential_cateory(row, dict_essential=dict_essential):
-    if row.Gene_ID in dict_essential.keys():
-        if dict_essential[row.Gene_ID] == "essential":
-            return "essential"
-        else:
-            return "nonessential"
-
-def add_product_cateory(row, dict_product=dict_product):
-    if row.Gene_ID in dict_product.keys():
-        return dict_product[row.Gene_ID]
-"""
 
 def final_annotation(vcf_file_annot, *bed_files):
     """
@@ -369,10 +200,9 @@ def final_annotation(vcf_file_annot, *bed_files):
     annotate_bed_s(df_vcf, *bed_files)
 
     #Add lineage info 
-    add_lineage_Coll(df_vcf)
+    #add_lineage_Coll(df_vcf)
 
     #Add resistance info
-    add_resistance_snp(df_vcf)
 
     #Retrieve only annotation fields
     #df_vcf_annot = df_vcf[['#CHROM', 'POS', 'ID', 'REF', 'ALT','Annotation',

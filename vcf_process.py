@@ -13,6 +13,9 @@ from misc import check_file_exists, obtain_output_dir, check_create_dir, get_pic
 list_to_bed, count_lines
 
 
+logger = logging.getLogger()
+
+
 def calculate_ALT_AD(row):
     split_AD = row.AD.split(",")[1:]
     split_AD = [int(x) for x in split_AD]
@@ -645,7 +648,7 @@ def poorly_covered_to_bed(coverage_folder, output_file_name, reference="CHROM", 
     list_uncovered = identify_uncovered(coverage_folder, min_coverage=2, nocall_fr=nocall_fr)
     list_to_bed(list_uncovered, coverage_folder, output_file_name, reference)
 
-def vcf_consensus_filter(vcf_file, distance=1, AF=0.75, QD=15, window_10=3, dp_limit=8, dp_AF=10, AF_dp=0.80, 
+def vcf_consensus_filter(vcf_file, distance=1, AF=0.80, QD=15, window_10=3, dp_limit=8, dp_AF=10, AF_dp=0.80, 
     highly_hetz=False, non_genotyped=False, poorly_covered=False, var_type="SNP"):
     """
     Apply custom filter to individual vcf based on:

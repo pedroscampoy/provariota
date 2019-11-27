@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os
+import logging
 import pandas as pd
 import argparse
 import sys
@@ -14,6 +15,10 @@ import scipy.spatial.distance as ssd #pdist
 
 from misc import check_file_exists, import_to_pandas, check_create_dir
 from vcf_process import import_VCF42_cohort_pandas
+
+
+logger = logging.getLogger()
+
 
 END_FORMATTING = '\033[0m'
 WHITE_BG = '\033[0;30;47m'
@@ -53,7 +58,7 @@ def import_VCF4_to_pandas(vcf_file, sep='\t'):
         next_line = f.readline().strip()
         while next_line.startswith("##"):
             header_lines = header_lines + 1
-            #print(next_line)
+            #logger.info(next_line)
             next_line = f.readline()
     
     if first_line.endswith('VCFv4.2'):
@@ -65,7 +70,7 @@ def import_VCF4_to_pandas(vcf_file, sep='\t'):
         dataframe['POS'] = dataframe['POS'].astype(int)
         
     else:
-        print("This vcf file is not v4.2")
+        logger.info("This vcf file is not v4.2")
         sys.exit(1)
            
     return dataframe
@@ -142,7 +147,7 @@ def identify_nongenotyped_mpileup(reference_file, row_position, sample_list_matr
     else:
         indices_ng = [i for i, x in enumerate(list_presence) if x == "!"]
         for index in indices_ng:
-            #print(reference_file, row_position, sample_list_matrix[index], bam_folder)
+            #logger.info(reference_file, row_position, sample_list_matrix[index], bam_folder)
             list_presence[index] = recheck_variant_mpileup(reference_file, row_position, sample_list_matrix[index], bam_folder)
         #new_list_presence = [mode if x == "!" else x for x in list_presence]
         return list_presence
@@ -151,7 +156,7 @@ def extract_recalibrate_params(pipeline_folder, reference=False):
     cohort_file = ""
     pipeline_folder = os.path.abspath(pipeline_folder)
     for root, dirs, _ in os.walk(pipeline_folder):
-        #print(pipeline_folder, root)
+        #logger.info(pipeline_folder, root)
         if root == pipeline_folder:
             for directory in dirs:
                 subfolder = os.path.join(root, directory)
@@ -172,7 +177,7 @@ def extract_recalibrate_params(pipeline_folder, reference=False):
     if cohort_file:
         return (cohort_file, bam_folder, reference_file)
     else:
-        print(RED + "cohort.combined.hf.vcf not found, wait for pipeline to finish" + END_FORMATTING)
+        logger.info(RED + "cohort.combined.hf.vcf not found, wait for pipeline to finish" + END_FORMATTING)
         sys.exit(1)
                     
 
@@ -193,11 +198,11 @@ def recalibrate_ddbb_vcf(snp_matrix_ddbb, vcf_cohort, bam_folder, reference_file
     for index, data_row in df_matrix[df_matrix.N < n_samples].iloc[:,3:].iterrows():
         #Extract its position
         row_position = int(df_matrix.loc[index,"Position"])
-        #print(data_row.values)
+        #logger.info(data_row.values)
         #Use enumerate to retrieve column index (column ondex + 3)
         presence_row = [recheck_variant(df_cohort.loc[df_cohort.POS == row_position, df_matrix.columns[n + 3]].item()) \
                            for n,x in enumerate(data_row)]
-        #print(presence_row, row_position)
+        #logger.info(presence_row, row_position)
         #Resolve non genotyped using gvcf files
         new_presence_row = identify_nongenotyped_mpileup(reference_file, row_position, sample_list_matrix, presence_row, bam_folder)
         
@@ -208,8 +213,8 @@ def recalibrate_ddbb_vcf(snp_matrix_ddbb, vcf_cohort, bam_folder, reference_file
         else:
             df_matrix.iloc[index, 3:] = new_presence_row
             df_matrix.loc[index, 'N'] = sum(new_presence_row)
-        #print(new_presence_row)
-        #print("\n")
+        #logger.info(new_presence_row)
+        #logger.info("\n")
     #Remove all rows at once to avoid interfering with index during for loop
     df_matrix.drop(index=list_index_dropped, axis=0, inplace=True)
     
@@ -222,7 +227,7 @@ def ddtb_add(input_folder, output_filename, recalibrate=False, sample_filter=Fal
 
     #Make sure output exist to force change name
     if os.path.isfile(output_filename):
-        print(YELLOW + "ERROR: " + BOLD + "output database EXIST, choose a different name or manually delete" + END_FORMATTING)
+        logger.info(YELLOW + "ERROR: " + BOLD + "output database EXIST, choose a different name or manually delete" + END_FORMATTING)
         sys.exit(1)
 
     final_ddbb = blank_database()
@@ -241,14 +246,14 @@ def ddtb_add(input_folder, output_filename, recalibrate=False, sample_filter=Fal
             "Sample file don't exist"
             sys.exit(1)
     
-    print(sample_filter_list)
+    logger.info(sample_filter_list)
 
     if len(sample_filter_list) < 1:
-        print("prease provide 2 or more samples")
+        logger.info("prease provide 2 or more samples")
         sys.exit(1)
 
-    #print("Previous final database contains %s rows and %s columns\n" % final_ddbb.shape)
-    print("The directory selected is: %s" % directory)
+    #logger.info("Previous final database contains %s rows and %s columns\n" % final_ddbb.shape)
+    logger.info("The directory selected is: %s" % directory)
     
 
     all_samples = 0
@@ -263,7 +268,7 @@ def ddtb_add(input_folder, output_filename, recalibrate=False, sample_filter=Fal
             sample = filename.split(".")[0] #Manage sample name
 
             if sample in sample_filter_list:
-                print("\nThe file is: %s" % filename)
+                logger.info("\nThe file is: %s" % filename)
 
             
                 file = os.path.join(directory, filename) #Whole file path
@@ -274,7 +279,7 @@ def ddtb_add(input_folder, output_filename, recalibrate=False, sample_filter=Fal
                 #Check if sample exist
                 ######################
                 if sample not in final_ddbb.columns.tolist():
-                    print("Adding new sample %s to %s" % (sample, os.path.basename(output_filename)))
+                    logger.info("Adding new sample %s to %s" % (sample, os.path.basename(output_filename)))
                     new_samples = new_samples + 1
                     new_colum_index = len(final_ddbb.columns) #extract the number of columns to insert a new one
                     #final_ddbb[sample] = sample #adds a new column but fills all blanks with the value sample
@@ -307,17 +312,17 @@ def ddtb_add(input_folder, output_filename, recalibrate=False, sample_filter=Fal
                             final_ddbb.loc[index_position,'Samples'] = new_names_samples
                             final_ddbb.loc[index_position,sample] = str(1) #Add "1" in cell with correct position vs sample (indicate present)
 
-                    print("\nSAMPLE:\t%s\nTOTAL Variants:\t%s\nShared Variants:\t%s\nNew Variants:\t%s\n"
+                    logger.info("\nSAMPLE:\t%s\nTOTAL Variants:\t%s\nShared Variants:\t%s\nNew Variants:\t%s\n"
                     % (sample, len(new_sample.index), len(positions_shared), len(positions_added)))
                 else:
-                    print(YELLOW + "The sample " + sample + " ALREADY exist" + END_FORMATTING)
+                    logger.info(YELLOW + "The sample " + sample + " ALREADY exist" + END_FORMATTING)
 
-    #final_ddbb = final_ddbb.fillna(0).sort_values("Position") 
+    final_ddbb = final_ddbb.fillna(0).sort_values("Position") 
     final_ddbb["Position"] = final_ddbb["Position"].astype(int) #TO REMOVE when nucleotides are added
     final_ddbb['N'] = final_ddbb['N'].astype(int)
     #final_ddbb = final_ddbb.reset_index(drop=True)
 
-    print("Final database now contains %s rows and %s columns" % final_ddbb.shape)
+    logger.info("Final database now contains %s rows and %s columns" % final_ddbb.shape)
     if recalibrate == False:
         output_filename = output_filename + ".tsv"
         final_ddbb.to_csv(output_filename, sep='\t', index=False)
@@ -325,8 +330,8 @@ def ddtb_add(input_folder, output_filename, recalibrate=False, sample_filter=Fal
         recalibrate = os.path.abspath(recalibrate)
         if os.path.exists(recalibrate):
             recalibrate_params = extract_recalibrate_params(recalibrate)
-            print("\n" + MAGENTA + "Recalibration selected" + END_FORMATTING)
-            print(output_filename)
+            logger.info("\n" + MAGENTA + "Recalibration selected" + END_FORMATTING)
+            logger.info(output_filename)
             output_filename = output_filename + ".revised.tsv"
 
             final_ddbb_revised = recalibrate_ddbb_vcf(final_ddbb, recalibrate_params[0], recalibrate_params[1], recalibrate_params[2])
@@ -339,15 +344,15 @@ def ddtb_add(input_folder, output_filename, recalibrate=False, sample_filter=Fal
             """
             final_ddbb_revised.to_csv(output_filename, sep='\t', index=False)
         else:
-            print("The directory supplied for recalculation does not exixt")
+            logger.info("The directory supplied for recalculation does not exixt")
             sys.exit(1)
-    print(output_filename)
+    logger.info(output_filename)
 
     #Create small report with basic count
     #####################################
             
-    print("\n" + GREEN + "Position check Finished" + END_FORMATTING)
-    print(GREEN + "Added " + str(new_samples) + " samples out of " + str(all_samples) + END_FORMATTING + "\n")
+    logger.info("\n" + GREEN + "Position check Finished" + END_FORMATTING)
+    logger.info(GREEN + "Added " + str(new_samples) + " samples out of " + str(all_samples) + END_FORMATTING + "\n")
 
 
     ###########################COMPARE FUNCTIONS#####################################################################
@@ -419,7 +424,7 @@ def linkage_to_newick(dataframe, output_file):
     tree = shc.to_tree(Z, False)
     def buildNewick(node, newick, parentdist, leaf_names):
         if node.is_leaf():
-            #print("%s:%f%s" % (leaf_names[node.id], parentdist - node.dist, newick))
+            #logger.info("%s:%f%s" % (leaf_names[node.id], parentdist - node.dist, newick))
             return "%s:%f%s" % (leaf_names[node.id], parentdist - node.dist, newick)
         else:
             if len(newick) > 0:
@@ -429,7 +434,7 @@ def linkage_to_newick(dataframe, output_file):
             newick = buildNewick(node.get_left(), newick, node.dist, leaf_names)
             newick = buildNewick(node.get_right(), ",%s" % (newick), node.dist, leaf_names)
             newick = "(%s" % (newick)
-            #print(newick)
+            #logger.info(newick)
             return newick
 
     with open(output_file, 'w') as f:
@@ -448,28 +453,28 @@ def matrix_to_rdf(snp_matrix, output_name):
     with open(output_name, 'w+') as fout:
         snp_number = snp_matrix.shape[0]
         first_line = "  ;1.0\n"
-        #print(first_line)
+        #logger.info(first_line)
         fout.write(first_line)
         snp_list = snp_matrix.Position.astype(int).tolist()
         snp_list = " ;".join([str(x) for x in snp_list]) + " ;\n"
-        #print(snp_list)
+        #logger.info(snp_list)
         fout.write(snp_list)
         third_line = ("10;" * snp_number) + "\n"
-        #print(third_line)
+        #logger.info(third_line)
         fout.write(third_line)
         transposed_snp_matrix = snp_matrix.T
         for index, row in transposed_snp_matrix.iloc[3:,:].iterrows():
             sample_header = ">"+ index+";1;;;;;;;\n"
-            #print(sample_header)
+            #logger.info(sample_header)
             fout.write(sample_header)
             snp_row = "".join([str(x) for x in row.tolist()]) + "\n"
-            #print(snp_row)
+            #logger.info(snp_row)
             fout.write(snp_row)
         ref_header = ">REF;1;;;;;;;\n"
-        #print(ref_header)
+        #logger.info(ref_header)
         fout.write(ref_header)
         ref_snp = "0" * snp_number
-        #print(ref_snp)
+        #logger.info(ref_snp)
         fout.write(ref_snp)
 
 def matrix_to_common(snp_matrix, output_name):
@@ -487,7 +492,7 @@ def matrix_to_common(snp_matrix, output_name):
             fout.write("Position\n")
             fout.write(line)
     else:
-        print("No common SNPs were found")
+        logger.info("No common SNPs were found")
 
 def ddtb_compare(final_database):
 
@@ -497,54 +502,54 @@ def ddtb_compare(final_database):
 
     output_path = database_file.split(".")[0]
 
-    print("Output path is: " + output_path)
+    logger.info("Output path is: " + output_path)
 
 
-    print(BLUE + BOLD + "Comparing all samples in " + database_file + END_FORMATTING)
+    logger.info(BLUE + BOLD + "Comparing all samples in " + database_file + END_FORMATTING)
     prior_pairwise = datetime.datetime.now()
 
     #Calculate pairwise snp distance for all and save file
-    print(CYAN + "Pairwise distance" + END_FORMATTING)
+    logger.info(CYAN + "Pairwise distance" + END_FORMATTING)
     pairwise_file = output_path + ".snp.pairwise.tsv"
     snp_distance_pairwise(presence_ddbb, pairwise_file)
     after_pairwise = datetime.datetime.now()
-    print("Done with pairwise in: %s" % (after_pairwise - prior_pairwise))
+    logger.info("Done with pairwise in: %s" % (after_pairwise - prior_pairwise))
 
     #Calculate snp distance for all and save file
-    print(CYAN + "SNP distance" + END_FORMATTING)
+    logger.info(CYAN + "SNP distance" + END_FORMATTING)
     snp_dist_file = output_path + ".snp.tsv"
     snp_distance_matrix(presence_ddbb, snp_dist_file)
 
     #Calculate hamming distance for all and save file
-    print(CYAN + "Hamming distance" + END_FORMATTING)
+    logger.info(CYAN + "Hamming distance" + END_FORMATTING)
     hmm_dist_file = output_path + ".hamming.tsv"
     hamming_distance_matrix(presence_ddbb, hmm_dist_file)
     """
     #Represent pairwise snp distance for all and save file
-    print(CYAN + "Drawing distance" + END_FORMATTING)
+    logger.info(CYAN + "Drawing distance" + END_FORMATTING)
     prior_represent = datetime.datetime.now()
     png_dist_file = output_path + ".snp.distance.png"
     #clustermap_dataframe(presence_ddbb, png_dist_file)
     after_represent = datetime.datetime.now()
-    print("Done with distance drawing in: %s" % (after_represent - prior_represent))
+    logger.info("Done with distance drawing in: %s" % (after_represent - prior_represent))
     """
     #Represent dendrogram snp distance for all and save file
-    print(CYAN + "Drawing dendrogram" + END_FORMATTING)
+    logger.info(CYAN + "Drawing dendrogram" + END_FORMATTING)
     png_dend_file = output_path + ".snp.dendrogram.png"
     dendogram_dataframe(presence_ddbb, png_dend_file)
 
     #Output a Newick file distance for all and save file
-    print(CYAN + "Newick dendrogram" + END_FORMATTING)
+    logger.info(CYAN + "Newick dendrogram" + END_FORMATTING)
     newick_file = output_path + ".nwk"
     linkage_to_newick(presence_ddbb, newick_file)
 
     #Output a binary snp matrix distance in rdf format
-    print(CYAN + "rdf format" + END_FORMATTING)
+    logger.info(CYAN + "rdf format" + END_FORMATTING)
     rdf_file = output_path + ".rdf"
     matrix_to_rdf(presence_ddbb, rdf_file)
 
     #Output a list of all common snps in group compared
-    print(CYAN + "Common SNPs" + END_FORMATTING)
+    logger.info(CYAN + "Common SNPs" + END_FORMATTING)
     common_file = output_path + ".common.txt"
     matrix_to_common(presence_ddbb, common_file)
 
@@ -552,10 +557,10 @@ def ddtb_compare(final_database):
 
 
 if __name__ == '__main__':
-    print("#################### COMPARE SNPS #########################")
+    logger.info("#################### COMPARE SNPS #########################")
 
     args = get_arguments()
-    print(args)
+    logger.info(args)
 
     if args.recalibrate == False:
         compare_snp_matrix = args.output + ".tsv"

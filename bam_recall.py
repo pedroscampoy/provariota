@@ -8,6 +8,7 @@ import shutil
 from misc import check_file_exists, obtain_output_dir, check_create_dir, get_picard_path, execute_subprocess, check_remove_file, \
     longest_common_suffix
 
+logger = logging.getLogger()
 
 
 """
@@ -139,7 +140,7 @@ def picard_dictionary(args):
     out_param = "O=" + dict_file_name
 
     if os.path.exists(dict_file_name):
-        print(dict_file_name + " already EXIST")
+        logger.info(dict_file_name + " already EXIST")
     else:
         cmd = ["picard", "CreateSequenceDictionary", 
         ref_param, out_param]
@@ -153,7 +154,7 @@ def samtools_faidx(args):
     fai_file_name = input_reference + ".fai"
 
     if os.path.exists(fai_file_name):
-        print(fai_file_name + " already EXIST")
+        logger.info(fai_file_name + " already EXIST")
     else:
         cmd = ["samtools", "faidx", input_reference]
         execute_subprocess(cmd)
@@ -287,7 +288,7 @@ def select_variants(raw_vcf, select_type='SNP'):
     elif select_type == "INDEL":
         extension = ".indel.vcf"
     else:
-        print(RED + BOLD + "Choose a correct type to filter" + END_FORMATTING)
+        logger.info(RED + BOLD + "Choose a correct type to filter" + END_FORMATTING)
 
     input_vcf = os.path.abspath(raw_vcf)
     check_file_exists(input_vcf)
@@ -360,7 +361,7 @@ def hard_filter(selected_vcf, select_type='SNP'):
             "--filter-expression", "ReadPosRankSum < -20.0", "--filter-name", "ReadPosRankSum-20",
             "--output", vcf_hard_filtered_output_file]
     else:
-        print(RED + BOLD + "Choose a correct type to filter" + END_FORMATTING)
+        logger.info(RED + BOLD + "Choose a correct type to filter" + END_FORMATTING)
 
     execute_subprocess(cmd)
 
@@ -402,7 +403,7 @@ def combine_gvcf(args, recalibrate=False, all_gvcf=False):
     if all_gvcf != False:
         if os.path.isdir(all_gvcf):
             all_gvcf = os.path.abspath(all_gvcf)
-            print("Using gvcf from enricment folder:" + all_gvcf)
+            logger.info("Using gvcf from enricment folder:" + all_gvcf)
             for root, _, files in os.walk(all_gvcf):
                 for name in files:
                     filename = os.path.join(root, name)
@@ -410,7 +411,7 @@ def combine_gvcf(args, recalibrate=False, all_gvcf=False):
                         cmd.append("--variant")
                         cmd.append(filename)
         else:
-            print("GVCF enrichment folder does not exist")
+            logger.info("GVCF enrichment folder does not exist")
 
     execute_subprocess(cmd)
 
@@ -653,9 +654,9 @@ def combine_gvcf_folder(args, gvcf_input_dir, sample_list=False):
                     cmd.append("--variant")
                     cmd.append(filename)
     else:
-        print("GVCF enrichment folder does not exist")
+        logger.info("GVCF enrichment folder does not exist")
 
     execute_subprocess(cmd)
 
 if __name__ == '__main__':
-    print("#################### BAM RECALL #########################")
+    logger.info("#################### BAM RECALL #########################")

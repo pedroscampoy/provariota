@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os
+import logging
 import sys
 import argparse
 import pandas as pd
@@ -8,6 +9,9 @@ import numpy as np
 import re
 import subprocess
 from misc import check_create_dir, obtain_output_dir, extract_sample
+
+logger = logging.getLogger()
+
 
 """
 =============================================================
@@ -93,7 +97,7 @@ def mash_screen(args, winner=True, r2=False, mash_database="/home/laura/DATABASE
     #identity, shared-hashes, median-multiplicity, p-value, query-ID, query-comment
 
     if not os.path.isfile(mash_database):
-        print(RED + BOLD + "Mash database can't be found\n" + END_FORMATTING + "You can download it typing:\n\
+        logger.info(RED + BOLD + "Mash database can't be found\n" + END_FORMATTING + "You can download it typing:\n\
             wget https://gembox.cbcb.umd.edu/mash/refseq.genomes.k21s1000.msh")
         sys.exit(1)
 
@@ -129,7 +133,7 @@ def mash_screen(args, winner=True, r2=False, mash_database="/home/laura/DATABASE
             command = subprocess.run(cmd,
             stdout=outfile, stderr=subprocess.PIPE, universal_newlines=True)
         if command.returncode == 0:
-            print(GREEN + "Program %s successfully executed" % prog + END_FORMATTING)
+            logger.info(GREEN + "Program %s successfully executed" % prog + END_FORMATTING)
         else:
             print (RED + BOLD + "Command %s FAILED\n" % prog + END_FORMATTING
                 + BOLD + "WITH PARAMETERS: " + END_FORMATTING + " ".join(param) + "\n"
@@ -208,7 +212,7 @@ def extract_species_from_screen(screen_file, identity_threshold=0.9):
 
 
 if __name__ == '__main__':
-    print("#################### SPECIES #########################")
+    logger.info("#################### SPECIES #########################")
     args = get_arguments()
     #zcat_concat_reads(args)
     mash_screen(args, winner=True, r2=False, mash_database="/home/laura/DATABASES/Mash/refseq.genomes.k21s1000.msh")

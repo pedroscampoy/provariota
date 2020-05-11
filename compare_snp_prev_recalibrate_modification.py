@@ -104,7 +104,10 @@ def recheck_variant(format_sample):
             
     return value
 
-def recheck_variant_mpileup(reference_file, whole_position, sample, bam_folder):
+def recheck_variant_mpileup(reference_file, position, sample, bam_folder):
+    #Find reference name
+    with open(reference_file) as f:
+        reference = f.readline().split(" ")[0].strip(">").strip()
     #Identify correct bam
     for root, _, files in os.walk(bam_folder):
         for name in files:
@@ -112,31 +115,25 @@ def recheck_variant_mpileup(reference_file, whole_position, sample, bam_folder):
             if name.startswith(sample) and name.endswith(".bqsr.bam"):
                 bam_file = filename
     #format position for mpileuo execution (NC_000962.3:632455-632455)
-    row_position = int(whole_position.split('|')[2])
-    row_reference = whole_position.split('|')[0]
-    position = row_reference + ":" + str(row_position) + "-" + str(row_position)
+    position = reference + ":" + str(position) + "-" + str(position)
     
     #Execute command and retrieve output
     cmd = ["samtools", "mpileup", "-f", reference_file, "-aa", "-r", position, bam_file]
-    #print(cmd)
+    print(cmd)
     text_mpileup = subprocess.run(cmd,stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True, universal_newlines=True) 
     
     #Extract 5th column to find variants
     variant = text_mpileup.stdout.split()[4]
     var_list = list(variant)
-    logger.info(var_list)
-
     
     most_freq_var = max(set(var_list), key = var_list.count).upper()
-
-    logger.info(most_freq_var)
         
     if most_freq_var == "." or most_freq_var == "," or most_freq_var == "*":
         return 0
     else:
         return 1
 
-def identify_nongenotyped_mpileup(reference_file, whole_position, sample_list_matrix, list_presence, bam_folder):
+def identify_nongenotyped_mpileup(reference_file, row_position, sample_list_matrix, list_presence, bam_folder):
     """
     Replace nongenotyped ("!") with the most abundant genotype
     """
@@ -152,9 +149,8 @@ def identify_nongenotyped_mpileup(reference_file, whole_position, sample_list_ma
     else:
         indices_ng = [i for i, x in enumerate(list_presence) if x == "!"]
         for index in indices_ng:
-            #logger.info('identify_nongenotyped_mpileup:')
-            #logger.info(reference_file, whole_position, sample_list_matrix[index], bam_folder)
-            list_presence[index] = recheck_variant_mpileup(reference_file, whole_position, sample_list_matrix[index], bam_folder)
+            logger.info(reference_file, row_position, sample_list_matrix[index], bam_folder)
+            list_presence[index] = recheck_variant_mpileup(reference_file, row_position, sample_list_matrix[index], bam_folder)
         #new_list_presence = [mode if x == "!" else x for x in list_presence]
         return list_presence
 
@@ -204,16 +200,16 @@ def recalibrate_ddbb_vcf(snp_matrix_ddbb, vcf_cohort, bam_folder, reference_file
     for index, data_row in df_matrix[df_matrix.N < n_samples].iloc[:,3:].iterrows():
         #Extract its position
         whole_position = df_matrix.loc[index,"Position"]
-        row_position = int(whole_position.split('|')[2])
-        row_reference = whole_position.split('|')[0]
-        logger.info('ROW POSITION ' + str(row_position))
+        row_position = whole_position.split('|')[2]
+        #logger.info(data_row.values)
         #Use enumerate to retrieve column index (column ondex + 3)
-        presence_row = [recheck_variant(df_cohort.loc[((df_cohort.POS == row_position) & (df_cohort['#CHROM'] == row_reference)), df_matrix.columns[n + 3]].tolist()[0]) for n,x in enumerate(data_row)]
-        logger.info(presence_row)
+        presence_row = [recheck_variant(df_cohort.loc[df_cohort.POS == row_position, df_matrix.columns[n + 3]].item()) \
+                           for n,x in enumerate(data_row)]
+        #logger.info(presence_row, row_position)
         #Resolve non genotyped using gvcf files
-
-        new_presence_row = identify_nongenotyped_mpileup(reference_file, whole_position, sample_list_matrix, presence_row, bam_folder)
-        logger.info(new_presence_row)
+        logger.info(reference_file, row_position, sample_list_matrix, presence_row, bam_folder)
+        new_presence_row = identify_nongenotyped_mpileup(reference_file, row_position, sample_list_matrix, presence_row, bam_folder)
+        
         #find positions with 20% of nongenotyped and delete them OR
         #reasign positions without nongenotyped positions 
         if new_presence_row == 'delete':
@@ -384,25 +380,25 @@ def snp_distance_pairwise(dataframe, output_file):
                     f.write(line_distance)
 
 def snp_distance_matrix(dataframe, output_file):
-    dataframe_only_samples = dataframe.set_index(dataframe['Position']).drop(['Position','N','Samples'], axis=1) #extract three first colums and use 'Position' as index
+    dataframe_only_samples = dataframe.set_index(dataframe['Position'].astype(int)).drop(['Position','N','Samples'], axis=1) #extract three first colums and use 'Position' as index
     hamming_distance = pairwise_distances(dataframe_only_samples.T, metric = "hamming") #dataframe.T means transposed
     snp_distance_df = pd.DataFrame(hamming_distance * len(dataframe_only_samples.index), index=dataframe_only_samples.columns, columns=dataframe_only_samples.columns) #Add index
     snp_distance_df = snp_distance_df.astype(int)
     snp_distance_df.to_csv(output_file, sep='\t', index=True)
 
 def hamming_distance_matrix(dataframe, output_file):
-    dataframe_only_samples = dataframe.set_index(dataframe['Position']).drop(['Position','N','Samples'], axis=1) #extract three first colums and use 'Position' as index
+    dataframe_only_samples = dataframe.set_index(dataframe['Position'].astype(int)).drop(['Position','N','Samples'], axis=1) #extract three first colums and use 'Position' as index
     hamming_distance = pairwise_distances(dataframe_only_samples.T, metric = "hamming") #dataframe.T means transposed
     hamming_distance_df = pd.DataFrame(hamming_distance, index=dataframe_only_samples.columns, columns=dataframe_only_samples.columns) #Add index
     hamming_distance_df.to_csv(output_file, sep='\t', index=True)
 
 def clustermap_dataframe(dataframe, output_file):
-    dataframe_only_samples = dataframe.set_index(dataframe['Position']).drop(['Position','N','Samples'], axis=1) #extract three first colums and use 'Position' as index
+    dataframe_only_samples = dataframe.set_index(dataframe['Position'].astype(int)).drop(['Position','N','Samples'], axis=1) #extract three first colums and use 'Position' as index
     sns.clustermap(dataframe_only_samples, annot=False, cmap="YlGnBu", figsize=(13, 13))
     plt.savefig(output_file, format="png")
 
 def dendogram_dataframe(dataframe, output_file):
-    dataframe_only_samples = dataframe.set_index(dataframe['Position']).drop(['Position','N','Samples'], axis=1) #extract three first colums and use 'Position' as index
+    dataframe_only_samples = dataframe.set_index(dataframe['Position'].astype(int)).drop(['Position','N','Samples'], axis=1) #extract three first colums and use 'Position' as index
     labelList = dataframe_only_samples.columns.tolist()
     Z = shc.linkage(dataframe_only_samples.T, method='average') #method='single'
 
@@ -426,7 +422,7 @@ def linkage_to_newick(dataframe, output_file):
     Input :  Z = linkage matrix, labels = leaf labels
     Output:  Newick formatted tree string
     """
-    dataframe_only_samples = dataframe.set_index(dataframe['Position']).drop(['Position','N','Samples'], axis=1) #extract three first colums and use 'Position' as index
+    dataframe_only_samples = dataframe.set_index(dataframe['Position'].astype(int)).drop(['Position','N','Samples'], axis=1) #extract three first colums and use 'Position' as index
     labelList = dataframe_only_samples.columns.tolist()
     Z = shc.linkage(dataframe_only_samples.T, method='average')
 
@@ -464,7 +460,7 @@ def matrix_to_rdf(snp_matrix, output_name):
         first_line = "  ;1.0\n"
         #logger.info(first_line)
         fout.write(first_line)
-        snp_list = snp_matrix.Position.tolist()
+        snp_list = snp_matrix.Position.astype(int).tolist()
         snp_list = " ;".join([str(x) for x in snp_list]) + " ;\n"
         #logger.info(snp_list)
         fout.write(snp_list)
@@ -496,7 +492,7 @@ def matrix_to_common(snp_matrix, output_name):
     total_samples = len(snp_matrix.columns[3:])
     if max_samples == total_samples:
         with open(output_name, 'w+') as fout: 
-            common_snps = snp_matrix['Position'][snp_matrix.N == max_samples].astype(str).tolist()
+            common_snps = snp_matrix['Position'][snp_matrix.N == max_samples].astype(int).astype(str).tolist()
             line = "\n".join(common_snps)
             fout.write("Position\n")
             fout.write(line)

@@ -90,7 +90,7 @@ def zcat_concat_reads(args):
     return output_file
 
 
-def mash_screen(args, winner=True, r2=False, mash_database="/home/laura/DATABASES/Mash/refseq.genomes.k21s1000.msh"):
+def mash_screen(args, winner=True, r2=False, mash_database="/processing_Data/bioinformatics/references/mash/RefSeq88n.msh"):
     #https://mash.readthedocs.io/en/latest/index.html
     #https://gembox.cbcb.umd.edu/mash/refseq.genomes.k21s1000.msh #MASH refseq database
     # mash screen -w -p 4 ../refseq.genomes.k21s1000.msh 4_R1.fastq.gz 4_R2.fastq.gz > 4.winner.screen.tab

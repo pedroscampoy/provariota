@@ -668,7 +668,7 @@ def vcf_consensus_filter(vcf_file, distance=1, AF=0.80, QD=15, window_10=3, dp_l
 
     tab_name = (".").join(vcf_name.split(".")[:-1])
     extend_raw = ".raw.tab"
-    extend_final = "." + var_type + ".final.vcf"
+    extend_final = "." + 'ALL' + ".final.vcf"
 
     table_outputt_dir = os.path.join(output_dir, "Table")
     check_create_dir(table_outputt_dir)
@@ -695,7 +695,7 @@ def vcf_consensus_filter(vcf_file, distance=1, AF=0.80, QD=15, window_10=3, dp_l
     add_window_distance(df_vcf, window_size=30)
 
     #Manage SNP INDEL filter
-    if var_type == "SNP":
+    '''if var_type == "SNP":
         var_to_filter = "INDEL"
     elif var_type == "INDEL":
         var_to_filter = "SNP"
@@ -703,7 +703,7 @@ def vcf_consensus_filter(vcf_file, distance=1, AF=0.80, QD=15, window_10=3, dp_l
         var_to_filter = "*"
     else:
         print("Wrong variant type to filter, use SNP/INDEL/ALL")
-        sys.exit(1)
+        sys.exit(1)'''
 
     #output all raw info into a file in 'Table' folder
     new_out_file = tab_name + extend_raw
@@ -721,7 +721,7 @@ def vcf_consensus_filter(vcf_file, distance=1, AF=0.80, QD=15, window_10=3, dp_l
                                 (df_vcf.len_AD > 2) |
                                 (df_vcf.ALT_AD < 2) |
                                 (df_vcf.ALT == '*') |
-                                (df_vcf.TYPE == var_to_filter) |
+                                #(df_vcf.TYPE == var_to_filter) |
                                 (df_vcf.dp < dp_limit) |
                                 (df_vcf.FILTER != "PASS") |
                                 ((df_vcf.gt0 == 0) & (df_vcf.window_10 > 1)) |

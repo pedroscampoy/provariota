@@ -417,6 +417,9 @@ def list_to_bed(input_list, output_dir, output_file_name, reference="CHROM"):
     output_bed_file = output_file_name + ".bed"
     
     final_output_path = os.path.join(output_dir, output_bed_file)
+
+    if len(input_list) == 0:
+        input_list.append(0)
     
     with open (final_output_path, 'w+') as f:
         for position in input_list:

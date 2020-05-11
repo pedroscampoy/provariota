@@ -110,7 +110,7 @@ def main():
 
         params_group = parser.add_argument_group('Parameters', 'parameters for diferent stringent conditions')
 
-        
+        params_group.add_argument('-u', '--unmmaped', type=int, required=False, default=20, help='Minimun unmmaped percentage to add samples into analysis')
         params_group.add_argument('-c', '--mincov', type=int, required=False, default=20, help='Minimun coverage to add samples into analysis')
         params_group.add_argument('-T', '--threads', type=str, dest = "threads", required=False, default=16, help='Threads to use')
         params_group.add_argument('-M', '--memory', type=str, dest = "memory", required=False, default=32, help='Max memory to use')
@@ -345,7 +345,7 @@ def main():
         saples_low_covered = []
     else:
         logger.info(GREEN + "Group coverage stats in group " + group_name + END_FORMATTING)
-        saples_low_covered = obtain_group_cov_stats(out_cov_dir, low_cov_threshold=args.mincov, unmmaped_threshold=20)
+        saples_low_covered = obtain_group_cov_stats(out_cov_dir, low_cov_threshold=args.mincov, unmmaped_threshold=args.unmmaped)
 
 
     if os.path.isfile(poorly_covered_bed):
@@ -585,7 +585,7 @@ def main():
 
             ################FINAL VCF FILTERING##################
             #####################################################
-            out_final_name = sample + ".combined.hf.SNP.final.vcf"
+            out_final_name = sample + ".combined.hf.ALL.final.vcf"
             in_final_name = sample + ".combined.hf.vcf"
             output_final_vcf = os.path.join(out_vcf_dir, out_final_name)
             in_final_vcf = os.path.join(out_vcf_dir, in_final_name)
@@ -673,9 +673,13 @@ def main():
     check_create_dir(path_compare)
     full_path_compare = os.path.join(path_compare, group_name)
 
-    compare_snp_matrix = full_path_compare + ".revised.tsv"
+    
 
+    #ddtb_add(out_vcf_dir, full_path_compare)
     ddtb_add(out_vcf_dir, full_path_compare, recalibrate=args.output)
+
+    compare_snp_matrix = full_path_compare + ".revised.tsv"
+    
     ddtb_compare(compare_snp_matrix)
 
     logger.info("\n\n" + MAGENTA + BOLD + "COMPARING FINISHED IN GROUP: " + group_name + END_FORMATTING + "\n")

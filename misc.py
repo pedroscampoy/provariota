@@ -3,9 +3,12 @@ import os
 import sys
 import re
 import subprocess
+import shutil
 import logging
+import datetime
 import pandas as pd
 import numpy as np
+from statistics import mean
 
 
 logger = logging.getLogger()
@@ -42,7 +45,6 @@ def check_file_exists(file_name):
         sys.exit(1)
     return os.path.isfile(file_name)
 
-
 def check_remove_file(file_name):
     """
     Check file exist and remove it.
@@ -74,6 +76,7 @@ def extract_sample(R1_file, R2_file):
     long_suffix = re.search('_S.*', sample_name_R)
     short_suffix = re.search('_R.*', sample_name_R)
     bar_suffix = re.search('_$', sample_name_R)
+    dot_suffix = re.search('.R$', sample_name_R)
     
     if long_suffix:
         match = long_suffix.group()
@@ -84,28 +87,14 @@ def extract_sample(R1_file, R2_file):
     elif bar_suffix:
         match = bar_suffix.group()
         sample_name = sample_name_R.rstrip("_")
+    elif dot_suffix:
+        match = dot_suffix.group()
+        sample_name = sample_name_R.rstrip(".R")
     else:
         sample_name = sample_name_R
 
     return sample_name
 
-
-def obtain_output_dir(args, subfolder=None):
-    """
-    Returns output folder and output file depending on the output supplied.
-    """
-    if args.output != None:
-        output_dir_arg = os.path.abspath(args.output)
-        output_dir = os.path.join(output_dir_arg, subfolder)
-    elif args.r1_file:
-        r1 = os.path.abspath(args.r1_file)
-        output_dir_arg = os.path.dirname(r1)
-        output_dir = os.path.join(output_dir_arg, subfolder)
-    elif args.input_bam:
-        bam = os.path.abspath(args.input_bam)
-        output_dir_arg = os.path.dirname(bam)
-        output_dir = os.path.join(output_dir_arg, subfolder)
-    return output_dir
     
 def check_create_dir(path):
     #exists = os.path.isfile(path)
@@ -115,29 +104,7 @@ def check_create_dir(path):
     else:
         os.mkdir(path)
 
-def get_picard_path():
-    type_route = subprocess.run(["whereis", "picard.jar"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True, universal_newlines=True) 
-    regex = re.compile(r'\/.*\.jar')
-    picard_route = re.search(regex, type_route.stdout)
-
-    return picard_route.group()
-
-
-def get_snpeff_path():
-    type_route = subprocess.run(["whereis", "snpEff"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True, universal_newlines=True) 
-    regex = re.compile(r'\/.*')
-    adapter_route = re.search(regex, type_route.stdout).group().strip().split("/")[0:-2]
-    partial_path = "/".join(adapter_route)
-
-    snpEff_config_path = subprocess.run(["find", partial_path, "-name", "snpEff.config"],stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True, universal_newlines=True)
-
-    final_path_config = snpEff_config_path.stdout.split("\n")[0]
-    final_path_config
-    
-    return final_path_config
-
-
-def execute_subprocess(cmd):
+def execute_subprocess(cmd, isShell=False):
     """
     https://crashcourse.housegordon.org/python-subprocess.html
     https://docs.python.org/3/library/subprocess.html 
@@ -158,7 +125,7 @@ def execute_subprocess(cmd):
         param = cmd[1:]
     
     try:
-        command = subprocess.run(cmd , stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        command = subprocess.run(cmd , shell=isShell, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         if command.returncode == 0:
             logger.debug(GREEN + DIM + "Program %s successfully executed" % prog + END_FORMATTING)
         else:
@@ -232,14 +199,6 @@ def extract_read_list(input_dir):
     
     return r1_list, r2_list
 
-
-def extract_sample_list():
-    #sample_list = []
-    # for r1, r2 in zip(r1_list, r2_list):
-    #     sample = extract_sample(r1, r2)
-    #     sample_list.append(sample)
-    pass
-
 def return_codon_position(number):
     position = number % 3
     if position == 0:
@@ -254,77 +213,139 @@ def file_to_list(file_name):
             list_F.append(line.strip())
     return list_F
 
-
-def get_coverage(args, input_bam, output_fmt="-d"):
-    """
-    #Calculate genome coverage at each position using bedtools and an input bam
-    https://bedtools.readthedocs.io/en/latest/content/tools/genomecov.html
-    """
-    #reference = os.path.abspath(args.reference)
-
-    input_bam = os.path.abspath(input_bam)
-    input_bam_base = os.path.basename(input_bam)
-
-    sample = input_bam_base.split(".")[0]
-    output_dir = obtain_output_dir(args, "Coverage")
-    sample_name = sample + ".cov"
-    output_file = os.path.join(output_dir, sample_name)
-
-    check_create_dir(output_dir)
-
-    #execute_subprocess(cmd)
-    with open(output_file, "w") as outfile:
-        #calculate coverage and save it in th eoutput file
-        subprocess.run(["genomeCoverageBed", "-ibam", input_bam, output_fmt], 
-        stdout=outfile, stderr=subprocess.PIPE, check=True, universal_newlines=True)
-
 def calculate_cov_stats(file_cov):
     df = pd.read_csv(file_cov, sep="\t", names=["#CHROM", "POS", "COV" ])
     unmmaped_pos = len(df.POS[df.COV == 0].tolist())
     pos_0_10 = len(df.POS[(df.COV > 0) & (df.COV <= 10)].tolist())
     pos_10_20 = len(df.POS[(df.COV > 10) & (df.COV <= 20)].tolist())
     pos_high20 = len(df.POS[(df.COV > 20)].tolist())
+    pos_high50 = len(df.POS[(df.COV > 50)].tolist())
+    pos_high100 = len(df.POS[(df.COV >= 100)].tolist())
+    pos_high500 = len(df.POS[(df.COV >= 500)].tolist())
+    pos_high1000 = len(df.POS[(df.COV >= 1000)].tolist())
     total_pos = df.shape[0]
     unmmaped_prop = "%.2f" % ((unmmaped_pos/total_pos)*100)
     prop_0_10 = "%.2f" % ((pos_0_10/total_pos)*100)
     prop_10_20 = "%.2f" % ((pos_10_20/total_pos)*100)
     prop_high20 = "%.2f" % ((pos_high20/total_pos)*100)
+    prop_high50 = "%.2f" % ((pos_high50/total_pos)*100)
+    prop_high100 = "%.2f" % ((pos_high100/total_pos)*100)
+    prop_high500 = "%.2f" % ((pos_high500/total_pos)*100)
+    prop_high1000 = "%.2f" % ((pos_high1000/total_pos)*100)
     
     mean_cov = "%.2f" % (df.COV.mean())
     
-    return mean_cov, unmmaped_prop, prop_0_10, prop_10_20, prop_high20
+    return mean_cov, unmmaped_prop, prop_0_10, prop_10_20, prop_high20, prop_high50, prop_high100, prop_high500, prop_high1000
 
-def obtain_group_cov_stats(directory, low_cov_threshold=20, unmmaped_threshold=20):
+def obtain_group_cov_stats(directory, group_name):
     directory_path = os.path.abspath(directory)
-    
-    if directory_path.endswith("Coverage"):
-        file_name = directory_path.split("/")[-2]
-    else:
-        file_name = "samples"
 
-    output_file_name = file_name + ".coverage.tab"
-    output_file = os.path.join(directory_path,output_file_name)
+    output_group_name = group_name + ".coverage.summary.tab"
+    output_file = os.path.join(directory_path, output_group_name)
 
-    saples_low_covered = []
-
-    with open(output_file, "w") as outfile:
-            outfile.write("#SAMPLE" + "\t" + "MEAN_COV" + "\t" + "UNMMAPED_PROP" + "\t" + "COV1-10X" + "\t" + "COV10-20X" + "\t" + "COV>20X" + "\t" + "\n")
-            #print("#SAMPLE" + "\t" + "MEAN_COV" + "\t" + "UNMMAPED_PROP" + "\t" + "COV1-10X" + "\t" + "COV10-20X" + "\t" + "COV>20X" + "\t" + "\n")
+    with open(output_file, "w+") as outfile:
+            outfile.write("#SAMPLE" + "\t" + "MEAN_COV" + "\t" + "UNMMAPED_PROP" + "\t" + "COV1-10X" + "\t" + "COV10-20X" + "\t" + "COV>20X" + "\t" + "COV>50X" + "\t" + "COV>100X" + "\t" + "COV>500X" + "\t" + "COV>1000X" + "\n")
             for root, _, files in os.walk(directory_path):
                 for name in files:
                     filename = os.path.join(root, name)
                     file_name_cov = os.path.basename(filename)
                     sample = file_name_cov.split(".")[0]
-                    if filename.endswith("cov") and (os.path.getsize(filename) > 0):
+                    if filename.endswith(".cov") and (os.path.getsize(filename) > 0):
                         coverage_stats = calculate_cov_stats(filename)
-                        mean_cov = coverage_stats[0]
-                        unmmaped_prop = coverage_stats[1]
-                        if float(mean_cov) < low_cov_threshold or float(unmmaped_prop) > unmmaped_threshold:
-                            saples_low_covered.append(sample)
                         outfile.write(sample + "\t" + ("\t").join(coverage_stats) + "\n")
-                        #print((sample + "\t" + ("\t").join(coverage_stats)) + "\n")
 
-    return saples_low_covered
+def extract_snp_count(output_dir,sample):
+    sample = str(sample)
+    if '.' in sample:
+        sample = sample.split('.')[0]
+    variants_folder = os.path.join(output_dir, 'Variants')
+    raw_var_folder = os.path.join(variants_folder, 'ivar_raw')
+    filename = os.path.join(raw_var_folder, sample + ".tsv")
+
+    if os.path.exists(filename):
+        df = pd.read_csv(filename, sep="\t")
+        df = df.drop_duplicates(subset=['POS', 'REF', 'ALT'], keep="first")
+        high_quality_snps = df["POS"][(df.PASS == True) &
+                    (df.ALT_DP >= 20) &
+                    (df.ALT_FREQ >= 0.8) &
+                    ~(df.ALT.str.startswith('+') | df.ALT.str.startswith('-'))].tolist()
+        htz_snps = df["POS"][(df.PASS == True) &
+                    (df.ALT_DP >= 20) &
+                    (df.ALT_FREQ < 0.8) &
+                    (df.ALT_FREQ >= 0.2) &
+                    ~(df.ALT.str.startswith('+') | df.ALT.str.startswith('-'))].tolist()
+        indels = df["POS"][(df.PASS == True) &
+                    (df.ALT_DP >= 20) &
+                    (df.ALT_FREQ >= 0.8) &
+                    (df.ALT.str.startswith('+') | df.ALT.str.startswith('-'))].tolist()
+        return (len(high_quality_snps), len(htz_snps), len(indels))
+    else:
+        logger.debug("FILE " + filename + " NOT FOUND" )
+        return None
+
+def extract_mapped_reads(output_dir,sample):
+    sample = str(sample)
+    if '.' in sample:
+        sample = sample.split('.')[0]
+    stats_folder = os.path.join(output_dir, 'Stats')
+    bamstats_folder = os.path.join(stats_folder, 'Bamstats')
+    filename = os.path.join(bamstats_folder, sample + ".bamstats")
+
+    if os.path.exists(filename):
+        with open (filename, 'r') as f:
+            for line in f:
+                if 'mapped' in line and '%' in line:
+                    reads_mapped = line.split(" ")[0]
+                    mappep_percentage = line.split("(")[-1].split("%")[0]
+                elif 'properly paired' in line:
+                    properly_paired = line.split(" ")[0]
+                    paired_percentage = line.split("(")[-1].split("%")[0]
+        return int(reads_mapped), float(mappep_percentage), int(properly_paired), float(paired_percentage)
+    else:
+        print("FILE " + filename + " NOT FOUND" )
+        return None
+
+def extract_n_consensus(output_dir,sample):
+    sample = str(sample)
+    if '.' in sample:
+        sample = sample.split('.')[0]
+    consensus_folder = os.path.join(output_dir, 'Consensus')
+    filename = os.path.join(consensus_folder, sample + ".fa")
+
+    if os.path.exists(filename):
+        with open (filename, 'r') as f:
+            content = f.read()
+            content_list = content.split('\n')
+            sample_fq = content_list[0].strip(">")
+            if sample_fq == sample:
+                #In case fasta is in several lines(not by default)
+                sequence = ("").join(content_list[1:]).strip()
+                all_N = re.findall(r'N+', sequence)
+                leading_N = re.findall(r'^N+', sequence)
+                tailing_N = re.findall(r'N+$', sequence)
+                length_N = [len(x) for x in all_N]
+                individual_N = [x for x in length_N if x == 1]
+                mean_length_N = mean(length_N)
+                sum_length_N = sum(length_N)
+                total_perc_N = sum_length_N / len(sequence) * 100
+                return(len(all_N), len(individual_N), len(leading_N), len(tailing_N), sum_length_N, total_perc_N, mean_length_N)
+    else:
+        print("FILE " + filename + " NOT FOUND" )
+        return None
+
+def obtain_overal_stats(output_dir, group):
+    stat_folder = os.path.join(output_dir, 'Stats')
+    overal_stat_file = os.path.join(stat_folder, group + ".overal.stats.tab")
+    for root, _, files in os.walk(stat_folder):
+        for name in files:
+            if name.endswith('coverage.summary.tab'):
+                filename = os.path.join(root, name)
+                df = pd.read_csv(filename, sep="\t")
+                df[['HQ_SNP', 'HTZ_SNP', 'INDELS']] = df.apply(lambda x: extract_snp_count(output_dir, x['#SAMPLE']), axis=1, result_type="expand")
+                df[['mapped_reads', 'perc_mapped', 'paired_mapped', 'perc_paired']] = df.apply(lambda x: extract_mapped_reads(output_dir, x['#SAMPLE']), axis=1, result_type="expand")
+                df[['N_groups', 'N_individual', 'N_leading', 'N_tailing', 'N_sum_len', 'N_total_perc','N_mean_len']] = df.apply(lambda x: extract_n_consensus(output_dir, x['#SAMPLE']), axis=1, result_type="expand")
+    df.to_csv(overal_stat_file, sep="\t", index=False)
+
 
 def edit_sample_list(file_list, sample_list):
     with open(file_list, 'r') as f:
@@ -337,41 +358,98 @@ def edit_sample_list(file_list, sample_list):
                 if line not in sample_list:
                     fout.write(line + "\n")
 
-def remove_low_covered_mixed(output_dir, sample_list, type_remove):
-    output_dir = os.path.abspath(output_dir)
-    group = output_dir.split("/")[-1]
-    uncovered_dir = os.path.join(output_dir, type_remove) #Uncovered or Mixed
-    check_create_dir(uncovered_dir)
 
-    sample_list_file = os.path.join(output_dir, "sample_list.txt")
+def remove_low_quality(output_dir, min_percentage_20x=90, min_hq_snp=1, type_remove='Uncovered'):
+    right_now = str(datetime.datetime.now())
+    right_now_full = "_".join(right_now.split(" "))
+    output_dir = os.path.abspath(output_dir)
+    uncovered_dir = os.path.join(output_dir, type_remove) #Uncovered or Mixed
+    variant_dir = output_dir + '/Variants/ivar_filtered'
+    consensus_dir = os.path.join(output_dir , 'Consensus')
+    uncovered_variant_dir = os.path.join(uncovered_dir , 'Variants')
+    uncovered_consensus_dir = os.path.join(uncovered_dir , 'Consensus')
+    uncovered_variant_filter = os.path.join(uncovered_variant_dir , 'ivar_filtered')
+    check_create_dir(uncovered_dir)
+    check_create_dir(uncovered_variant_dir)
+    check_create_dir(uncovered_variant_filter)
+    check_create_dir(uncovered_consensus_dir)
+
+    uncovered_samples = []
     
     for root, _, files in os.walk(output_dir):
         #Any previous file created except for Table for mixed samples
         # and Species for both uncovered and mixed
-        if root.endswith('GVCF_recal') or root.endswith('Coverage') \
-        or root.endswith('VCF') or root.endswith('VCF_recal') \
-        or root.endswith('Bam') or root.endswith('GVCF') \
-        or root.endswith('Table'):
+        if root.endswith('Stats'):
             for name in files:
                 filename = os.path.join(root, name)
-                for sample_low in sample_list:
-                    sample_dot = sample_low + "." #Adapt name to the posibility that two samples starts with the same name
-                    if name.startswith(sample_dot):
-                        if os.path.isfile(sample_list_file):
-                            os.remove(filename)
- 
-        #Place low covered samples in a specific folder to analize them with different parameters
-        if root.endswith(group):
+                if name.endswith('overal.stats.tab'):
+                    coverage_stat_file = filename
+                    stats_df = pd.read_csv(coverage_stat_file, sep="\t")
+                    uncovered_samples = stats_df['#SAMPLE'][(stats_df['COV>20X'] < min_percentage_20x) |
+                                                            (stats_df['HQ_SNP'] < min_hq_snp)].tolist()
+                    #create a df with only covered to replace the original
+                    covered_df = stats_df[~stats_df['#SAMPLE'].isin(uncovered_samples)]
+                    covered_df.to_csv(coverage_stat_file, sep="\t", index=False)
+                    #create a df with uncovered
+                    uncovered_df = stats_df[stats_df['#SAMPLE'].isin(uncovered_samples)]
+                    uncovered_table_filename = right_now_full + '_uncovered.summary.tab'
+                    uncovered_table_file = os.path.join(uncovered_dir, uncovered_table_filename)
+                    if len(uncovered_samples) > 0:
+                        uncovered_df.to_csv(uncovered_table_file, sep="\t", index=False)
+
+    uncovered_samples = [str(x) for x in uncovered_samples]
+
+    for root, _, files in os.walk(output_dir):
+        if root == output_dir:
+            for name in files:
+                if name.endswith('fastq.gz'):
+                    filename = os.path.join(root, name)
+                    sample = re.search(r'^(.+?)[._-]', name).group(1)
+                    if sample in uncovered_samples:
+                        destination_file = os.path.join(uncovered_dir, name)
+                        shutil.move(filename, destination_file)
+
+    for root, _, files in os.walk(output_dir):
+        if 'Trimmed' in root or 'Quality' in root:
             for name in files:
                 filename = os.path.join(root, name)
-                for sample_low in sample_list:
-                    sample_lowbar = sample_low + "_"
-                    if name.startswith(sample_lowbar) and name.endswith("fastq.gz"):
-                        dest_uncovered_path = os.path.join(uncovered_dir, name)
-                        if os.path.isfile(sample_list_file):
-                            os.rename(filename, dest_uncovered_path)
-    if os.path.isfile(sample_list_file):
-        edit_sample_list(sample_list_file, sample_list)
+                sample = re.search(r'^(.+?)[._-]', name).group(1)
+                if sample in uncovered_samples:
+                    os.remove(filename)
+
+    for sample in uncovered_samples:
+        sample = str(sample)
+        source_uncovered_var = os.path.join(variant_dir, sample + '.tsv')
+        dest_uncovered_var = os.path.join(uncovered_variant_filter, sample + '.tsv')
+        source_uncovered_cons = os.path.join(consensus_dir, sample + '.fa')
+        dest_uncovered_cons = os.path.join(uncovered_consensus_dir, sample + '.fa')
+        source_uncovered_cons_qual = os.path.join(consensus_dir, sample + '.qual.txt')
+        dest_uncovered_cons_qual = os.path.join(uncovered_consensus_dir, sample + '.qual.txt')
+        shutil.move(source_uncovered_var, dest_uncovered_var)
+        shutil.move(source_uncovered_cons, dest_uncovered_cons)
+        shutil.move(source_uncovered_cons_qual, dest_uncovered_cons_qual)
+    
+    #return uncovered_samples
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 def clean_unwanted_files(args):
@@ -484,7 +562,6 @@ def check_reanalysis(output_dir):
                                 os.remove(filename)
                             if "poorly_covered.bed" in filename and samples_analyzed < 100:
                                 os.remove(filename)
-            #print(file_exist, samples_analyzed, samples_fastq)
 
 def extrach_variants_summary(vcf_table, distance=15, quality=10 ):
     sample = vcf_table.split("/")[-1].split(".")[0]

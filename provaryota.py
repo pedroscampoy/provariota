@@ -13,33 +13,32 @@ import datetime
 
 
 # Local application imports
-from misc import check_file_exists, extract_sample, obtain_output_dir, check_create_dir, execute_subprocess, \
-    extract_read_list, file_to_list, get_coverage, obtain_group_cov_stats, remove_low_covered_mixed, clean_unwanted_files, \
-    check_reanalysis, vcf_stats
-from bbduk_trimmer import bbduk_trimming
+from misc import check_file_exists, extract_sample, check_create_dir, execute_subprocess, \
+    extract_read_list, file_to_list, obtain_group_cov_stats, clean_unwanted_files, \
+    check_reanalysis, vcf_stats, remove_low_quality, obtain_overal_stats
+from preprocessing import fastqc_quality, fastp_trimming, format_html_image
 from pe_mapper import bwa_mapping, sam_to_index_bam
-from bam_recall import picard_dictionary, samtools_faidx, picard_markdup, haplotype_caller, call_variants, \
-    select_variants, hard_filter, combine_gvcf, select_pass, select_pass_variants, recalibrate_bam, \
-    samples_from_vcf,split_vcf_saples, combine_vcf
-from vcf_process import vcf_consensus_filter, highly_hetz_to_bed, poorly_covered_to_bed, non_genotyped_to_bed
-from annotation import replace_reference, snpeff_annotation, final_annotation, create_report, css_report
-from species_determination import mash_screen, extract_species_from_screen
-from compare_snp import ddtb_add, ddtb_compare
+from bam_variant import picard_dictionary, samtools_faidx, picard_markdup, ivar_consensus, \
+    replace_consensus_header, create_bamstat, create_coverage
+from vcf_process import filter_tsv_variants, import_VCF42_freebayes_to_df
+from annotation import annotate_snpeff, annotate_pangolin, user_annotation
+from compare_snp import ddtb_add, ddtb_compare, ddbb_create_intermediate, revised_df
 
 """
 =============================================================
 HEADER
 =============================================================
 
-INSTITUTION:IiSGM + CNM-ISCIII
+INSTITUTION:IiSGM
 AUTHOR: Pedro J. Sola (pedroscampoy@gmail.com)
 d^v^b
 VERSION=0.1
-CREATED: 28 April 2019
+CREATED: 22 Sep 2020
 REVISION: 
-        20191119 - Adapt to other samples
+
 
 TODO:
+    Adapt check_reanalysis
     Check file with multiple arguments
     Check program is installed (dependencies)
 ================================================================
@@ -72,49 +71,41 @@ def main():
 
     def get_arguments():
 
-        parser = argparse.ArgumentParser(prog = 'snptb.py', description= 'Pipeline to call variants (SNVs) with any non model organism. Specialised in Mycobacterium Tuberculosis')
+        parser = argparse.ArgumentParser(prog = 'provaryota.py', description= 'Pipeline to call variants (SNVs) with any non model organism. Specialised in prokaryotic organisms')
         
         input_group = parser.add_argument_group('Input', 'Input parameters')
 
         input_group.add_argument('-i', '--input', dest="input_dir", metavar="input_directory", type=str, required=True, help='REQUIRED.Input directory containing all fast[aq] files')
         input_group.add_argument('-r', '--reference', metavar="reference", type=str, required=True, help='REQUIRED. File to map against')
+        input_group.add_argument('-a', '--annotation', metavar="annotation", type=str, required=True, help='REQUIRED. gff3 file to annotate variants')
         input_group.add_argument('-s', '--sample', metavar="sample", type=str, required=False, help='Sample to identify further files')
         input_group.add_argument('-S', '--sample_list', type=str, required=False, help='Sample names to analyse only in the file supplied')
-        input_group.add_argument('-B', '--annot_bed', type=str, required=False, action='append', help='bed file to annotate')
-        input_group.add_argument('-V', '--annot_vcf', type=str, required=False, action='append', help='vcf file to annotate')
+        input_group.add_argument('-p', '--primers', type=str, default=False, required=False, help='Bed file including primers to trim')
         
+        quality_group = parser.add_argument_group('Quality parameters', 'parameters for diferent triming conditions')
+
+        quality_group.add_argument('-c', '--coverage20', type=int, default=90, required=False, help='Minimum percentage of coverage at 20x to clasify as uncovered (Default 90)')
+        quality_group.add_argument('-n', '--min_snp', type=int, required=False, default=1, help='SNP number to pass quality threshold')
+
         output_group = parser.add_argument_group('Output', 'Required parameter to output results')
 
         output_group.add_argument('-o', '--output', type=str, required=True, help='REQUIRED. Output directory to extract all results')
         output_group.add_argument('-C', '--noclean', required=False, action='store_false', help='Clean unwanted files for standard execution')
 
-        trimming_group = parser.add_argument_group('Trimming parameters', 'parameters for diferent triming conditions')
+        params_group = parser.add_argument_group('Parameters', 'parameters for diferent stringent conditions')
 
-        trimming_group.add_argument('-H', '--hdist', type=str, required=False, help='Set hdist parameter, default 2')
-        trimming_group.add_argument('-k', '--kmer', type=str, required=False, help='Set k parameter, default 21')
-
-        gatk_group = parser.add_argument_group('GATK parameters', 'parameters for diferent variant calling')
-
-        gatk_group.add_argument('-E', '--enrich_gvcf', required=False,  default=False, help='Point a directory with g.vcf files to enrich the analysis')
-        gatk_group.add_argument('-A', '--all_cohort', required=False,  action='store_true', help='Output vcf of all samples instead of just the one inputted before cohort')
-
-        vcf_group = parser.add_argument_group('VCF filters', 'parameters for variant filtering')
-
-        vcf_group.add_argument('-b', '--bed_remove', type=str, required=False, default=False, help='BED file with position ranges to filter from final vcf')
-        vcf_group.add_argument('-m', '--maxnocallfr', type=str, required=False, default=0.1, help='maximun proportion of samples with non genotyped alleles')
+        params_group.add_argument('-T', '--threads', type=str, dest="threads", required=False, default=16, help='Threads to use')
+        params_group.add_argument('-M', '--memory', type=str, dest="memory", required=False, default=32, help='Max memory to use')
 
         annot_group = parser.add_argument_group('Annotation', 'parameters for variant annotation')
 
-        annot_group.add_argument('--mash_database', type=str, required=False, default="/home/pjsola/REFERENCES/mash/RefSeq88n.msh", help='MASH ncbi annotation containing all species database')
+        annot_group.add_argument('-B', '--annot_bed', type=str, default=[], required=False, action='append', help='bed file to annotate')
+        annot_group.add_argument('-V', '--annot_vcf', type=str, default=[], required=False, action='append', help='vcf file to annotate')
+        
+        annot_group = parser.add_argument_group('Annotation', 'parameters for variant annotation')
+
+        annot_group.add_argument('--mash_database', type=str, required=False, default=False, help='MASH ncbi annotation containing all species database')
         annot_group.add_argument('--snpeff_database', type=str, required=False, default=False, help='snpEFF annotation database')
-
-        params_group = parser.add_argument_group('Parameters', 'parameters for diferent stringent conditions')
-
-        params_group.add_argument('-u', '--unmmaped', type=int, required=False, default=20, help='Minimun unmmaped percentage to add samples into analysis')
-        params_group.add_argument('-c', '--mincov', type=int, required=False, default=20, help='Minimun coverage to add samples into analysis')
-        params_group.add_argument('-T', '--threads', type=str, dest = "threads", required=False, default=16, help='Threads to use')
-        params_group.add_argument('-M', '--memory', type=str, dest = "memory", required=False, default=32, help='Max memory to use')
-
 
         arguments = parser.parse_args()
 
@@ -128,13 +119,17 @@ def main():
     ######################################################################
     output = os.path.abspath(args.output)
     group_name = output.split("/")[-1]
+    reference = os.path.abspath(args.reference)
+    annotation = os.path.abspath(args.annotation)
 
     #LOGGING
     #Create log file with date and time
     right_now = str(datetime.datetime.now())
     right_now_full = "_".join(right_now.split(" "))
     log_filename = group_name + "_" + right_now_full + ".log"
-    log_full_path = os.path.join(output, log_filename)
+    log_folder = os.path.join(output, 'Logs')
+    check_create_dir(log_folder)
+    log_full_path = os.path.join(log_folder, log_filename)
 
     logger = logging.getLogger()
     logger.setLevel(logging.DEBUG)
@@ -153,7 +148,6 @@ def main():
     logger.addHandler(file_handler)
 
 
-
     logger.info("\n\n" + BLUE + BOLD + "STARTING PIPELINE IN GROUP: " + group_name + END_FORMATTING)
 
     today = str(datetime.date.today())
@@ -166,7 +160,7 @@ def main():
     #Obtain all R1 and R2 from folder
     r1, r2 = extract_read_list(args.input_dir)
 
-    #Check if there are samples to filter
+    #Check if there are samples to filter out
     sample_list_F = []
     if args.sample_list == None:
         logger.info("\n" + "No samples to filter")
@@ -179,12 +173,10 @@ def main():
     logger.info("\n%d samples will be analysed: %s" % (len(sample_list_F), ",".join(sample_list_F)))
 
 
-
-
     #PREPARE REFERENCE FOR MAPPING + FAI + DICT #########
     #####################################################
-
-    picard_dictionary(args)
+    
+    #picard_dictionary(args)
     samtools_faidx(args)
 
     #DECLARE FOLDERS CREATED IN PIPELINE ################
@@ -194,24 +186,28 @@ def main():
     #script_dir = os.path.dirname(os.path.realpath(__file__))
 
     #Output related
+    out_qc_dir = os.path.join(output, "Quality")
+    out_qc_pre_dir = os.path.join(out_qc_dir, "raw") #subfolder
+    out_qc_post_dir = os.path.join(out_qc_dir, "processed") #subfolder
     out_trim_dir = os.path.join(output, "Trimmed")
     out_map_dir = os.path.join(output, "Bam")
-    out_cov_dir = os.path.join(output, "Coverage")
-    out_gvcfr_dir = os.path.join(output, "GVCF_recal")
-    out_vcfr_dir = os.path.join(output, "VCF_recal")
-    out_gvcf_dir = os.path.join(output, "GVCF")
-    out_vcf_dir = os.path.join(output, "VCF")
-    out_annot_dir = os.path.join(output, "Annotation")
-    out_species_dir = os.path.join(output, "Species")
-    #out_uncovered_dir = os.path.join(output, "Uncovered")
-    out_compare_dir = os.path.join(output, "Compare")
-    out_table_dir = os.path.join(output, "Table")
+    out_variant_dir = os.path.join(output, "Variants")
+    out_variant_freebayes_dir = os.path.join(out_variant_dir, "freebayes_raw") #subfolder
+    out_filtered_freebayes_dir = os.path.join(out_variant_dir, "freebayes_filtered") #subfolder
+    out_consensus_dir = os.path.join(output, "Consensus")
 
-    highly_hetz_bed = os.path.join(out_vcf_dir, "highly_hetz.bed")
-    non_genotyped_bed = os.path.join(out_vcf_dir, "non_genotyped.bed")
-    poorly_covered_bed = os.path.join(out_cov_dir, "poorly_covered.bed")
+    out_stats_dir = os.path.join(output, "Stats")
+    out_stats_bamstats_dir = os.path.join(out_stats_dir, "Bamstats") #subfolder
+    out_stats_coverage_dir = os.path.join(out_stats_dir, "Coverage") #subfolder
+    out_compare_dir = os.path.join(output, "Compare")
+
+    out_annot_dir = os.path.join(output, "Annotation")
+    out_annot_snpeff_dir = os.path.join(out_annot_dir, "snpeff") #subfolder
+    out_annot_user_dir = os.path.join(out_annot_dir, "user") #subfolder
+
 
     for r1_file, r2_file in zip(r1, r2):
+        #EXtract sample name
         sample = extract_sample(r1_file, r2_file)
         args.sample = sample
         if sample in sample_list_F:
@@ -219,37 +215,51 @@ def main():
             sample_number = str(sample_list_F.index(sample) + 1)
             sample_total = str(len(sample_list_F))
 
-            out_bqsr_name = sample + ".bqsr.bam"
-            output_bqsr_file = os.path.join(out_map_dir, out_bqsr_name)
+            out_markdup_name = sample + ".rg.markdup.sorted.bam"
+            output_markdup_file = os.path.join(out_map_dir, out_markdup_name)
 
-            if not os.path.isfile(output_bqsr_file):
+            logger.info("\n" + WHITE_BG + "STARTING SAMPLE: " + sample + " (" + sample_number + "/" + sample_total + ")" + END_FORMATTING)
+
+            if not os.path.isfile(output_markdup_file):
             
                 args.r1_file = r1_file
                 args.r2_file = r2_file
-
-                logger.info("\n" + WHITE_BG + "STARTING SAMPLE: " + sample + " (" + sample_number + "/" + sample_total + ")" + END_FORMATTING)
 
                 ##############START PIPELINE#####################
                 #################################################
 
                 #INPUT ARGUMENTS
                 ################
-                check_file_exists(args.r1_file)
-                check_file_exists(args.r2_file)
+                check_file_exists(r1_file)
+                check_file_exists(r2_file)
 
                 args.output = os.path.abspath(args.output)
                 check_create_dir(args.output)
-                #QUALITY CHECK
-                ##############
+
+                ######################QUALITY CHECK in RAW with fastqc
+                ######################################################
+                check_create_dir(out_qc_dir)
+
+                out_qc_raw_name_r1 = (".").join(r1_file.split('/')[-1].split('.')[0:-2]) + '_fastqc.html'
+                out_qc_raw_name_r2 = (".").join(r2_file.split('/')[-1].split('.')[0:-2]) + '_fastqc.html'
+                output_qc_raw_file_r1 = os.path.join(out_qc_pre_dir, out_qc_raw_name_r1)
+                output_qc_raw_file_r2 = os.path.join(out_qc_pre_dir, out_qc_raw_name_r2)
+                                
+                if os.path.isfile(output_qc_raw_file_r1) and os.path.isfile(output_qc_raw_file_r2):
+                    logger.info(YELLOW + DIM + output_qc_raw_file_r1 + " EXIST\nOmmiting QC for sample " + sample + END_FORMATTING)
+                else:
+                    logger.info(GREEN + "Checking quality in sample " + sample + END_FORMATTING)
+                    logger.info("R1: " + r1_file + "\nR2: " + r2_file)
+                    fastqc_quality(r1_file, r2_file, out_qc_pre_dir, args.threads)
+
                 """
-                TODO: Quality check 
                 TODO: Human filter
                 """
-                        
-                #QUALITY TRIMMING AND ADAPTER REMOVAL WITH bbduk.sh
+                
+                ####QUALITY TRIMMING AND ADAPTER REMOVAL WITH fastp
                 ###################################################
-                out_trim_name_r1 = sample + "_R1.clean.fastq.gz"
-                out_trim_name_r2 = sample + "_R2.clean.fastq.gz"
+                out_trim_name_r1 = sample + ".trimmed_R1.fastq.gz"
+                out_trim_name_r2 = sample + ".trimmed_R2.fastq.gz"
                 output_trimming_file_r1 = os.path.join(out_trim_dir, out_trim_name_r1)
                 output_trimming_file_r2 = os.path.join(out_trim_dir, out_trim_name_r2)
                 
@@ -257,349 +267,204 @@ def main():
                     logger.info(YELLOW + DIM + output_trimming_file_r1 + " EXIST\nOmmiting Trimming for sample " + sample + END_FORMATTING)
                 else:
                     logger.info(GREEN + "Trimming sample " + sample + END_FORMATTING)
-                    bbduk_trimming(args)
+                    fastp_trimming(r1_file, r2_file, sample, out_trim_dir, threads=args.threads, min_qual=20, window_size=10, min_len=35)
+
+
+                ##################QUALITY CHECK in TRIMMED with fastqc
+                ######################################################
+                check_create_dir(out_qc_dir)
+                
+                out_qc_pos_r1 = sample + ".trimmed_R1_fastqc.html"
+                out_qc_pos_r2 = sample + ".trimmed_R2_fastqc.html"
+                output_qc_precessed_file_r1 = os.path.join(out_qc_post_dir, out_qc_pos_r1)
+                output_qc_precessed_file_r2 = os.path.join(out_qc_post_dir, out_qc_pos_r2)
+                                
+                if os.path.isfile(output_qc_precessed_file_r1) and os.path.isfile(output_qc_precessed_file_r2):
+                    logger.info(YELLOW + DIM + output_qc_raw_file_r1 + " EXIST\nOmmiting QC for sample " + sample + END_FORMATTING)
+                else:
+                    logger.info(GREEN + "Checking quality in processed sample " + sample + END_FORMATTING)
+                    logger.info("R1: " + output_trimming_file_r1 + "\nR2: " + output_trimming_file_r2)
+                    fastqc_quality(output_trimming_file_r1, output_trimming_file_r2, out_qc_post_dir, args.threads)
 
                 #MAPPING WITH BWA - SAM TO SORTED BAM - ADD HEADER SG
                 #####################################################
                 out_map_name = sample + ".rg.sorted.bam"
                 output_map_file = os.path.join(out_map_dir, out_map_name)
 
-                out_markdup_name = sample + ".rg.markdup.sorted.bam"
-                output_markdup_file = os.path.join(out_map_dir, out_markdup_name)
-
-                args.r1_file = output_trimming_file_r1
-                args.r2_file = output_trimming_file_r2
-
-                if os.path.isfile(output_map_file) or os.path.isfile(output_markdup_file):
+                if os.path.isfile(output_map_file):
                     logger.info(YELLOW + DIM + output_map_file + " EXIST\nOmmiting Mapping for sample " + sample + END_FORMATTING)
                 else:
                     logger.info(GREEN + "Mapping sample " + sample + END_FORMATTING)
-                    logger.info("R1: " + output_trimming_file_r1 + "\nR2: " + output_trimming_file_r2 + "\nReference: " + args.reference)
-                    bwa_mapping(args)
-                    sam_to_index_bam(args)
+                    logger.info("R1: " + output_trimming_file_r1 + "\nR2: " + output_trimming_file_r2 + "\nReference: " + reference)
+                    bwa_mapping(output_trimming_file_r1, output_trimming_file_r2, reference, sample, out_map_dir, threads=args.threads)
+                    sam_to_index_bam(sample, out_map_dir, output_trimming_file_r1, threads=args.threads)
+
 
                 #MARK DUPLICATES WITH PICARDTOOLS ###################
                 #####################################################
-                #TO DO: remove output_map_file and include markdup in previous step checking for existence of .rg.markdup.sorted.bam
-                out_markdup_name = sample + ".rg.markdup.sorted.bam"
-                output_markdup_file = os.path.join(out_map_dir, out_markdup_name)
-
-                args.input_bam = output_map_file
+                
 
                 if os.path.isfile(output_markdup_file):
                     logger.info(YELLOW + DIM + output_markdup_file + " EXIST\nOmmiting Duplucate Mark for sample " + sample + END_FORMATTING)
                 else:
                     logger.info(GREEN + "Marking Dupes in sample " + sample + END_FORMATTING)
-                    logger.info("Input Bam: " + args.input_bam)
-                    picard_markdup(args)
+                    logger.info("Input Bam: " + output_map_file)
+                    picard_markdup(output_map_file)
                 
-                #CALCULATE COVERAGE FOR EACH POSITION##################
-                #######################################################
-                out_cov_name = sample + ".cov"
-                output_cov_file = os.path.join(out_cov_dir, out_cov_name)
-
-                if os.path.isfile(output_cov_file):
-                    logger.info(YELLOW + DIM + output_cov_file + " EXIST\nOmmiting coverage calculation for sample " + sample + END_FORMATTING)
-                else:
-                    logger.info(GREEN + "Calculating coverage in sample " + sample + END_FORMATTING)
-                    get_coverage(args, output_markdup_file, output_fmt="-d")
-
-                #SPECIES DETERMINATION USING mash #################
-                ###################################################
-                out_mash_name = sample + ".screen.tab"
-                output_mash_file = os.path.join(out_species_dir, out_mash_name)
-                
-                if os.path.isfile(output_mash_file):
-                    logger.info(YELLOW + DIM + output_mash_file + " EXIST\nOmmiting Species calculation for sample " + sample + END_FORMATTING)
-                else:
-                    logger.info(GREEN + "Determining species content in sample " + sample + END_FORMATTING)
-                    mash_screen(args, winner=True, r2=False, mash_database=args.mash_database)
-                
-
-                #HAPLOTYPE CALL 1/2 FOR HARD FILTERING AND RECALIBRATION
-                #######################################################
-                out_gvcfr_name = sample + ".g.vcf"
-                output_gvcfr_file = os.path.join(out_gvcfr_dir, out_gvcfr_name)
-
-                if os.path.isfile(output_gvcfr_file):
-                    logger.info(YELLOW + DIM + output_gvcfr_file + " EXIST\nOmmiting Haplotype Call (Recall) for sample " + sample + END_FORMATTING)
-                else:
-                    logger.info(GREEN + "Haplotype Calling (Recall) in sample " + sample + END_FORMATTING)
-                    haplotype_caller(args, recalibrate=True, ploidy=2, bamout=False, forceactive=False)
+            else:
+                logger.info(YELLOW + DIM + output_markdup_file + " EXIST\nOmmiting BAM mapping and BAM manipulation in sample " + sample + END_FORMATTING)
             
-            else:
-                logger.info(YELLOW + DIM + "\nOMMITING BAM HANDLING FOR SAMPLE " + sample + END_FORMATTING)
-
-
-
-    #GROUP COVERAGE SUMMARY STATS##########################
-    #######################################################
-    group_name = output.split("/")[-1]
-    logger.info("\n\n" + BLUE + BOLD + "CHECKING LOW COVERED SAMPLES IN GROUP: " + group_name + END_FORMATTING + "\n")
-
-    out_cov_name = group_name + ".coverage.tab"
-    output_cov_file = os.path.join(out_cov_dir, out_cov_name)
-
-    if os.path.isfile(output_cov_file):
-        logger.info(YELLOW + DIM + output_cov_file + " EXIST\nOmmiting group coverage calculation for group " + group_name + END_FORMATTING)
-        saples_low_covered = []
-    else:
-        logger.info(GREEN + "Group coverage stats in group " + group_name + END_FORMATTING)
-        saples_low_covered = obtain_group_cov_stats(out_cov_dir, low_cov_threshold=args.mincov, unmmaped_threshold=args.unmmaped)
-
-
-    if os.path.isfile(poorly_covered_bed):
-        logger.info(YELLOW + DIM + output_cov_file + " EXIST\nOmmiting poorly covered calculation for group " + group_name + END_FORMATTING)
-    else:
-        logger.info(GREEN + "Calculating low covered regions " + group_name + END_FORMATTING)
-        poorly_covered_to_bed(out_cov_dir, "poorly_covered", reference="CHROM", min_coverage=2, nocall_fr=0.5)
-
-    if len(saples_low_covered) > 0:
-        logger.info("\n" + YELLOW + BOLD + "There are sample(s) with low coverage that will be removed from the analysis: " + "\n"\
-            + ",".join(saples_low_covered) + END_FORMATTING + "\n")
-        remove_low_covered_mixed(args.output, saples_low_covered, "Uncovered")
-        #Remove sample from the list of filtered samples
-        ################################################
-        for samples_to_remove in saples_low_covered:
-            sample_list_F.remove(samples_to_remove)
-    else:
-        logger.info("\n" + YELLOW + BOLD + "All samples have a decent depth of coverage according to threshold supplied" + "\n")
-
-
-
-
-    #ONCE ALL GVCF VARIANTS ARE CALLED, THEY ARE GATHERED AND FILTERED 
-    # TO RECALIBRATE ORIGINAL MARKDUPPED BAM
-    ######################################################################
-    ##############START GROUP CALLING FOR RECALIBRATION###################
-    ######################################################################
-
-    group_name = output.split("/")[-1]
-    logger.info("\n\n" + BLUE + BOLD + "STARTING JOINT CALL FOR RECALIBATION IN GROUP: " + group_name + END_FORMATTING + "\n")
-
-    #CALL VARIANTS 1/2 FOR HARD FILTERING AND RECALIBRATION
-    #######################################################
-    out_gvcfr_name = group_name + ".cohort.g.vcf"
-    output_gvcfr_file = os.path.join(out_gvcfr_dir, out_gvcfr_name)
-
-    if os.path.isfile(output_gvcfr_file):
-        logger.info(YELLOW + DIM + output_gvcfr_file + " EXIST\nOmmiting GVCF Combination (Recall) for group " + group_name + END_FORMATTING)
-    else:
-        logger.info(GREEN + "GVCF Combination (Recall) in group " + group_name + END_FORMATTING)
-        combine_gvcf(args, recalibrate=True, all_gvcf=False)
-
-    #CALL VARIANTS 1/2 FOR HARD FILTERING AND RECALIBRATION
-    #######################################################
-    out_vcfr_name = group_name + ".cohort.raw.vcf"
-    output_vcfr_file = os.path.join(out_vcfr_dir, out_vcfr_name)
-
-    if os.path.isfile(output_vcfr_file):
-        logger.info(YELLOW + DIM + output_vcfr_file + " EXIST\nOmmiting Variant Calling (Recall-Group) for group " + group_name + END_FORMATTING)
-    else:
-        logger.info(GREEN + "Variant Calling (Recall-Group) in group " + group_name + END_FORMATTING)
-        call_variants(args, recalibrate=True, group=True)
-
-    #SELECT VARIANTS 1/2 FOR HARD FILTERING AND RECALIBRATION
-    #########################################################
-    out_vcfsnpr_name = group_name + ".cohort.snp.vcf"
-    out_vcfindelr_name = group_name + ".cohort.indel.vcf"
-    output_vcfsnpr_file = os.path.join(out_vcfr_dir, out_vcfsnpr_name)
-    output_vcfindelr_file = os.path.join(out_vcfr_dir, out_vcfindelr_name)
-
-    if os.path.isfile(output_vcfsnpr_file) and os.path.isfile(output_vcfindelr_file):
-        logger.info(YELLOW + DIM + output_vcfsnpr_file + " EXIST\nOmmiting Variant Selection (Recall-Group) for group " + group_name + END_FORMATTING)
-    else:
-        logger.info(GREEN + "Selecting Variants (Recall-Group) in group " + group_name + END_FORMATTING)
-        select_variants(output_vcfr_file, select_type='SNP') #select_variants(output_vcfr_file, select_type='INDEL')
-        select_variants(output_vcfr_file, select_type='INDEL')
-
-    #HARD FILTER VARIANTS 1/2 FOR RECALIBRATION #############
-    #########################################################
-    out_vcfhfsnpr_name = group_name + ".cohort.snp.hf.vcf"
-    out_vcfhfindelr_name = group_name + ".cohort.indel.hf.vcf"
-    output_vcfhfsnpr_file = os.path.join(out_vcfr_dir, out_vcfhfsnpr_name)
-    output_vcfhfindelr_file = os.path.join(out_vcfr_dir, out_vcfhfindelr_name)
-
-
-    if os.path.isfile(output_vcfhfsnpr_file) and os.path.isfile(output_vcfhfindelr_file):
-        logger.info(YELLOW + DIM + output_vcfhfsnpr_file + " EXIST\nOmmiting Hard Filtering (Recall-Group) for group " + group_name + END_FORMATTING)
-    else:
-        logger.info(GREEN + "Hard Filtering Variants (Recall-Group) in group " + group_name + END_FORMATTING)
-        hard_filter(output_vcfsnpr_file, select_type='SNP')
-        hard_filter(output_vcfindelr_file, select_type='INDEL')
-
-    #PASS FILTER VARIANTS 1/2 FOR RECALIBRATION #############
-    #########################################################
-    out_vcfhfsnppass_name = group_name + ".cohort.snp.hf.pass.vcf"
-    #out_vcfhfindelpass_name = group_name + ".cohort.indel.hf.pass.vcf"
-    output_vcfhfsnppass_file = os.path.join(out_vcfr_dir, out_vcfhfsnppass_name)
-    #output_vcfhfindelpass_file = os.path.join(out_vcfr_dir, out_vcfhfindelpass_name)
-
-
-    if os.path.isfile(output_vcfhfsnpr_file) and os.path.isfile(output_vcfhfsnppass_file):
-        logger.info(YELLOW + DIM + output_vcfhfsnppass_file + " EXIST\nOmmiting PASS Filtering (Recall-Group) for group " + group_name + END_FORMATTING)
-    else:
-        logger.info(GREEN + "PASS Filtering Variants (Recall-Group) in group " + group_name + END_FORMATTING)
-        select_pass_variants(output_vcfhfsnpr_file, nocall_fr=0.2)
-        select_pass_variants(output_vcfhfindelr_file, nocall_fr=0.2)
-
-
-        ######################################################################
-        ##############START RECALIBRATION AND FINAL CALL######################
-        ######################################################################
-
-    logger.info("\n\n" + BLUE + BOLD + "STARTING RECALIBATION IN GROUP: " + group_name + END_FORMATTING)
-
-    for r1_file, r2_file in zip(r1, r2):
-        sample = extract_sample(r1_file, r2_file)
-
-        args.sample = sample
-        args.output = os.path.abspath(args.output)
-
-        if sample in sample_list_F:
-
-            sample_number = str(sample_list_F.index(sample) + 1)
-            sample_total = str(len(sample_list_F))
-
-            logger.info("\n" + WHITE_BG + "RECALIBRATION AND CALL ON SAMPLE: " + sample + " (" + sample_number + "/" + sample_total + ")" + END_FORMATTING)
-
-            ##############START BAM RECALIBRATION############
-            #################################################
-
-            ################BQSR AND APPLY BQSR##################
+            ########################END OF MAPPING AND BAM MANIPULATION#####################################################################
+            ################################################################################################################################
+            
+            #VARIANT CALLING WTIH ivar variants##################
             #####################################################
-            out_bqsr_name = sample + ".bqsr.bam"
-            output_bqsr_file = os.path.join(out_map_dir, out_bqsr_name)
+            check_create_dir(out_variant_dir)
+            out_ivar_variant_name = sample + ".tsv"
+            out_ivar_variant_file = os.path.join(out_variant_ivar_dir, out_ivar_variant_name)
 
-            if os.path.isfile(output_bqsr_file):
-                logger.info(YELLOW + DIM + output_bqsr_file + " EXIST\nOmmiting Recalibration for sample " + sample + END_FORMATTING)
+            if os.path.isfile(out_ivar_variant_file):
+                logger.info(YELLOW + DIM + out_ivar_variant_file + " EXIST\nOmmiting Variant call for  sample " + sample + END_FORMATTING)
             else:
-                logger.info(GREEN + "Recalibration in sample " + sample + END_FORMATTING)
-                recalibrate_bam(args)
+                logger.info(GREEN + "Calling variants with ivar in sample " + sample + END_FORMATTING)
+                ivar_variants(reference, output_markdup_file, out_variant_dir, sample, annotation, min_quality=15, min_frequency_threshold=0.01, min_depth=1)
 
-            #HAPLOTYPE CALL 1/2 FOR HARD FILTERING AND RECALIBRATION
+
+            #VARIANT FILTERING ##################################
+            #####################################################
+            check_create_dir(out_filtered_ivar_dir)
+            out_ivar_filtered_file = os.path.join(out_filtered_ivar_dir, out_ivar_variant_name)
+
+            if os.path.isfile(out_ivar_filtered_file):
+                logger.info(YELLOW + DIM + out_ivar_filtered_file + " EXIST\nOmmiting Variant filtering for  sample " + sample + END_FORMATTING)
+            else:
+                logger.info(GREEN + "Filtering variants in sample " + sample + END_FORMATTING)
+                filter_tsv_variants(out_ivar_variant_file, out_filtered_ivar_dir, min_frequency=0.7, min_total_depth=10, min_alt_dp=4, is_pass=True, only_snp=True)
+            
+            #CREATE CONSENSUS with ivar consensus##################
             #######################################################
-            out_gvcf_name = sample + ".g.vcf"
-            output_gvcf_file = os.path.join(out_gvcf_dir, out_gvcf_name)
+            check_create_dir(out_consensus_dir)
+            out_ivar_consensus_name = sample + ".fa"
+            out_ivar_consensus_file = os.path.join(out_consensus_dir, out_ivar_consensus_name)
 
-            #args.input_bam = output_bqsr_file
-
-            if os.path.isfile(output_gvcf_file):
-                logger.info(YELLOW + DIM + output_gvcf_file + " EXIST\nOmmiting Haplotype Call for sample " + sample + END_FORMATTING)
+            if os.path.isfile(out_ivar_consensus_file):
+                logger.info(YELLOW + DIM + out_ivar_consensus_file + " EXIST\nOmmiting Consensus for  sample " + sample + END_FORMATTING)
             else:
-                logger.info(GREEN + "Haplotype Calling in sample " + sample + END_FORMATTING)
-                haplotype_caller(args, recalibrate=False, ploidy=2, bamout=False, forceactive=False)
-
-    #ONCE ALL GVCF VARIANTS ARE CALLED, THEY ARE GATHERED AND FILTERED 
-    # FOR FINAL CALLING
-    ######################################################################
-    ##############START GROUP CALLING FOR FINAL CALL######################
-    ######################################################################
-    group_name = args.output.split("/")[-1]
-    logger.info("\n\n" + BLUE + BOLD + "STARTING JOINT CALL FOR FINAL CALL IN GROUP: " + group_name + END_FORMATTING + "\n")
-
-    #CALL VARIANTS 2/2 FOR HARD FILTERING AND RECALIBRATION
-    #######################################################
-    out_gvcf_name = group_name + ".cohort.g.vcf"
-    output_gvcf_file = os.path.join(out_gvcf_dir, out_gvcf_name)
-
-    if os.path.isfile(output_gvcf_file):
-        logger.info(YELLOW + DIM + output_gvcfr_file + " EXIST\nOmmiting GVCF Combination for group " + group_name + END_FORMATTING)
-    else:
-        logger.info(GREEN + "GVCF Combination in group " + group_name + END_FORMATTING)
-        combine_gvcf(args, recalibrate=False, all_gvcf=args.enrich_gvcf)
-
-    #CALL VARIANTS 2/2 FOR HARD FILTERING AND RECALIBRATION
-    #######################################################
-    out_vcf_name = group_name + ".cohort.raw.vcf"
-    output_vcf_file = os.path.join(out_vcf_dir, out_vcf_name)
-
-    if os.path.isfile(output_vcf_file):
-        logger.info(YELLOW + DIM + output_vcf_file + " EXIST\nOmmiting Variant Calling (Group) for group " + group_name + END_FORMATTING)
-    else:
-        logger.info(GREEN + "Variant Calling (Group) in group " + group_name + END_FORMATTING)
-        call_variants(args, recalibrate=False, group=True)
-
-    #SELECT VARIANTS 2/2 FOR HARD FILTERING AND RECALIBRATION
-    #########################################################
-    out_vcfsnp_name = group_name + ".cohort.snp.vcf"
-    out_vcfindel_name = group_name + ".cohort.indel.vcf"
-    output_vcfsnp_file = os.path.join(out_vcf_dir, out_vcfsnp_name)
-    output_vcfindel_file = os.path.join(out_vcf_dir, out_vcfindel_name)
-
-    if os.path.isfile(output_vcfsnp_file) and os.path.isfile(output_vcfindel_file):
-        logger.info(YELLOW + DIM + output_vcfsnp_file + " EXIST\nOmmiting Variant Selection (Group) for group " + group_name + END_FORMATTING)
-    else:
-        logger.info(GREEN + "Selecting Variants (Group) in group " + group_name + END_FORMATTING)
-        select_variants(output_vcf_file, select_type='SNP')
-        select_variants(output_vcf_file, select_type='INDEL')
-
-    #HARD FILTER VARIANTS 2/2 FOR RECALIBRATION #############
-    #########################################################
-    out_vcfhfsnp_name = group_name + ".cohort.snp.hf.vcf"
-    out_vcfhfindel_name = group_name + ".cohort.indel.hf.vcf"
-    output_vcfhfsnp_file = os.path.join(out_vcf_dir, out_vcfhfsnp_name)
-    output_vcfhfindel_file = os.path.join(out_vcf_dir, out_vcfhfindel_name)
+                logger.info(GREEN + "Creating consensus with ivar in sample " + sample + END_FORMATTING)
+                ivar_consensus(output_markdup_file, out_consensus_dir, sample, min_quality=20, min_frequency_threshold=0.8, min_depth=20, uncovered_character='N')
+                logger.info(GREEN + "Replacing consensus header in " + sample + END_FORMATTING)
+                replace_consensus_header(out_ivar_consensus_file)
 
 
-    if os.path.isfile(output_vcfhfsnp_file) and os.path.isfile(output_vcfhfindel_file):
-        logger.info(YELLOW + DIM + output_vcfhfsnp_file + " EXIST\nOmmiting Hard Filtering (Group) for group " + group_name + END_FORMATTING)
-    else:
-        logger.info(GREEN + "Hard Filtering Variants (Group) in group " + group_name + END_FORMATTING)
-        hard_filter(output_vcfsnp_file, select_type='SNP')
-        hard_filter(output_vcfindel_file, select_type='INDEL')
+            ########################CREATE STATS AND QUALITY FILTERS########################################################################
+            ################################################################################################################################
+            #CREATE Bamstats#######################################
+            #######################################################
+            check_create_dir(out_stats_dir)
+            check_create_dir(out_stats_bamstats_dir)
+            out_bamstats_name = sample + ".bamstats"
+            out_bamstats_file = os.path.join(out_stats_bamstats_dir, out_bamstats_name)
 
-
-    #PASS FILTER VARIANTS 2/2 FOR RECALIBRATION #############
-    #########################################################
-    out_vcfhfcombined_name = group_name + ".cohort.combined.hf.vcf"
-    output_vcfhfcombined_file = os.path.join(out_vcf_dir, out_vcfhfcombined_name)
-
-
-    if os.path.isfile(output_vcfhfcombined_file):
-        logger.info(YELLOW + DIM + output_vcfhfcombined_file + " EXIST\nOmmiting combination for group " + group_name + END_FORMATTING)
-    else:
-        logger.info(GREEN + "Combining both vcf SNP and INDEL in group " + group_name + END_FORMATTING)
-        combine_vcf(output_vcfhfsnp_file, output_vcfhfindel_file, name_out=False)
-
-    if args.all_cohort == True:
-        split_vcf_saples(output_vcfhfcombined_file, sample_list=False, nocall_fr=args.maxnocallfr)
-    else:
-        split_vcf_saples(output_vcfhfcombined_file, sample_list=sample_list_F, nocall_fr=args.maxnocallfr)
-    ###########################################################################
-    ###########################################################################
-    ###########################################################################
-
-    logger.info(GREEN + "Determinind highly heterozygous and poorly genotyped regions in " + group_name + END_FORMATTING)
-    highly_hetz_to_bed(output_vcfhfcombined_file, "highly_hetz", reference="CHROM", nocall_fr=0.5)
-    non_genotyped_to_bed(output_vcfhfcombined_file, "non_genotyped", reference="CHROM", nocall_fr=0.5)
-
-    for r1_file, r2_file in zip(r1, r2):
-        sample = extract_sample(r1_file, r2_file)
-        args.sample = sample
-        args.output = os.path.abspath(args.output)
-
-        if sample in sample_list_F:
-
-            logger.info("\n" + WHITE_BG + "FINAL FILTERING IN SAMPLE " + sample + END_FORMATTING)
-
-            ################FINAL VCF FILTERING##################
-            #####################################################
-            out_final_name = sample + ".combined.hf.ALL.final.vcf"
-            in_final_name = sample + ".combined.hf.vcf"
-            output_final_vcf = os.path.join(out_vcf_dir, out_final_name)
-            in_final_vcf = os.path.join(out_vcf_dir, in_final_name)
-
-            if os.path.isfile(output_final_vcf):
-                logger.info(YELLOW + DIM + output_final_vcf + " EXIST\nOmmiting Final filter for sample " + sample + END_FORMATTING)
+            if os.path.isfile(out_bamstats_file):
+                logger.info(YELLOW + DIM + out_bamstats_file + " EXIST\nOmmiting Bamstats for  sample " + sample + END_FORMATTING)
             else:
-                logger.info(GREEN + "Final filter in sample " + sample + END_FORMATTING)
-                vcf_consensus_filter(in_final_vcf, distance=1, AF=0.75, QD=15, window_10=3, dp_limit=8, dp_AF=10, AF_dp=0.80,
-                highly_hetz=highly_hetz_bed, 
-                non_genotyped=non_genotyped_bed, 
-                poorly_covered=poorly_covered_bed, 
-                var_type="SNP")
+                logger.info(GREEN + "Creating bamstats in sample " + sample + END_FORMATTING)
+                create_bamstat(output_markdup_file, out_stats_bamstats_dir, sample, threads=args.threads)
 
+            #CREATE Bamstats#######################################
+            #######################################################
+            check_create_dir(out_stats_coverage_dir)
+            out_coverage_name = sample + ".cov"
+            out_coverage_file = os.path.join(out_stats_coverage_dir, out_coverage_name)
+
+            if os.path.isfile(out_coverage_file):
+                logger.info(YELLOW + DIM + out_coverage_file + " EXIST\nOmmiting Bamstats for  sample " + sample + END_FORMATTING)
+            else:
+                logger.info(GREEN + "Creating coverage in sample " + sample + END_FORMATTING)
+                create_coverage(output_markdup_file, out_stats_coverage_dir, sample)
+
+            
+    
+    ###################fastqc OUTPUT FORMAT FOR COMPARISON
+    ######################################################
+    logger.info(GREEN + "Creating summary report for quality result " + END_FORMATTING)
+    format_html_image(out_qc_dir)
+
+    ###############################coverage OUTPUT SUMMARY
+    ######################################################
+    logger.info(GREEN + "Creating summary report for coverage result " + END_FORMATTING)
+    obtain_group_cov_stats(out_stats_coverage_dir, group_name)
+
+    #####################READS and VARIANTS OUTPUT SUMMARY
+    ######################################################
+    logger.info(GREEN + "Creating overal summary report " + END_FORMATTING)
+    obtain_overal_stats(output, group_name)
+
+    ######################################REMOVE UNCOVERED
+    ##############################################################################################################################
+    logger.info(GREEN + "Removing low quality samples" + END_FORMATTING)
+    remove_low_quality(output, min_percentage_20x=args.coverage20, min_hq_snp=args.min_snp, type_remove='Uncovered')
+
+    #ANNOTATION WITH SNPEFF AND USER INPUT ##############
+    #####################################################
+    logger.info("\n\n" + BLUE + BOLD + "STARTING ANNOTATION IN GROUP: " + group_name + END_FORMATTING + "\n")
+    check_create_dir(out_annot_dir)
+    check_create_dir(out_annot_snpeff_dir)
+    check_create_dir(out_annot_pangolin_dir)
+    ####SNPEFF
+    if args.snpeff_database != False:
+        for root, _, files in os.walk(out_filtered_ivar_dir):
+            if root == out_filtered_ivar_dir: 
+                for name in files:
+                    if name.endswith('.tsv'):
+                        sample = name.split('.')[0]
+                        filename = os.path.join(root, name)
+                        out_annot_file = os.path.join(out_annot_snpeff_dir, sample + ".annot")
+                        if os.path.isfile(out_annot_file):
+                            logger.info(YELLOW + DIM + out_annot_file + " EXIST\nOmmiting snpEff Annotation for sample " + sample + END_FORMATTING)
+                        else:
+                            logger.info(GREEN + "Annotating sample with snpEff: " + sample + END_FORMATTING)
+                            output_vcf = os.path.join(out_annot_snpeff_dir, sample + '.vcf')
+                            annotate_snpeff(filename, output_vcf, out_annot_file, database=args.snpeff_database)
+    ####USER DEFINED
+    if not args.annot_bed and not args.annot_vcf:
+        logger.info(YELLOW + BOLD + "Ommiting User Annotation, no BED or VCF files supplied" + END_FORMATTING)
+    else:
+        check_create_dir(out_annot_user_dir)
+        for root, _, files in os.walk(out_filtered_ivar_dir):
+            if root == out_filtered_ivar_dir: 
+                for name in files:
+                    if name.endswith('.tsv'):
+                        sample = name.split('.')[0]
+                        filename = os.path.join(root, name)
+                        out_annot_file = os.path.join(out_annot_user_dir, sample + ".tsv")
+                        user_annotation(filename, out_annot_file, vcf_files=args.annot_vcf, bed_files=args.annot_bed)
+
+
+    ################SNP COMPARISON using tsv variant files
+    ######################################################
+    logger.info("\n\n" + BLUE + BOLD + "STARTING COMPARISON IN GROUP: " + group_name + END_FORMATTING + "\n")
+
+    check_create_dir(out_compare_dir)
+    folder_compare = today + "_" + group_name
+    path_compare = os.path.join(out_compare_dir, folder_compare)
+    check_create_dir(path_compare)
+    full_path_compare = os.path.join(path_compare, group_name)
+
+    #ddtb_add(out_filtered_ivar_dir, full_path_compare)
+    compare_snp_matrix_recal = full_path_compare + ".revised.final.tsv"
+    compare_snp_matrix_recal_intermediate = full_path_compare + ".revised_intermediate.tsv"
+    recalibrated_snp_matrix_intermediate = ddbb_create_intermediate(out_variant_ivar_dir, out_stats_coverage_dir, min_freq_discard=0.1, min_alt_dp=4)
+    recalibrated_snp_matrix_intermediate.to_csv(compare_snp_matrix_recal_intermediate, sep="\t", index=False)
+    recalibrated_revised_df = revised_df(recalibrated_snp_matrix_intermediate, path_compare, min_freq_include=0.7, min_threshold_discard=0.7, remove_faulty=True, drop_samples=True, drop_positions=True)
+    recalibrated_revised_df.to_csv(compare_snp_matrix_recal, sep="\t", index=False)
+    ddtb_compare(compare_snp_matrix_recal, distance=5)
+
+
+    logger.info("\n\n" + MAGENTA + BOLD + "COMPARING FINISHED IN GROUP: " + group_name + END_FORMATTING + "\n")
+
+    """
+ 
     #DETEMINING MIXED ORIGIN IN GROUP######################
     #######################################################
     output_vcfstat_file = os.path.join(out_table_dir, "vcf_stat.tab")
@@ -691,8 +556,9 @@ def main():
     else:
         logger.info("No cleaning was requested")
 
+    
+    """
     logger.info("\n\n" + MAGENTA + BOLD + "#####END OF PIPELINE SNPTB#####" + END_FORMATTING + "\n")
-
 
 if __name__ == '__main__':
     try:

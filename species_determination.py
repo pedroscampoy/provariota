@@ -8,7 +8,7 @@ import pandas as pd
 import numpy as np
 import re
 import subprocess
-from misc import check_create_dir, obtain_output_dir, extract_sample
+from misc import check_create_dir, extract_sample
 
 logger = logging.getLogger()
 

@@ -5,7 +5,7 @@ import gzip
 import argparse
 #import argcomplete
 import subprocess
-from misc import check_file_exists, extract_sample, obtain_output_dir, check_create_dir, get_picard_path, execute_subprocess, check_remove_file
+from misc import check_file_exists, extract_sample, check_create_dir, execute_subprocess, check_remove_file
 
 
 """
@@ -18,6 +18,7 @@ AUTHOR: Pedro J. Sola (pedroscampoy@gmail.com)
 VERSION=0.1
 CREATED: 27 March 2019
 REVISION:
+    20200923 - Revisited for covidma pipeline
 
 TODO
 
@@ -26,45 +27,7 @@ END_OF_HEADER
 ================================================================
 """
 
-
-def get_arguments():
-
-    parser = argparse.ArgumentParser(prog = 'pe_mapper.py', description= 'Creates an index, map reads and convert sam to ordered bam')
-    
-    input_group = parser.add_argument_group('Input', 'Required files to map')
-
-    input_group.add_argument('-1', '--read_1', dest="r1_file", metavar="R1_file[.fastq]", type=str, required=True, help='Input file for R1')
-    input_group.add_argument('-2', '--read_2', dest="r2_file", metavar="R1_file[.fastq]", type=str, required=True, help='Input file for R2')
-    input_group.add_argument('-r', '--reference', type=str, required=True, help='File to map against')
-
-    output_group = parser.add_argument_group('Output')
-
-    output_group.add_argument('-o', '--output', type=str, required=False, help='Output file name, default same as input directory')
-    output_group.add_argument('-s', '--sample', type=str, required=False, help='Sample name to handle output files ')
-
-    params_group = parser.add_argument_group('Parameters', 'map and arguments for each mapper')
-
-    mapper_exclusive = params_group.add_mutually_exclusive_group()
-
-    mapper_exclusive.add_argument("--bowtie2",  dest = "bowtie2_mapper", action="store_false", required= False, help="Uses bowtie2 to map reads (Default)")
-    mapper_exclusive.add_argument("--bwa",  dest = "bwa_mapper", action="store_true", required= False, help="Uses bwa to map reads")
-
-    params_group.add_argument('-a', '--extensive_mapping', action="store_true", required=False, help='Use extensive mapping (Default False)')
-    params_group.add_argument('-T', '--threads', type=str, dest = "threads", required=False, default=4, help='Threads to use')
-    params_group.add_argument('-M', '--memory', type=str, dest = "memory", required=False, default=8, help='MAx memory to use')
-
-
-    arguments = parser.parse_args()
-
-    return arguments
-
-
-
-    # Determine mapper used in pipeline and get the command
-    # bwa index ref.fa && bwa mem ref.fa read1.fq read2.fq > aln-pe.sam
-    # bowtie2-build $database $database &&  bowtie2 -1 $R1 -2 $R2 -S $output_dir/$sample.sam 
-    # -q --very-sensitive-local $a_mapping -p $threads -x $database
-    
+"""
 def bowtie2_mapping(args):
     r1 = os.path.abspath(args.r1_file)
     r2 = os.path.abspath(args.r2_file)
@@ -88,20 +51,18 @@ def bowtie2_mapping(args):
     #bowtie map
     cmd_map = ["bowtie2", "-1", r1, "-2", r2, "-S", output_file, "-q", "--very-sensitive-local", "-p", str(args.threads), "-x", reference, extensive_command]
     execute_subprocess(cmd_map)
+"""
 
 
-
-def bwa_mapping(args):
+def bwa_mapping(r1, r2, reference, sample, output_dir, threads=8):
     """
     #Store output in a file when it is outputted in stdout
     https://stackoverflow.com/questions/4965159/how-to-redirect-output-with-subprocess-in-python
     """
-    r1 = os.path.abspath(args.r1_file)
-    r2 = os.path.abspath(args.r2_file)
-    reference = os.path.abspath(args.reference)
+    r1 = os.path.abspath(r1)
+    r2 = os.path.abspath(r2)
+    reference = os.path.abspath(reference)
 
-    sample = extract_sample(r1,r2)
-    output_dir = obtain_output_dir(args, "Bam")
     sample_name = sample + ".sam"
     output_file = os.path.join(output_dir, sample_name)
 
@@ -110,7 +71,7 @@ def bwa_mapping(args):
     cmd_index = ["bwa", "index", reference]
     execute_subprocess(cmd_index)
     
-    cmd_map = ["bwa", "mem", "-t", str(args.threads), "-o", output_file, reference, r1, r2]
+    cmd_map = ["bwa", "mem", "-Y", "-M", "-t", str(threads), "-o", output_file, reference, r1, r2]
     execute_subprocess(cmd_map)
     """
     Create file whew it outputs thoug stdout --> Easier with -o param
@@ -120,7 +81,7 @@ def bwa_mapping(args):
         stdout=outfile, stderr=subprocess.PIPE, check=True, universal_newlines=True)
     """
 
-def add_SG(args, input_bam, output_bg_sorted):
+def add_SG(sample, input_bam, output_bg_sorted, r1):
     """
     @MN00227:45:000H255J3:1:11102:21214:1110 1:N:0:18
     @NS500454:48:HKG57BGXX:1:11101:17089:1032 2:N:0:TCCTGAGC+TCTTACGC
@@ -134,10 +95,6 @@ def add_SG(args, input_bam, output_bg_sorted):
     PL = Platform/technology used to produce the read (ILLUMINA, SOLID, LS454, HELICOS and PACBIO)
     LB = DNA preparation library identifier
     """
-    r1 = os.path.abspath(args.r1_file)
-    r2 = os.path.abspath(args.r2_file)
-
-    sample = extract_sample(r1,r2)
 
     with gzip.open(r1) as f:
         first_line = f.readline().strip().decode()
@@ -172,18 +129,13 @@ def add_SG(args, input_bam, output_bg_sorted):
     "SORT_ORDER=coordinate"]
     execute_subprocess(cmd)
 
-def sam_to_index_bam(args):
+def sam_to_index_bam(sample, output_dir, r1, threads):
     # input_sam_path = os.path.abspath(input_sam)
     # if output_bam == "inputdir":
     #     output_bam = os.path.dirname(input_sam_path)
     # else:
     #     output_bam = output_bam
 
-    r1 = os.path.abspath(args.r1_file)
-    r2 = os.path.abspath(args.r2_file)
-
-    sample = extract_sample(r1,r2)
-    output_dir = obtain_output_dir(args, "Bam")
     sample_name = sample + ".sam"
     input_sam_path = os.path.join(output_dir, sample_name)
 
@@ -192,39 +144,27 @@ def sam_to_index_bam(args):
     output_bam_name = input_name + ".bam"
     output_bam_path = os.path.join(output_dir, output_bam_name)
 
+    output_sorted_name = input_name + ".sorted.bam"
+    output_sorted_path = os.path.join(output_dir, output_sorted_name)
+
     output_bg_sorted_name = input_name + ".rg.sorted.bam"
     output_bg_sorted_path = os.path.join(output_dir, output_bg_sorted_name)
 
-    check_create_dir(output_dir)
-    """
-    #sam to bam: samtools view -Sb $input_file -o $output_dir/$sample.bam
-    with open(output_bam_path, "w") as outfile:
-        #map reads and save it in th eoutput file
-        subprocess.run(["samtools", "view", "-Sb", input_sam_path], 
-        stdout=outfile, stderr=subprocess.PIPE, check=True, universal_newlines=True)
-    """
-    cmd = ["samtools", "view", "-Sb", input_sam_path, "-o", output_bam_path, "--threads", str(args.threads)]
-    execute_subprocess(cmd)
+    cmd_view = ["samtools", "view", "-Sb", input_sam_path, "--threads", str(threads), "-o", output_bam_path,]
+    execute_subprocess(cmd_view)
 
     check_remove_file(input_sam_path)
-
-    add_SG(args, output_bam_path, output_bg_sorted_path)
+    
+    cmd_sort = ["samtools", "sort", output_bam_path, "-o", output_sorted_path]
+    execute_subprocess(cmd_sort)
 
     check_remove_file(output_bam_path)
 
+    add_SG(sample, output_sorted_path, output_bg_sorted_path, r1)
+
+    check_remove_file(output_sorted_path)
+
     """
-    output_sorted_name = input_name + ".sorted.bam"
-    output_sorted_path = os.path.join(output_dir, output_sorted_name)
-    if os.path.exists(output_sorted_path):
-        os.remove(output_sorted_path)
-    
-    REPLACED BY PICARD TOOLS
-    #samtools sort: samtools sort $output_dir/$sample".sorted.bam" -o $output_dir/$sample".sorted.bam"
-    subprocess.run(["samtools", "sort", output_bam_path, "-o", output_sorted_path], 
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
-
-    os.remove(output_bam_path)
-
     #samtools index: samtools index $output_dir/$sample".sorted.bam"
     subprocess.run(["samtools", "index", output_sorted_path], 
         stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)

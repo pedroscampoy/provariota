@@ -115,10 +115,10 @@ def picard_dictionary(args):
         execute_subprocess(cmd)
 
 
-def samtools_faidx(args):
+def samtools_faidx(input_reference):
     #samtools faidx reference.fa
 
-    input_reference = os.path.abspath(args.reference)
+    input_reference = os.path.abspath(input_reference)
     fai_file_name = input_reference + ".fai"
 
     if os.path.exists(fai_file_name):
@@ -252,15 +252,45 @@ def create_coverage(input_bam, output_dir, sample):
     cmd = "samtools depth -aa {} > {}".format(input_bam, output_file)
     execute_subprocess(cmd, isShell=True)
 
-def freebayes_variants(reference, input_bam, output_variant, sample):
-    vcf_folder = os.path.join(output_variant, 'vcf')
-    check_create_dir(vcf_folder)
+def create_reference_chuncks(input_reference, num_chuncks=100000):
+    
+    input_reference = os.path.abspath(input_reference)
+    input_folder = ("/").join(input_reference.split("/")[0:-1])
+    output_file = os.path.join(input_folder, "reference." + str(num_chuncks) + ".regions")
 
-    output_file = os.path.join(vcf_folder, sample + ".vcf")
+    input_reference_fai = input_reference + ".fai"
 
-    cmd = ['freebayes', '-f', reference, input_bam, '-v', output_file]
+    cmd = " fasta_generate_regions.py {} {} > {}".format(input_reference_fai, num_chuncks, output_file)
+    execute_subprocess(cmd, isShell=True)
 
-    execute_subprocess(cmd)
+    return output_file
+    
+
+def freebayes_variants(reference, input_bam, output_variant, sample, num_chuncks=100000, threads=16):
+    check_create_dir(output_variant)
+    region_file = create_reference_chuncks(reference, num_chuncks=num_chuncks)
+    output_file = os.path.join(output_variant, sample + ".vcf")
+
+    input = {'region_file': region_file,
+            'threads' : str(threads),
+            'reference': reference,
+            'input_bam': input_bam,
+            'output_file': output_file,}
+    
+    cmd = "freebayes-parallel {region_file} {threads} -f {reference} --haplotype-length 0 --use-best-n-alleles 1 --min-alternate-count 1 --min-alternate-fraction 0 --report-monomorphic --pooled-continuous {input_bam} > {output_file} ".format(**input)
+
+    #cmd = ['freebayes-parallel', '<(', 'fasta_generate_regions.py', fai_reference, '10000)', '-f', reference, '--haplotype-length', '0', '--use-best-n-alleles', '1', '--min-alternate-count', '1', '--min-alternate-fraction', '0', '--report-monomorphic', '--pooled-continuous', '-v', output_file, input_bam]
+
+    execute_subprocess(cmd, isShell=True)
+
+# def lowfreq_variants(reference, input_bam, output_variant, sample, threads=16):
+#     check_create_dir(output_variant)
+
+#     output_file = os.path.join(output_variant, sample + ".vcf")
+
+#     cmd = ['lofreq', 'call-parallel', '--call-indels', '--min-cov', '0', '--sig', '1', '--no-default-filter', '--pp-threads', str(threads), '-f', reference, '-o', output_file, input_bam]
+
+#     execute_subprocess(cmd)
 
 if __name__ == '__main__':
     logger.info("#################### BAM RECALL #########################")

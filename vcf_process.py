@@ -289,6 +289,8 @@ def import_VCF42_freebayes_to_df(vcf_file, sep='\t'):
         else:
             df = pd.read_csv(vcf_file, sep=sep, skiprows=[header_lines], header=header_lines)
 
+        df = df[df.ALT != '.']
+
         sample = df.columns[-1]
         df.rename(columns={sample:'sample'}, inplace=True)
         
@@ -298,7 +300,7 @@ def import_VCF42_freebayes_to_df(vcf_file, sep='\t'):
             
             format_fields = data_row['FORMAT'].split(":")
             format_values = data_row['sample'].split(":")
-                                    
+            
             for ifield, ivalue in zip(info_fields,info_values):
                 df.loc[index,ifield] = ivalue
                 
@@ -347,5 +349,72 @@ def import_VCF42_freebayes_to_df(vcf_file, sep='\t'):
     return df[['REGION', 'POS', 'ID', 'REF', 'ALT', 'QUAL', 'FILTER', 'AF', 'AN', 'TOTAL_DP', 'DPB', 'LEN', 
        'NUMALT', 'ODDS', 'TYPE', 'GT', 'AD', 'len_AD', 'REF_DP', 'ALT_DP', 'REF_QUAL', 'ALT_QUAL', 'REF_FREQ', 'ALT_FREQ']]
 
+def import_VCF40_lofreq_to_df(vcf_file, sep='\t'):
+    """
+    Script to read vcf 4.0
+    - now handle correct allele frequency calculated by summing REF reads + ALT reads instead from DP parameter
+    - now retrieve the largest read number for ALT allele frequency in case is a heterozygous SNP (depends on calculate_ALT_AD())
+    - now uses dataframe.iterrows() instead dataframe.index
+    - remove snps with two alternate alleles, keeping the most abundant if this is more at least 3 times more frequent
+    """
 
+    header_lines = 0
+    if vcf_file.endswith(".gz"):
+        with gzip.open(vcf_file, 'rb') as f:
+            first_line = f.readline().decode().strip()
+            next_line = f.readline().decode().strip()
+            while next_line.startswith("##"):
+                header_lines = header_lines + 1
+                next_line = f.readline().decode().strip()
+    else:
+        with open(vcf_file, 'r') as f:
+            first_line = f.readline().strip()
+            next_line = f.readline().strip()
+            while next_line.startswith("##"):
+                header_lines = header_lines + 1
+                next_line = f.readline().strip()
+    
+    if first_line.endswith('VCFv4.0'):
+        
+        #Use first line as header
+        if vcf_file.endswith(".gz"):
+            df = pd.read_csv(vcf_file, compression='gzip', sep=sep, skiprows=[header_lines], header=header_lines)
+        else:
+            df = pd.read_csv(vcf_file, sep=sep, skiprows=[header_lines], header=header_lines)
+    else:
+        print("This vcf file is not v4.0")
+        sys.exit(1)
+    print(df.shape)
+    df = df[df.ALT != '.']
+    print('removed alt')
+    print(df.shape)
+    for index, data_row in df.iterrows():
+            info_fields = [x.split('=')[0] for x in data_row.INFO.split(';')]
+            info_values = [x.split('=')[1] for x in data_row.INFO.split(';')]
 
+                                    
+            for ifield, ivalue in zip(info_fields,info_values):
+                df.loc[index,ifield] = ivalue
+    
+    
+
+    df[['REFF', 'REFR', 'ALTF', 'ALTR']] = df['DP4'].str.split(',', expand=True)
+
+    to_int = ['POS', 'REFF', 'REFR', 'ALTF', 'ALTR' ]
+
+    for column in df.columns:
+        if column in to_int:
+            df[column] = df[column].astype(int)
+
+    df = df.replace('PASS', True)
+                
+    df.rename(columns={'#CHROM':'REGION', 'DP':'TOTAL_DP', 'AF': 'ALT_FREQ', 'FILTER' : 'PASS'}, inplace=True)
+
+    df['REF_DP'] = df.REFF + df.REFR
+    df['ALT_DP'] = df.ALTF + df.ALTR
+
+    return df
+
+def vcf_to_ivar_tsv(input_vcf, output_tsv):
+    df = import_VCF42_freebayes_to_df(input_vcf)
+    df.to_csv(output_tsv, sep="\t", index=False)

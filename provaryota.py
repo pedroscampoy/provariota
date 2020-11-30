@@ -19,8 +19,8 @@ from misc import check_file_exists, extract_sample, check_create_dir, execute_su
 from preprocessing import fastqc_quality, fastp_trimming, format_html_image
 from pe_mapper import bwa_mapping, sam_to_index_bam
 from bam_variant import picard_dictionary, samtools_faidx, picard_markdup, ivar_consensus, \
-    replace_consensus_header, create_bamstat, create_coverage
-from vcf_process import filter_tsv_variants, import_VCF42_freebayes_to_df
+    replace_consensus_header, create_bamstat, create_coverage, freebayes_variants
+from vcf_process import filter_tsv_variants, vcf_to_ivar_tsv
 from annotation import annotate_snpeff, annotate_pangolin, user_annotation
 from compare_snp import ddtb_add, ddtb_compare, ddbb_create_intermediate, revised_df
 
@@ -77,15 +77,14 @@ def main():
 
         input_group.add_argument('-i', '--input', dest="input_dir", metavar="input_directory", type=str, required=True, help='REQUIRED.Input directory containing all fast[aq] files')
         input_group.add_argument('-r', '--reference', metavar="reference", type=str, required=True, help='REQUIRED. File to map against')
-        input_group.add_argument('-a', '--annotation', metavar="annotation", type=str, required=True, help='REQUIRED. gff3 file to annotate variants')
         input_group.add_argument('-s', '--sample', metavar="sample", type=str, required=False, help='Sample to identify further files')
         input_group.add_argument('-S', '--sample_list', type=str, required=False, help='Sample names to analyse only in the file supplied')
         input_group.add_argument('-p', '--primers', type=str, default=False, required=False, help='Bed file including primers to trim')
         
         quality_group = parser.add_argument_group('Quality parameters', 'parameters for diferent triming conditions')
 
-        quality_group.add_argument('-c', '--coverage20', type=int, default=90, required=False, help='Minimum percentage of coverage at 20x to clasify as uncovered (Default 90)')
-        quality_group.add_argument('-n', '--min_snp', type=int, required=False, default=1, help='SNP number to pass quality threshold')
+        quality_group.add_argument('-c', '--mincoverage', type=int, default=10, required=False, help='Minimum percentage of uncovered (Default 10)')
+        quality_group.add_argument('-n', '--min_snp', type=int, required=False, default=3, help='SNP number to pass quality threshold')
 
         output_group = parser.add_argument_group('Output', 'Required parameter to output results')
 
@@ -120,7 +119,6 @@ def main():
     output = os.path.abspath(args.output)
     group_name = output.split("/")[-1]
     reference = os.path.abspath(args.reference)
-    annotation = os.path.abspath(args.annotation)
 
     #LOGGING
     #Create log file with date and time
@@ -177,7 +175,7 @@ def main():
     #####################################################
     
     #picard_dictionary(args)
-    samtools_faidx(args)
+    samtools_faidx(args.reference)
 
     #DECLARE FOLDERS CREATED IN PIPELINE ################
     #AND KEY FILES ######################################
@@ -186,6 +184,7 @@ def main():
     #script_dir = os.path.dirname(os.path.realpath(__file__))
 
     #Output related
+    #out_ref_dir = os.path.join(output, "Reference")
     out_qc_dir = os.path.join(output, "Quality")
     out_qc_pre_dir = os.path.join(out_qc_dir, "raw") #subfolder
     out_qc_post_dir = os.path.join(out_qc_dir, "processed") #subfolder
@@ -320,40 +319,43 @@ def main():
             #VARIANT CALLING WTIH ivar variants##################
             #####################################################
             check_create_dir(out_variant_dir)
-            out_ivar_variant_name = sample + ".tsv"
-            out_ivar_variant_file = os.path.join(out_variant_ivar_dir, out_ivar_variant_name)
+            check_create_dir(out_variant_freebayes_dir)
+            out_freebayes_variant_name = sample + ".vcf"
+            out_freebayes_variant_file = os.path.join(out_variant_freebayes_dir, out_freebayes_variant_name)
 
-            if os.path.isfile(out_ivar_variant_file):
-                logger.info(YELLOW + DIM + out_ivar_variant_file + " EXIST\nOmmiting Variant call for  sample " + sample + END_FORMATTING)
+            if os.path.isfile(out_freebayes_variant_file):
+                logger.info(YELLOW + DIM + out_freebayes_variant_file + " EXIST\nOmmiting Variant call for  sample " + sample + END_FORMATTING)
             else:
-                logger.info(GREEN + "Calling variants with ivar in sample " + sample + END_FORMATTING)
-                ivar_variants(reference, output_markdup_file, out_variant_dir, sample, annotation, min_quality=15, min_frequency_threshold=0.01, min_depth=1)
+                logger.info(GREEN + "Calling variants with freebayes in sample " + sample + END_FORMATTING)
+                freebayes_variants(reference, output_markdup_file, out_variant_freebayes_dir, sample)
 
 
-            #VARIANT FILTERING ##################################
+            #VARIANT FORMAT ADAPTATION TO IVAR ##################
             #####################################################
-            check_create_dir(out_filtered_ivar_dir)
-            out_ivar_filtered_file = os.path.join(out_filtered_ivar_dir, out_ivar_variant_name)
-
-            if os.path.isfile(out_ivar_filtered_file):
-                logger.info(YELLOW + DIM + out_ivar_filtered_file + " EXIST\nOmmiting Variant filtering for  sample " + sample + END_FORMATTING)
-            else:
-                logger.info(GREEN + "Filtering variants in sample " + sample + END_FORMATTING)
-                filter_tsv_variants(out_ivar_variant_file, out_filtered_ivar_dir, min_frequency=0.7, min_total_depth=10, min_alt_dp=4, is_pass=True, only_snp=True)
+            check_create_dir(out_filtered_freebayes_dir)
+            out_ivar_variant_name = sample + ".tsv"
+            out_freebayes_filtered_file = os.path.join(out_filtered_freebayes_dir, out_ivar_variant_name)
             
-            #CREATE CONSENSUS with ivar consensus##################
+
+            if os.path.isfile(out_freebayes_filtered_file):
+                logger.info(YELLOW + DIM + out_freebayes_filtered_file + " EXIST\nOmmiting format adaptation for  sample " + sample + END_FORMATTING)
+            else:
+                logger.info(GREEN + "Adapting variants format in sample " + sample + END_FORMATTING)
+                vcf_to_ivar_tsv(out_freebayes_variant_file, out_freebayes_filtered_file)
+            
+            #CREATE CONSENSUS with freebayes consensus##################
             #######################################################
             check_create_dir(out_consensus_dir)
-            out_ivar_consensus_name = sample + ".fa"
-            out_ivar_consensus_file = os.path.join(out_consensus_dir, out_ivar_consensus_name)
+            out_freebayes_consensus_name = sample + ".fa"
+            out_freebayes_consensus_file = os.path.join(out_consensus_dir, out_freebayes_consensus_name)
 
-            if os.path.isfile(out_ivar_consensus_file):
-                logger.info(YELLOW + DIM + out_ivar_consensus_file + " EXIST\nOmmiting Consensus for  sample " + sample + END_FORMATTING)
+            if os.path.isfile(out_freebayes_consensus_file):
+                logger.info(YELLOW + DIM + out_freebayes_consensus_file + " EXIST\nOmmiting Consensus for  sample " + sample + END_FORMATTING)
             else:
-                logger.info(GREEN + "Creating consensus with ivar in sample " + sample + END_FORMATTING)
+                logger.info(GREEN + "Creating consensus with freebayes in sample " + sample + END_FORMATTING)
                 ivar_consensus(output_markdup_file, out_consensus_dir, sample, min_quality=20, min_frequency_threshold=0.8, min_depth=20, uncovered_character='N')
                 logger.info(GREEN + "Replacing consensus header in " + sample + END_FORMATTING)
-                replace_consensus_header(out_ivar_consensus_file)
+                replace_consensus_header(out_freebayes_consensus_file)
 
 
             ########################CREATE STATS AND QUALITY FILTERS########################################################################
@@ -393,28 +395,27 @@ def main():
     ###############################coverage OUTPUT SUMMARY
     ######################################################
     logger.info(GREEN + "Creating summary report for coverage result " + END_FORMATTING)
-    obtain_group_cov_stats(out_stats_coverage_dir, group_name)
+    #obtain_group_cov_stats(out_stats_coverage_dir, group_name)
 
     #####################READS and VARIANTS OUTPUT SUMMARY
     ######################################################
     logger.info(GREEN + "Creating overal summary report " + END_FORMATTING)
-    obtain_overal_stats(output, group_name)
+    #obtain_overal_stats(output, group_name)
 
     ######################################REMOVE UNCOVERED
     ##############################################################################################################################
     logger.info(GREEN + "Removing low quality samples" + END_FORMATTING)
-    remove_low_quality(output, min_percentage_20x=args.coverage20, min_hq_snp=args.min_snp, type_remove='Uncovered')
+    #remove_low_quality(output, min_coverage=args.mincoverage, min_hq_snp=args.min_snp, type_remove='Uncovered')
 
     #ANNOTATION WITH SNPEFF AND USER INPUT ##############
     #####################################################
     logger.info("\n\n" + BLUE + BOLD + "STARTING ANNOTATION IN GROUP: " + group_name + END_FORMATTING + "\n")
     check_create_dir(out_annot_dir)
     check_create_dir(out_annot_snpeff_dir)
-    check_create_dir(out_annot_pangolin_dir)
     ####SNPEFF
     if args.snpeff_database != False:
-        for root, _, files in os.walk(out_filtered_ivar_dir):
-            if root == out_filtered_ivar_dir: 
+        for root, _, files in os.walk(out_filtered_freebayes_dir):
+            if root == out_filtered_freebayes_dir: 
                 for name in files:
                     if name.endswith('.tsv'):
                         sample = name.split('.')[0]
@@ -431,8 +432,8 @@ def main():
         logger.info(YELLOW + BOLD + "Ommiting User Annotation, no BED or VCF files supplied" + END_FORMATTING)
     else:
         check_create_dir(out_annot_user_dir)
-        for root, _, files in os.walk(out_filtered_ivar_dir):
-            if root == out_filtered_ivar_dir: 
+        for root, _, files in os.walk(out_filtered_freebayes_dir):
+            if root == out_filtered_freebayes_dir: 
                 for name in files:
                     if name.endswith('.tsv'):
                         sample = name.split('.')[0]
@@ -451,12 +452,12 @@ def main():
     check_create_dir(path_compare)
     full_path_compare = os.path.join(path_compare, group_name)
 
-    #ddtb_add(out_filtered_ivar_dir, full_path_compare)
+    #ddtb_add(out_filtered_freebayes_dir, full_path_compare)
     compare_snp_matrix_recal = full_path_compare + ".revised.final.tsv"
     compare_snp_matrix_recal_intermediate = full_path_compare + ".revised_intermediate.tsv"
-    recalibrated_snp_matrix_intermediate = ddbb_create_intermediate(out_variant_ivar_dir, out_stats_coverage_dir, min_freq_discard=0.1, min_alt_dp=4)
+    recalibrated_snp_matrix_intermediate = ddbb_create_intermediate(out_filtered_freebayes_dir, out_stats_coverage_dir, min_freq_discard=0.1, min_alt_dp=4)
     recalibrated_snp_matrix_intermediate.to_csv(compare_snp_matrix_recal_intermediate, sep="\t", index=False)
-    recalibrated_revised_df = revised_df(recalibrated_snp_matrix_intermediate, path_compare, min_freq_include=0.7, min_threshold_discard=0.7, remove_faulty=True, drop_samples=True, drop_positions=True)
+    recalibrated_revised_df = revised_df(recalibrated_snp_matrix_intermediate, path_compare, min_freq_include=0.7, min_threshold_discard_uncov_sample=0.4, min_threshold_discard_uncov_pos=0.4, min_threshold_discard_htz_sample=0.7, min_threshold_discard_htz_pos=0.4, remove_faulty=True, drop_samples=True, drop_positions=True)
     recalibrated_revised_df.to_csv(compare_snp_matrix_recal, sep="\t", index=False)
     ddtb_compare(compare_snp_matrix_recal, distance=5)
 

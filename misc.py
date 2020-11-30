@@ -259,25 +259,22 @@ def extract_snp_count(output_dir,sample):
     if '.' in sample:
         sample = sample.split('.')[0]
     variants_folder = os.path.join(output_dir, 'Variants')
-    raw_var_folder = os.path.join(variants_folder, 'ivar_raw')
+    raw_var_folder = os.path.join(variants_folder, 'freebayes_filtered')
     filename = os.path.join(raw_var_folder, sample + ".tsv")
 
     if os.path.exists(filename):
         df = pd.read_csv(filename, sep="\t")
         df = df.drop_duplicates(subset=['POS', 'REF', 'ALT'], keep="first")
-        high_quality_snps = df["POS"][(df.PASS == True) &
-                    (df.ALT_DP >= 20) &
+        high_quality_snps = df["POS"][(df.ALT_DP >= 20) &
                     (df.ALT_FREQ >= 0.8) &
-                    ~(df.ALT.str.startswith('+') | df.ALT.str.startswith('-'))].tolist()
-        htz_snps = df["POS"][(df.PASS == True) &
-                    (df.ALT_DP >= 20) &
+                    (df.TYPE == 'snp')].tolist()
+        htz_snps = df["POS"][(df.ALT_DP >= 20) &
                     (df.ALT_FREQ < 0.8) &
                     (df.ALT_FREQ >= 0.2) &
-                    ~(df.ALT.str.startswith('+') | df.ALT.str.startswith('-'))].tolist()
-        indels = df["POS"][(df.PASS == True) &
-                    (df.ALT_DP >= 20) &
+                    (df.TYPE == 'snp')].tolist()
+        indels = df["POS"][(df.ALT_DP >= 20) &
                     (df.ALT_FREQ >= 0.8) &
-                    (df.ALT.str.startswith('+') | df.ALT.str.startswith('-'))].tolist()
+                    ((df.TYPE == 'ins') | (df.TYPE == 'del'))].tolist()
         return (len(high_quality_snps), len(htz_snps), len(indels))
     else:
         logger.debug("FILE " + filename + " NOT FOUND" )
@@ -359,20 +356,13 @@ def edit_sample_list(file_list, sample_list):
                     fout.write(line + "\n")
 
 
-def remove_low_quality(output_dir, min_percentage_20x=90, min_hq_snp=1, type_remove='Uncovered'):
+def remove_low_quality(output_dir, min_coverage=20, min_hq_snp=2, type_remove='Uncovered'):
     right_now = str(datetime.datetime.now())
     right_now_full = "_".join(right_now.split(" "))
     output_dir = os.path.abspath(output_dir)
     uncovered_dir = os.path.join(output_dir, type_remove) #Uncovered or Mixed
-    variant_dir = output_dir + '/Variants/ivar_filtered'
-    consensus_dir = os.path.join(output_dir , 'Consensus')
-    uncovered_variant_dir = os.path.join(uncovered_dir , 'Variants')
-    uncovered_consensus_dir = os.path.join(uncovered_dir , 'Consensus')
-    uncovered_variant_filter = os.path.join(uncovered_variant_dir , 'ivar_filtered')
+
     check_create_dir(uncovered_dir)
-    check_create_dir(uncovered_variant_dir)
-    check_create_dir(uncovered_variant_filter)
-    check_create_dir(uncovered_consensus_dir)
 
     uncovered_samples = []
     
@@ -385,7 +375,7 @@ def remove_low_quality(output_dir, min_percentage_20x=90, min_hq_snp=1, type_rem
                 if name.endswith('overal.stats.tab'):
                     coverage_stat_file = filename
                     stats_df = pd.read_csv(coverage_stat_file, sep="\t")
-                    uncovered_samples = stats_df['#SAMPLE'][(stats_df['COV>20X'] < min_percentage_20x) |
+                    uncovered_samples = stats_df['#SAMPLE'][(stats_df['UNMMAPED_PROP'] >= min_coverage) |
                                                             (stats_df['HQ_SNP'] < min_hq_snp)].tolist()
                     #create a df with only covered to replace the original
                     covered_df = stats_df[~stats_df['#SAMPLE'].isin(uncovered_samples)]
@@ -416,18 +406,6 @@ def remove_low_quality(output_dir, min_percentage_20x=90, min_hq_snp=1, type_rem
                 sample = re.search(r'^(.+?)[._-]', name).group(1)
                 if sample in uncovered_samples:
                     os.remove(filename)
-
-    for sample in uncovered_samples:
-        sample = str(sample)
-        source_uncovered_var = os.path.join(variant_dir, sample + '.tsv')
-        dest_uncovered_var = os.path.join(uncovered_variant_filter, sample + '.tsv')
-        source_uncovered_cons = os.path.join(consensus_dir, sample + '.fa')
-        dest_uncovered_cons = os.path.join(uncovered_consensus_dir, sample + '.fa')
-        source_uncovered_cons_qual = os.path.join(consensus_dir, sample + '.qual.txt')
-        dest_uncovered_cons_qual = os.path.join(uncovered_consensus_dir, sample + '.qual.txt')
-        shutil.move(source_uncovered_var, dest_uncovered_var)
-        shutil.move(source_uncovered_cons, dest_uncovered_cons)
-        shutil.move(source_uncovered_cons_qual, dest_uncovered_cons_qual)
     
     #return uncovered_samples
 

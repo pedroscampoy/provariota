@@ -82,11 +82,11 @@ def import_tsv_variants(tsv_file,  min_total_depth=4, min_alt_dp=4, only_snp=Tru
     df = df[((df.TOTAL_DP >= min_total_depth) &
                     (df.ALT_DP >= min_alt_dp))]
 
-    df = df[['REGION','POS', 'REF', 'ALT', 'ALT_FREQ']]
+    df = df[['REGION','POS', 'REF', 'ALT', 'ALT_FREQ', 'TYPE']]
     df = df.rename(columns={'ALT_FREQ' : sample})
     if only_snp == True:
-        #df = df[df.TYPE == 'snp']
-        #df = df.drop(['TYPE'], axis=1)
+        df = df[df.TYPE == 'snp']
+        df = df.drop(['TYPE'], axis=1)
         return df
     else:
         return df
@@ -102,12 +102,12 @@ def extract_lowfreq(tsv_file,  min_total_depth=4, min_alt_dp=4, min_freq_include
     df = df[(df.ALT_DP < min_alt_dp) &
             (df.ALT_FREQ >= min_freq_include)]
 
-    df = df[['REGION','POS', 'REF', 'ALT', 'ALT_FREQ']]
+    df = df[['REGION','POS', 'REF', 'ALT', 'ALT_FREQ', 'TYPE']]
     df['ALT_FREQ'] = '?'
     df = df.rename(columns={'ALT_FREQ' : sample})
     if only_snp == True:
-        #df = df[df.TYPE == 'snp']
-        #df = df.drop(['TYPE'], axis=1)
+        df = df[df.TYPE == 'snp']
+        df = df.drop(['TYPE'], axis=1)
         return df
     else:
         return df
@@ -123,7 +123,7 @@ def extract_uncovered(cov_file, min_total_depth=4):
     df = df.replace(0,'!')
     return df
 
-def ddbb_create_intermediate(variant_dir, coverage_dir, min_freq_discard=0.1, min_alt_dp=4):
+def ddbb_create_intermediate(variant_dir, coverage_dir, min_freq_discard=0.1, min_alt_dp=10):
     df = pd.DataFrame(columns=['REGION','POS', 'REF', 'ALT'])
     #Merge all raw
     for root, _, files in os.walk(variant_dir):
@@ -152,7 +152,7 @@ def ddbb_create_intermediate(variant_dir, coverage_dir, min_freq_discard=0.1, mi
                     filename = os.path.join(root, name)
                     sample = name.split('.')[0]
                     logger.debug("Adding lowfreqs: " + sample)
-                    dfl = extract_lowfreq(filename, min_total_depth=4, min_alt_dp=4, only_snp=True)
+                    dfl = extract_lowfreq(filename, min_total_depth=4, min_alt_dp=min_alt_dp, only_snp=True)
                     df[sample].update(df[['REGION', 'POS', 'REF', 'ALT']].merge(dfl, on=['REGION', 'POS', 'REF', 'ALT'], how='left')[sample])
 
     #Include uncovered

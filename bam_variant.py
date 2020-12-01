@@ -277,7 +277,7 @@ def freebayes_variants(reference, input_bam, output_variant, sample, num_chuncks
             'input_bam': input_bam,
             'output_file': output_file,}
     
-    cmd = "freebayes-parallel {region_file} {threads} -f {reference} --haplotype-length 0 --use-best-n-alleles 1 --min-alternate-count 1 --min-alternate-fraction 0 --report-monomorphic --pooled-continuous {input_bam} > {output_file} ".format(**input)
+    cmd = "freebayes-parallel {region_file} {threads} -f {reference} --haplotype-length 0 --use-best-n-alleles 1 --min-alternate-count 0 --min-alternate-fraction 0 {input_bam} > {output_file} ".format(**input)
 
     #cmd = ['freebayes-parallel', '<(', 'fasta_generate_regions.py', fai_reference, '10000)', '-f', reference, '--haplotype-length', '0', '--use-best-n-alleles', '1', '--min-alternate-count', '1', '--min-alternate-fraction', '0', '--report-monomorphic', '--pooled-continuous', '-v', output_file, input_bam]
 

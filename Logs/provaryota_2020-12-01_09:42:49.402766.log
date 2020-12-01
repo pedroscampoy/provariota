@@ -1,0 +1,20 @@
+2020-12-01 09:42:49,402:
+
+[34m[1mSTARTING PIPELINE IN GROUP: provaryota[0m
+2020-12-01 09:42:49,403:ARGUMENTS:
+2020-12-01 09:42:49,403:Namespace(annot_bed=[], annot_vcf=[], input_dir='.', mash_database=False, memory=32, min_snp=3, mincoverage=10, noclean=True, output='.', primers=False, reference='/home/laura/DATABASES/REFERENCES/ancestorII/MTB_ancestorII_reference.fasta', sample=None, sample_list=None, snpeff_database=False, threads=16)
+2020-12-01 09:42:49,403:
+No samples to filter
+2020-12-01 09:42:49,403:
+0 samples will be analysed: 
+2020-12-01 09:42:49,403:/home/laura/DATABASES/REFERENCES/ancestorII/MTB_ancestorII_reference.fasta.fai already EXIST
+2020-12-01 09:42:49,404:[32mCreating summary report for quality result [0m
+2020-12-01 09:42:49,404:[Errno 2] No such file or directory: '/home/laura/DEVELOP/provaryota/Quality/fastq_image_report.html'
+Traceback (most recent call last):
+  File "/home/laura/DEVELOP/provaryota/provaryota.py", line 566, in <module>
+    main()
+  File "/home/laura/DEVELOP/provaryota/provaryota.py", line 393, in main
+    format_html_image(out_qc_dir)
+  File "/home/laura/DEVELOP/provaryota/preprocessing.py", line 183, in format_html_image
+    with open(output_file, 'w+') as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/home/laura/DEVELOP/provaryota/Quality/fastq_image_report.html'

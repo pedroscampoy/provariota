@@ -39,6 +39,7 @@ def get_arguments():
     parser.add_argument('-d', '--distance', default=0, required=False, help='Minimun distance to cluster groups after comparison')
     parser.add_argument('-c', '--only-compare', dest="only_compare", required=False, default=False, help='Add already calculated snp binary matrix')
     parser.add_argument('-r', '--recalibrate', required= False, type=str, default=False, help='Coverage folder')
+    parser.add_argument('-b', '--bam_folder', required= False, type=str, default=False, help='Bam folder')
     parser.add_argument('-R', '--reference', required= False, type=str, default=False, help='Reference fasta file used in original variant calling')
 
     parser.add_argument('-o', '--output', type=str, required=True, help='Name of all the output files, might include path')
@@ -554,7 +555,10 @@ def recheck_variant_mpileup_intermediate(reference_id, position, alt_snp, sample
     bases will be presented as * in the following lines. Also at the read base column, a symbol ^ marks the start of a read. The ASCII of the
     character following ^ minus 33 gives the mapping quality. A symbol $ marks the end of a read segment
     """
-    previous_binary = int(previous_binary)
+    if previous_binary != 0 or previous_binary != '0':
+        return previous_binary
+
+    #previous_binary = int(previous_binary)
     position = int(position)
 
     #Identify correct bam
@@ -897,9 +901,12 @@ if __name__ == '__main__':
             coverage_dir = os.path.abspath(args.recalibrate)
             compare_snp_matrix_recal = group_compare + ".revised.final.tsv"
             compare_snp_matrix_recal_intermediate = group_compare + ".revised_intermediate.tsv"
-            recalibrated_snp_matrix_intermediate = ddbb_create_intermediate(input_dir, coverage_dir, min_freq_discard=0.1, min_alt_dp=4)
+            compare_snp_matrix_recal_mpileup = group_compare + ".revised_intermediate_mpileup.tsv"
+            recalibrated_snp_matrix_intermediate = ddbb_create_intermediate(input_dir, coverage_dir, min_freq_discard=0.1, min_alt_dp=10)
             recalibrated_snp_matrix_intermediate.to_csv(compare_snp_matrix_recal_intermediate, sep="\t", index=False)
-            recalibrated_revised_df = revised_df(recalibrated_snp_matrix_intermediate, output_dir, min_freq_include=0.7, min_threshold_discard_uncov_sample=0.4, min_threshold_discard_uncov_pos=0.4, min_threshold_discard_htz_sample=0.4, min_threshold_discard_htz_pos=0.4, remove_faulty=True, drop_samples=True, drop_positions=True)
+            recalibrated_snp_matrix_mpileup = recalibrate_ddbb_vcf_intermediate(recalibrated_snp_matrix_intermediate, args.bam_folder)
+            recalibrated_snp_matrix_mpileup.to_csv(compare_snp_matrix_recal_mpileup, sep="\t", index=False)
+            recalibrated_revised_df = revised_df(recalibrated_snp_matrix_mpileup, output_dir, min_freq_include=0.7, min_threshold_discard_uncov_sample=0.4, min_threshold_discard_uncov_pos=0.4, min_threshold_discard_htz_sample=0.4, min_threshold_discard_htz_pos=0.4, remove_faulty=True, drop_samples=True, drop_positions=True)
             recalibrated_revised_df.to_csv(compare_snp_matrix_recal, sep="\t", index=False)
             ddtb_compare(compare_snp_matrix_recal, distance=args.distance)
     else:

@@ -540,7 +540,7 @@ def revised_df(df, out_dir=False, min_freq_include=0.7, min_threshold_discard_un
     
     return df
 
-def recheck_variant_mpileup_intermediate(reference_id, position, alt_snp, sample, previous_binary, bam_folder):
+def recheck_variant_mpileup_intermediate(reference_id, position, alt_snp, sample, previous_binary, bam_folder, min_cov_low_freq = 10):
 
     """
     http://www.htslib.org/doc/samtools-mpileup.html
@@ -555,70 +555,65 @@ def recheck_variant_mpileup_intermediate(reference_id, position, alt_snp, sample
     bases will be presented as * in the following lines. Also at the read base column, a symbol ^ marks the start of a read. The ASCII of the
     character following ^ minus 33 gives the mapping quality. A symbol $ marks the end of a read segment
     """
-    if previous_binary != 0 or previous_binary != '0':
+    if previous_binary != 0 and previous_binary != '0':
+        logger.info('NON0: {} in sample {} is not 0: {}'.format(position, sample, previous_binary))
         return previous_binary
-
-    #previous_binary = int(previous_binary)
-    position = int(position)
-
-    #Identify correct bam
-    for root, _, files in os.walk(bam_folder):
-        for name in files:
-            filename = os.path.join(root, name)
-            sample_file = name.split('.')[0]
-            if name.startswith(sample) and sample_file == sample and name.endswith(".bam"):
-                bam_file = filename
-    #format position for mpileup execution (NC_000962.3:632455-632455)
-    position_format = reference_id + ":" + str(position) + "-" + str(position)
-    
-    #Execute command and retrieve output
-    cmd = ["samtools", "mpileup", "-aa", "-r", position_format, bam_file]
-    text_mpileup = subprocess.run(cmd,stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True, universal_newlines=True) 
-    split_mpileup = text_mpileup.stdout.split()
-    #Extract 5th column to find variants
-    mpileup_reference = split_mpileup[0]
-    mpileup_position = int(split_mpileup[1])
-    mpileup_depth = int(split_mpileup[3])
-    mpileup_variants = split_mpileup[4]
-    variant_list = list(mpileup_variants)
-    variants_to_account = ['A', 'T', 'C', 'G', '.', ',']
-    variant_upper_list = [x.upper() for x in variant_list]
-    variant_upper_list = [x for x in variant_upper_list if x in variants_to_account]
-
-    if len(variant_upper_list) == 0:
-        most_counted_variant = "*"
-        mpileup_depth = 0
-
-    if reference_id != mpileup_reference:
-        logger.info('ERROR: References are different')
-        sys.exit(1)
     else:
-        if  mpileup_depth == 0:
-            logger.info('WARNING: SAMPLE: {} has 0 depth in position {}'.format(sample, position))
-            return '!'
+        #previous_binary = int(previous_binary)
+        position = int(position)
 
-        elif mpileup_depth > 0:
-            most_counted_variant = max(set(variant_upper_list), key = variant_upper_list.count)
-            count_all_variants = {x:variant_upper_list.count(x) for x in variant_upper_list}
-            freq_most_frequent = count_all_variants[most_counted_variant]/len(variant_upper_list)
-            freq_most_frequent = round(freq_most_frequent,2)
+        #Identify correct bam
+        for root, _, files in os.walk(bam_folder):
+            for name in files:
+                filename = os.path.join(root, name)
+                sample_file = name.split('.')[0]
+                if name.startswith(sample) and sample_file == sample and name.endswith(".bam"):
+                    bam_file = filename
+        #format position for mpileup execution (NC_000962.3:632455-632455)
+        position_format = reference_id + ":" + str(position) + "-" + str(position)
+        
+        #Execute command and retrieve output
+        cmd = ["samtools", "mpileup", "-aa", "-r", position_format, bam_file]
+        text_mpileup = subprocess.run(cmd,stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True, universal_newlines=True) 
+        split_mpileup = text_mpileup.stdout.split()
+        #Extract 5th column to find variants
+        mpileup_reference = split_mpileup[0]
+        mpileup_position = int(split_mpileup[1])
+        mpileup_depth = int(split_mpileup[3])
+        mpileup_variants = split_mpileup[4]
+        variant_list = list(mpileup_variants)
+        variants_to_account = ['A', 'T', 'C', 'G', '.', ',']
+        variant_upper_list = [x.upper() for x in variant_list]
+        variant_upper_list = [x for x in variant_upper_list if x in variants_to_account]
 
-            if (most_counted_variant == alt_snp) and (freq_most_frequent < 0.8) and (freq_most_frequent >= 0.1):
-                logger.info('WARNING: SAMPLE: {} has heterozygous position at {} with frequency {}'.format(sample, position, freq_most_frequent))
-                return freq_most_frequent
+        if len(variant_upper_list) == 0:
+            most_counted_variant = "*"
+            mpileup_depth = 0
 
-            elif (most_counted_variant == ".") or (most_counted_variant == ",") or (most_counted_variant == "*") or (freq_most_frequent < 0.8) or (most_counted_variant != alt_snp):
-                if previous_binary != 0:
-                    logger.info('SAMPLE: {} has been corrected in position {}: {}=>0'.format(sample, position, previous_binary))
-                return 0
-            elif (most_counted_variant == alt_snp) and (freq_most_frequent >= 0.8) and (position == mpileup_position):
-                if previous_binary != 1:
-                    logger.info('SAMPLE: {} has been corrected in position {}: {}=>1'.format(sample, position, previous_binary))
-                return 1
-            else:
-                return 'Ñ'
+        if reference_id != mpileup_reference:
+            logger.info('ERROR: References are different')
+            sys.exit(1)
+        else:
+            if  mpileup_depth == 0:
+                logger.info('WARNING: SAMPLE: {} has 0 depth in position {}. BEFORE: {}'.format(sample, position, previous_binary))
+                return '!'
+            elif mpileup_depth > 0:
+                most_counted_variant = max(set(variant_upper_list), key = variant_upper_list.count)
+                count_all_variants = {x:variant_upper_list.count(x) for x in variant_upper_list}
+                freq_most_frequent = count_all_variants[most_counted_variant]/len(variant_upper_list)
+                freq_most_frequent = round(freq_most_frequent,2)
 
-def recalibrate_ddbb_vcf_intermediate(snp_matrix_ddbb_file, bam_folder):
+                if (most_counted_variant == alt_snp) and (freq_most_frequent >= 0.1) and (mpileup_depth > min_cov_low_freq):
+                    logger.info('WARNING: SAMPLE: {} has heterozygous position at {} with frequency {}. BEFORE: {}'.format(sample, position, freq_most_frequent, previous_binary))
+                    return freq_most_frequent
+                elif (most_counted_variant == alt_snp) and (freq_most_frequent >= 0.6) and (mpileup_depth <= min_cov_low_freq):
+                    logger.info('WARNING: SAMPLE: {} has lowcov position at {} with frequency {}. BEFORE: {}'.format(sample, position, freq_most_frequent, previous_binary))
+                    return '?'
+                else:
+                    logger.info('ELSE {}, most_counted_variant {}, freq_most_frequent {}'.format(text_mpileup.stdout, most_counted_variant, freq_most_frequent))
+                    return freq_most_frequent
+
+def recalibrate_ddbb_vcf_intermediate(snp_matrix_ddbb_file, bam_folder, min_cov_low_freq = 10):
     
     df_matrix = pd.read_csv(snp_matrix_ddbb_file, sep="\t")
     
@@ -636,7 +631,7 @@ def recalibrate_ddbb_vcf_intermediate(snp_matrix_ddbb_file, bam_folder):
         #Use enumerate to retrieve column index (column ondex + 3)
         #find positions with frequency >80% in mpileup execution
         #Returns ! for coverage 0
-        new_presence_row = [recheck_variant_mpileup_intermediate(row_reference, row_position, row_alt_snp, df_matrix.columns[n + 3], x, bam_folder) for n,x in enumerate(data_row)]
+        new_presence_row = [recheck_variant_mpileup_intermediate(row_reference, row_position, row_alt_snp, df_matrix.columns[n + 3], x, bam_folder, min_cov_low_freq = 10) for n,x in enumerate(data_row)]
         
         df_matrix.iloc[index, 3:] = new_presence_row
         df_matrix.loc[index, 'N'] = sum([x == 1 for x in new_presence_row])
@@ -904,8 +899,10 @@ if __name__ == '__main__':
             compare_snp_matrix_recal_mpileup = group_compare + ".revised_intermediate_mpileup.tsv"
             recalibrated_snp_matrix_intermediate = ddbb_create_intermediate(input_dir, coverage_dir, min_freq_discard=0.1, min_alt_dp=10)
             recalibrated_snp_matrix_intermediate.to_csv(compare_snp_matrix_recal_intermediate, sep="\t", index=False)
-            recalibrated_snp_matrix_mpileup = recalibrate_ddbb_vcf_intermediate(recalibrated_snp_matrix_intermediate, args.bam_folder)
+
+            recalibrated_snp_matrix_mpileup = recalibrate_ddbb_vcf_intermediate(compare_snp_matrix_recal_intermediate, args.bam_folder, min_cov_low_freq = 10)
             recalibrated_snp_matrix_mpileup.to_csv(compare_snp_matrix_recal_mpileup, sep="\t", index=False)
+
             recalibrated_revised_df = revised_df(recalibrated_snp_matrix_mpileup, output_dir, min_freq_include=0.7, min_threshold_discard_uncov_sample=0.4, min_threshold_discard_uncov_pos=0.4, min_threshold_discard_htz_sample=0.4, min_threshold_discard_htz_pos=0.4, remove_faulty=True, drop_samples=True, drop_positions=True)
             recalibrated_revised_df.to_csv(compare_snp_matrix_recal, sep="\t", index=False)
             ddtb_compare(compare_snp_matrix_recal, distance=args.distance)

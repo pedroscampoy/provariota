@@ -22,7 +22,7 @@ from bam_variant import picard_dictionary, samtools_faidx, picard_markdup, ivar_
     replace_consensus_header, create_bamstat, create_coverage, freebayes_variants
 from vcf_process import filter_tsv_variants, vcf_to_ivar_tsv
 from annotation import annotate_snpeff, annotate_pangolin, user_annotation
-from compare_snp import ddtb_add, ddtb_compare, ddbb_create_intermediate, revised_df
+from compare_snp import ddtb_add, ddtb_compare, ddbb_create_intermediate, revised_df, recalibrate_ddbb_vcf_intermediate
 
 """
 =============================================================
@@ -455,12 +455,19 @@ def main():
     #ddtb_add(out_filtered_freebayes_dir, full_path_compare)
     compare_snp_matrix_recal = full_path_compare + ".revised.final.tsv"
     compare_snp_matrix_recal_intermediate = full_path_compare + ".revised_intermediate.tsv"
-    recalibrated_snp_matrix_intermediate = ddbb_create_intermediate(out_filtered_freebayes_dir, out_stats_coverage_dir, min_freq_discard=0.1, min_alt_dp=4)
-    recalibrated_snp_matrix_intermediate.to_csv(compare_snp_matrix_recal_intermediate, sep="\t", index=False)
-    recalibrated_revised_df = revised_df(recalibrated_snp_matrix_intermediate, path_compare, min_freq_include=0.7, min_threshold_discard_uncov_sample=0.4, min_threshold_discard_uncov_pos=0.4, min_threshold_discard_htz_sample=0.7, min_threshold_discard_htz_pos=0.4, remove_faulty=True, drop_samples=True, drop_positions=True)
-    recalibrated_revised_df.to_csv(compare_snp_matrix_recal, sep="\t", index=False)
-    ddtb_compare(compare_snp_matrix_recal, distance=5)
+    compare_snp_matrix_recal_mpileup = full_path_compare + ".revised_intermediate_mpileup.tsv"
 
+    recalibrated_snp_matrix_intermediate = ddbb_create_intermediate(out_filtered_freebayes_dir, out_stats_coverage_dir, min_freq_discard=0.1, min_alt_dp=10)
+    recalibrated_snp_matrix_intermediate.to_csv(compare_snp_matrix_recal_intermediate, sep="\t", index=False)
+
+    recalibrated_snp_matrix_mpileup = recalibrate_ddbb_vcf_intermediate(compare_snp_matrix_recal_intermediate, out_map_dir, min_cov_low_freq = 10)
+    recalibrated_snp_matrix_mpileup.to_csv(compare_snp_matrix_recal_mpileup, sep="\t", index=False)
+
+
+    recalibrated_revised_df = revised_df(recalibrated_snp_matrix_mpileup, path_compare, min_freq_include=0.8, min_threshold_discard_uncov_sample=0.4, min_threshold_discard_uncov_pos=0.4, min_threshold_discard_htz_sample=0.4, min_threshold_discard_htz_pos=0.4, min_threshold_discard_all_pos=0.6, min_threshold_discard_all_sample=0.6, remove_faulty=True, drop_samples=True, drop_positions=True)
+    recalibrated_revised_df.to_csv(compare_snp_matrix_recal, sep="\t", index=False)
+
+    ddtb_compare(compare_snp_matrix_recal, distance=5)
 
     logger.info("\n\n" + MAGENTA + BOLD + "COMPARING FINISHED IN GROUP: " + group_name + END_FORMATTING + "\n")
 

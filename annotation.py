@@ -37,7 +37,7 @@ def tsv_to_vcf(tsv_file):
     return df
 
 def snpeff_execution(vcf_file, annot_file, database=False):
-    df_vcf = pd.read_csv(vcf_file, sep="\t")
+    df_vcf = import_VCF_to_pandas(vcf_file)
     if df_vcf.shape[0] != 0:
         cmd = ["snpEff", "-noStats", database, vcf_file]
         with open(annot_file, "w+") as outfile:
@@ -90,35 +90,41 @@ def import_annot_to_pandas(vcf_file, sep='\t'):
                     'CDS.pos / CDS.length',
                     'AA.pos / AA.length',
                     'ERRORS / WARNINGS / INFO']
-    anlelle_headers = ['Codon_change', 'AA_change', 'DP', 'Allele']
+    #anlelle_headers = ['Codon_change', 'AA_change', 'DP', 'Allele']
 
     #Apply function to split and recover the first 15 fields = only first anotations, the most likely
+
+    df['INFO'] = df.apply(lambda x: x.INFO.split(';')[-1], axis=1)
+    
+    #for head in anlelle_headers:
+    #    df[head] = df[head].str.split("=").str[-1]
+
+    df['TMP_ANN_16'] = df['INFO'].apply(lambda x: ('|').join(x.split('|')[0:15]))
+
+    df.INFO = df.INFO.str.split("ANN=").str[-1]
+
+    df = df.join(df.pop('INFO')
+                   .str.strip(',')
+                   .str.split(',', expand=True)
+                   .stack()
+                   .reset_index(level=1, drop=True)
+                   .rename('INFO')).reset_index(drop=True)
 
     df['TMP_ANN_16'] = df['INFO'].apply(lambda x: ('|').join(x.split('|')[0:15]))
     df[ann_headers] = df['TMP_ANN_16'].str.split('|', expand=True)
     df['HGVS.c'] = df['HGVS.c'].str.split(".").str[-1]
-    df['HGVS.p'] = df['HGVS.p'].str.split(".").str[-1]
-    df[anlelle_headers] = df['Allele'].str.split(';', expand=True)
-    
-    for head in anlelle_headers:
-        df[head] = df[head].str.split("=").str[-1]
+    df['HGVS.p'] = df['HGVS.p'].str.split(".").str[-1].replace('', '-')
 
-    del df['TMP_ANN_16']
-
-    #Send INFO column to last position
-    df = df[ [ col for col in df.columns if col != 'INFO' ] + ['INFO'] ]
+    df.drop(["INFO", "TMP_ANN_16"], inplace = True, axis = 1)
 
     return df
 
-def annotate_snpeff(input_tsv_file, output_vcf_file, output_annot_file, database='NC_045512.2'):
-    vcf_df = tsv_to_vcf(input_tsv_file)
-    vcf_df.to_csv(output_vcf_file, sep="\t", index=False)
+def annotate_snpeff(input_vcf_file, output_annot_file, database='NC_045512.2'):
     #Execure snpEff
-    snpeff_execution(output_vcf_file, output_annot_file, database=database)
+    snpeff_execution(input_vcf_file, output_annot_file, database=database)
     #Format annot vcf and remove vcf
     annot_df = import_annot_to_pandas(output_annot_file)
     annot_df.to_csv(output_annot_file, sep="\t", index=False)
-    os.remove(output_vcf_file)
 
 
 def annotate_pangolin(input_file, output_folder, output_filename, threads=8, max_ambig=0.6):

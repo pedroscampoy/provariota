@@ -414,10 +414,10 @@ def main():
     check_create_dir(out_annot_snpeff_dir)
     ####SNPEFF
     if args.snpeff_database != False:
-        for root, _, files in os.walk(out_filtered_freebayes_dir):
-            if root == out_filtered_freebayes_dir: 
+        for root, _, files in os.walk(out_variant_freebayes_dir):
+            if root == out_variant_freebayes_dir: 
                 for name in files:
-                    if name.endswith('.tsv'):
+                    if name.endswith('.vcf'):
                         sample = name.split('.')[0]
                         filename = os.path.join(root, name)
                         out_annot_file = os.path.join(out_annot_snpeff_dir, sample + ".annot")
@@ -425,8 +425,7 @@ def main():
                             logger.info(YELLOW + DIM + out_annot_file + " EXIST\nOmmiting snpEff Annotation for sample " + sample + END_FORMATTING)
                         else:
                             logger.info(GREEN + "Annotating sample with snpEff: " + sample + END_FORMATTING)
-                            output_vcf = os.path.join(out_annot_snpeff_dir, sample + '.vcf')
-                            annotate_snpeff(filename, output_vcf, out_annot_file, database=args.snpeff_database)
+                            annotate_snpeff(filename, out_annot_file, database=args.snpeff_database)
     ####USER DEFINED
     if not args.annot_bed and not args.annot_vcf:
         logger.info(YELLOW + BOLD + "Ommiting User Annotation, no BED or VCF files supplied" + END_FORMATTING)

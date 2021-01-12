@@ -100,9 +100,13 @@ def add_SG(sample, input_bam, output_bg_sorted, r1):
         first_line = f.readline().strip().decode()
     #print(first_line)
     first_line_list = first_line.split(":")
- 
-    rg_id = ".".join([first_line_list[2],first_line_list[3],first_line_list[-1]])
-    rg_pu = ".".join([first_line_list[2],first_line_list[3],first_line_list[-1]])
+    if len(first_line_list) > 4:
+        rg_id = ".".join([first_line_list[2],first_line_list[3],first_line_list[-1]])
+        rg_pu = ".".join([first_line_list[2],first_line_list[3],first_line_list[-1]])
+    else:
+        first_line_list = first_line.split(" ")
+        rg_id = ".".join([first_line_list[0],first_line_list[1]])
+        rg_pu = ".".join([first_line_list[0],first_line_list[1]])
     rg_sm = sample
     rg_pl = "ILLUMINA"
     rg_lb = "lib_" + sample

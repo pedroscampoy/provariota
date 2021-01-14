@@ -483,13 +483,13 @@ def revised_df(df, out_dir=False, min_freq_include=0.8, min_threshold_discard_un
     if remove_faulty == True:
 
         uncovered_positions = df.iloc[:,3:].apply(lambda x:  sum([i in ['!','?'] for i in x.values])/sum([(i not in [0, '0']) for i in x.values]), axis=1)
-        heterozygous_positions = df.iloc[:,3:].apply(lambda x: sum([(i not in ['!','?',0,1, '0', '1']) and (float(i) < min_freq_include) for i in x.values])/sum([(i not in [0, '0']) for i in x.values]), axis=1)
+        heterozygous_positions = df.iloc[:,3:].apply(lambda x: sum([(i not in ['!','?',0,1, '0', '1']) and (float(i) < min_freq_include) and (float(i) > 0.1) for i in x.values])/sum([(i not in [0, '0']) for i in x.values]), axis=1)
         report_position = pd.DataFrame({'Position': df.Position, 'uncov_fract': uncovered_positions, 'htz_frac': heterozygous_positions, 'faulty_frac': uncovered_positions + heterozygous_positions})
         faulty_positions = report_position['Position'][(report_position.uncov_fract >= min_threshold_discard_uncov_pos) | (report_position.htz_frac >= min_threshold_discard_htz_pos) | (report_position.faulty_frac >= min_threshold_discard_all_pos)].tolist()
 
 
         uncovered_samples = df.iloc[:,3:].apply(lambda x: sum([i in ['!','?'] for i in x.values])/sum([(i not in [0, '0']) for i in x.values]), axis=0)
-        heterozygous_samples = df.iloc[:,3:].apply(lambda x: sum([(i not in ['!','?',0,1, '0', '1']) and (float(i) < min_freq_include) for i in x.values])/sum([(i not in [0, '0']) for i in x.values]), axis=0)
+        heterozygous_samples = df.iloc[:,3:].apply(lambda x: sum([(i not in ['!','?',0,1, '0', '1']) and (float(i) < min_freq_include) and (float(i) > 0.1) for i in x.values])/sum([(i not in [0, '0']) for i in x.values]), axis=0)
         report_samples = pd.DataFrame({'sample': df.iloc[:,3:].columns, 'uncov_fract': uncovered_samples, 'htz_frac': heterozygous_samples, 'faulty_frac': uncovered_samples + heterozygous_samples})
         faulty_samples = report_samples['sample'][(report_samples.uncov_fract >= min_threshold_discard_uncov_sample) | (report_samples.htz_frac >= min_threshold_discard_htz_sample) | (report_samples.faulty_frac >= min_threshold_discard_all_sample)].tolist()
 
@@ -512,11 +512,11 @@ def revised_df(df, out_dir=False, min_freq_include=0.8, min_threshold_discard_un
         if drop_samples == True:
             df = df.drop(faulty_samples, axis=1)
 
-        print('FAULTY POSITIONS:\n{}\n\nFAULTY SAMPLES:\n{}'.format(("\n").join(faulty_positions), ("\n").join(faulty_samples)))
+        logger.info('FAULTY POSITIONS:\n{}\n\nFAULTY SAMPLES:\n{}'.format(("\n").join(faulty_positions), ("\n").join(faulty_samples)))
 
     #Uncovered to 0
     #Number of valid to remove o valid and replace lowfreq
-    df['valid'] = df.apply(lambda x: sum([i != '?' and i != '!' and float(i) > min_freq_include for i in x[3:]]), axis=1)
+    df['valid'] = df.apply(lambda x: sum([i != '?' and i != '!' and float(i) >= min_freq_include for i in x[3:]]), axis=1)
     df = df[df.valid >= 1]
     df = df.drop('valid', axis=1)
 
@@ -534,19 +534,19 @@ def revised_df(df, out_dir=False, min_freq_include=0.8, min_threshold_discard_un
     #df.iloc[:,3:] = df.iloc[:,3:].applymap(f)
 
     #Replace Htz with 1
-    f = lambda x: 1 if x != 0 else 0 # IF HANDLE HETEROZYGOUS CHANGE THIS 0 for X or 0.5
+    f = lambda x: 1 if x > 0.5 else 0 # IF HANDLE HETEROZYGOUS CHANGE THIS 0 for X or 0.5
     df.iloc[:,3:] = df.iloc[:,3:].applymap(f)
 
     df.N = df.apply(lambda x: sum(x[3:]), axis=1)
 
-    def estract_sample_name(row):
+    def extract_sample_name(row):
         count_list = [i not in ['!',0,'0'] for i in row[3:]]
         samples = np.array(df.columns[3:])
         #samples[np.array(count_list)] filter array with True False array
         return ((',').join(samples[np.array(count_list)]))
 
 
-    df['Samples'] = df.apply(estract_sample_name, axis=1)
+    df['Samples'] = df.apply(extract_sample_name, axis=1)
 
     #Remove positions with 0 samples after htz
     df = df[df.N > 0]
@@ -608,7 +608,7 @@ def recheck_variant_mpileup_intermediate(reference_id, position, alt_snp, sample
             sys.exit(1)
         else:
             if  mpileup_depth == 0:
-                #logger.info('WARNING: SAMPLE: {} has 0 depth in position {}. BEFORE: {}'.format(sample, position, previous_binary))
+                logger.debug('WARNING: SAMPLE: {} has 0 depth in position {}. BEFORE: {}'.format(sample, position, previous_binary))
                 return '!'
             elif mpileup_depth > 0:
                 most_counted_variant = max(set(variant_upper_list), key = variant_upper_list.count)
@@ -617,19 +617,19 @@ def recheck_variant_mpileup_intermediate(reference_id, position, alt_snp, sample
                 freq_most_frequent = round(freq_most_frequent,2)
 
                 if (most_counted_variant == alt_snp) and (freq_most_frequent >= 0.1) and (mpileup_depth > min_cov_low_freq):
-                    #logger.info('WARNING: SAMPLE: {} has heterozygous position at {} with frequency {}. BEFORE: {}'.format(sample, position, freq_most_frequent, previous_binary))
+                    logger.debug('WARNING: SAMPLE: {} has heterozygous position at {} with frequency {}. BEFORE: {}'.format(sample, position, freq_most_frequent, previous_binary, text_mpileup.stdout))
                     return freq_most_frequent
                 elif (most_counted_variant == alt_snp) and (freq_most_frequent >= 0.6) and (mpileup_depth <= min_cov_low_freq):
-                    #logger.info('WARNING: SAMPLE: {} has lowcov position at {} with frequency {}. BEFORE: {}'.format(sample, position, freq_most_frequent, previous_binary))
+                    logger.debug('WARNING: SAMPLE: {} has lowcov position at {} with frequency {}. BEFORE: {}: {}'.format(sample, position, freq_most_frequent, previous_binary, text_mpileup.stdout))
                     return '?'
                 elif (most_counted_variant == alt_snp):
                     return freq_most_frequent
                 elif (alt_snp in variant_upper_list):
                     very_low_freq = round(count_all_variants[alt_snp]/len(variant_upper_list), 2)
-                    #logger.info('SAMPLE: {} has VERY lowcov position at {} with frequency {}. BEFORE: {}'.format(sample, position, very_low_freq, previous_binary))
+                    logger.debug('SAMPLE: {} has VERY lowcov position at {} with frequency {}. BEFORE: {}: {}'.format(sample, position, very_low_freq, previous_binary, text_mpileup.stdout))
                     return very_low_freq
                 else:
-                    #logger.info('ELSE {}, most_counted_variant {}, freq_most_frequent {}'.format(text_mpileup.stdout, most_counted_variant, freq_most_frequent))
+                    logger.debug('ELSE {}, most_counted_variant {}, freq_most_frequent {}'.format(text_mpileup.stdout, most_counted_variant, freq_most_frequent))
                     return 0
 
 def recalibrate_ddbb_vcf_intermediate(snp_matrix_ddbb_file, bam_folder, min_cov_low_freq = 10):
@@ -931,7 +931,7 @@ if __name__ == '__main__':
             recalibrated_snp_matrix_mpileup = recalibrate_ddbb_vcf_intermediate(compare_snp_matrix_recal_intermediate, args.bam_folder, min_cov_low_freq = 10)
             recalibrated_snp_matrix_mpileup.to_csv(compare_snp_matrix_recal_mpileup, sep="\t", index=False)
 
-            recalibrated_revised_df = revised_df(recalibrated_snp_matrix_mpileup, output_dir, min_freq_include=0.8, min_threshold_discard_uncov_sample=0.4, min_threshold_discard_uncov_pos=0.4, min_threshold_discard_htz_sample=0.4, min_threshold_discard_htz_pos=0.4, min_threshold_discard_all_pos=0.6, min_threshold_discard_all_sample=0.6, remove_faulty=True, drop_samples=True, drop_positions=True)
+            recalibrated_revised_df = revised_df(recalibrated_snp_matrix_mpileup, output_dir, min_freq_include=0.75, min_threshold_discard_uncov_sample=0.4, min_threshold_discard_uncov_pos=0.4, min_threshold_discard_htz_sample=0.6, min_threshold_discard_htz_pos=0.6, min_threshold_discard_all_pos=0.6, min_threshold_discard_all_sample=0.6, remove_faulty=True, drop_samples=True, drop_positions=True)
             recalibrated_revised_df.to_csv(compare_snp_matrix_recal, sep="\t", index=False)
             ddtb_compare(compare_snp_matrix_recal, distance=args.distance)
     else:

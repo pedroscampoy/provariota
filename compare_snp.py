@@ -617,7 +617,7 @@ def recheck_variant_mpileup_intermediate(reference_id, position, alt_snp, sample
                 freq_most_frequent = round(freq_most_frequent,2)
 
                 if (most_counted_variant == alt_snp) and (freq_most_frequent >= 0.1) and (mpileup_depth > min_cov_low_freq):
-                    logger.debug('WARNING: SAMPLE: {} has heterozygous position at {} with frequency {}. BEFORE: {}'.format(sample, position, freq_most_frequent, previous_binary, text_mpileup.stdout))
+                    logger.debug('WARNING: SAMPLE: {} has heterozygous position at {} with frequency {}. BEFORE: {}: {}'.format(sample, position, freq_most_frequent, previous_binary, text_mpileup.stdout))
                     return freq_most_frequent
                 elif (most_counted_variant == alt_snp) and (freq_most_frequent >= 0.6) and (mpileup_depth <= min_cov_low_freq):
                     logger.debug('WARNING: SAMPLE: {} has lowcov position at {} with frequency {}. BEFORE: {}: {}'.format(sample, position, freq_most_frequent, previous_binary, text_mpileup.stdout))
